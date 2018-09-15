@@ -17,6 +17,17 @@
 
 ### Start project
 
+
+    //If you need to update staticfiles, requirements or nginx.
     docker-compose up -d --build
+
+    //For normal usage, comes with hot reloading
+    docker-compose up -d
+
+    //Error output on django engine
+    docker-compose logs -f app
+
+    //Shutting down project
+    docker-compose down
 
 Project should be now available at [localhost](http://localhost)
