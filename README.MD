@@ -1,11 +1,11 @@
-#Requirements
+# Requirements
 
 - docker 18.06.0
 - docker-compose 1.22.00
 
-#Starting project
+# Starting project
 
-##Setup database
+## Setup database
 
     docker-compose run app python /app/manage.py migrate --noinput
 
@@ -13,7 +13,7 @@
 
     docker-compose run app python /app/manage.py createsuperuser
 
-##Start project
+## Start project
 
     docker-compose up -d --build
 
