@@ -5,15 +5,17 @@
 
 # Starting project
 
-## Setup database
+### Create env file
+
+    cp rest-assured/settings/.env.example rest-assured/settings/.env
+
+### Setup database
 
     docker-compose run app python /app/manage.py migrate --noinput
 
----
-
     docker-compose run app python /app/manage.py createsuperuser
 
-## Start project
+### Start project
 
     docker-compose up -d --build
 
