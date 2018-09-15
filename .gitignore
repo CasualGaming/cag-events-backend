@@ -1,7 +1,7 @@
 # REST-assured ignores
 #
 
-local.py
+
 dev.db
 .idea/
 .vagrant/
