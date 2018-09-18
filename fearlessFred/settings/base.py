@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     # Local apps
     'apps.userprofile',
 
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,7 +43,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'rest-assured.urls'
+ROOT_URLCONF = 'fearlessFred.urls'
 
 TEMPLATES = [
     {
@@ -61,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'rest-assured.wsgi.application'
+WSGI_APPLICATION = 'fearlessFred.wsgi.application'
 
 
 

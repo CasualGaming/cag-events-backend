@@ -9,10 +9,10 @@ WORKDIR /app
 
 COPY requirements/ /app/requirements/
 COPY ./apps/  /app/apps/
-COPY rest-assured  /app/rest-assured/
+COPY fearlessFred  /app/fearlessFred/
 COPY ./manage.py  /app/
 
-RUN pip install -r /app/requirements/local.txt && python manage.py collectstatic --settings=rest-assured.settings.local --noinput
+RUN pip install -r /app/requirements/local.txt && python manage.py collectstatic --settings=fearlessFred.settings.local --noinput
 RUN rm -rf /app/requirements
 
 

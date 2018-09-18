@@ -12,6 +12,6 @@ import os
 import django
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rest-assured.settings.local")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fearlessFred.settings.local")
 
 application = get_wsgi_application()

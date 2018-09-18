@@ -7,7 +7,7 @@
 
 ### Create env file
 
-    cp rest-assured/settings/.env.example rest-assured/settings/.env
+    cp fearlessFred/settings/.env.example fearlessFred/settings/.env
 
 ### Setup database
 

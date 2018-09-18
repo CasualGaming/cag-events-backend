@@ -4,7 +4,7 @@ services:
   app:
     build: .
     env_file:
-      - rest-assured/settings/.env
+      - fearlessFred/settings/.env
     volumes:
     - ./:/app
     - static:/app/static
