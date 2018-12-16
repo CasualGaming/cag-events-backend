@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from .models import UserProfile
 
 
-
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -23,7 +22,6 @@ class UserSerializerPrivate(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         UserProfile.objects.get_or_create(user=user, **profile_data)
         return user
-
 
 
 class UserSerializerPublic(serializers.ModelSerializer):

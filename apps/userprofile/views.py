@@ -1,11 +1,11 @@
-from .models import User
 from django.http import Http404
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import UserSerializerPublic, UserSerializerPrivate
+from .models import User
 from .permissions import IsOwnerOrAdmin, IsAuthOrPost
+from .serializers import UserSerializerPublic, UserSerializerPrivate
 
 
 class UserView(generics.ListCreateAPIView):
@@ -19,7 +19,6 @@ class UserView(generics.ListCreateAPIView):
         if self.request.user.is_staff or (self.request.method == "POST"):
             return UserSerializerPrivate
         return UserSerializerPublic
-
 
 
 class UserDetail(APIView):
@@ -42,7 +41,7 @@ class UserDetail(APIView):
 
     def put(self, request, pk, format=None):
         user = self.get_object(pk)
-        serializer  = UserSerializerPrivate(user, data=request.data)
+        serializer = UserSerializerPrivate(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
