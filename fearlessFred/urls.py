@@ -13,13 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_swagger.views import get_swagger_view
+
 from apps.userprofile import urls as userprofile_urls
 
+schema_view = get_swagger_view(title='Fearless Fred API')
+
 urlpatterns = [
+    path('', schema_view),
     path('admin/', admin.site.urls),
     path('users/', include(userprofile_urls)),
     path('auth/', include('rest_framework.urls'))
-
 ]
