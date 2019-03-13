@@ -13,6 +13,9 @@ class FredOIDCAB(OIDCAuthenticationBackend):
 
         groups = claims.get('groups', [])
 
+        if 'supermen' in groups:
+            user.is_superuser = True
+
         for group in groups:
             g, created = Group.objects.get_or_create(name=group)
             user.groups.add(g)
