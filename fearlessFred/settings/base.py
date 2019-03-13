@@ -14,6 +14,16 @@ SECRET_KEY = env('SECRET_KEY')
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
+OIDC_RP_CLIENT_ID = env('OIDC_RP_CLIENT_ID')
+OIDC_RP_CLIENT_SECRET = env('OIDC_RP_CLIENT_SECRET')
+
+OIDC_OP_AUTHORIZATION_ENDPOINT = env('OIDC_OP_AUTHORIZATION_ENDPOINT')
+OIDC_OP_TOKEN_ENDPOINT = env('OIDC_OP_TOKEN_ENDPOINT')
+OIDC_OP_USER_ENDPOINT = env('OIDC_OP_USER_ENDPOINT')
+
+OIDC_RP_SIGN_ALGO = env('OIDC_RP_SIGN_ALGO')
+OIDC_OP_JWKS_ENDPOINT = env('OIDC_OP_JWKS_ENDPOINT')
+
 
 # Application definition
 
@@ -31,7 +41,8 @@ INSTALLED_APPS = [
 
     # Thirdparty apps
     'rest_framework',
-    'rest_framework_swagger'
+    'rest_framework_swagger',
+    'mozilla_django_oidc',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +96,9 @@ WSGI_APPLICATION = 'fearlessFred.wsgi.application'
 #     },
 # ]
 
+AUTHENTICATION_BACKENDS = (
+    'fearlessFred.catchAuth.FredOIDCAB',
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -110,5 +124,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
+    ]
 }
