@@ -21,10 +21,12 @@ from rest_framework.schemas import get_schema_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework_swagger.views import get_swagger_view
 
+from apps.lan.views import LANViewSet
 #from apps.userprofile import urls as userprofile_urls
 from apps.userprofile.views import UserViewSet
 
 router = DefaultRouter()
+router.register(r'lan', LANViewSet)
 router.register(r'users', UserViewSet)
 
 swagger_schema_view = get_swagger_view(title='Fearless Fred API')

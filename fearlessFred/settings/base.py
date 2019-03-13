@@ -30,6 +30,7 @@ OIDC_OP_JWKS_ENDPOINT = env('OIDC_OP_JWKS_ENDPOINT')
 INSTALLED_APPS = [
     # Local apps
     'apps.userprofile',
+    'apps.lan',
 
 
     'django.contrib.admin',
