@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     # Local apps
     'apps.userprofile',
     'apps.lan',
+    'apps.news',
 
 
     'django.contrib.admin',
