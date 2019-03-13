@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -eu # Exit on error and undefined var is error
+
+MANAGE="python manage.py"
+
+# Check if settings exist
+APP_SETTINGS_FILE=fearlessFred/settings/local.py
+if [[ ! -e $APP_SETTINGS_FILE ]]; then
+    echo "App settings not found: $APP_SETTINGS_FILE" 1>&2
+    exit 1
+fi
+
+# Activate venv and deactivate on exit
+machine="$(uname -s)"
+case "${machine}" in
+    Linux*) source .venv/bin/activate;;
+    MINGW*) source .venv/Scripts/activate;;
+esac
+trap deactivate EXIT
+
+export DJANGO_SETTINGS_MODULE=fearlessFred.settings.local
+
+#exec uwsgi --ini uwsgi.ini
+${MANAGE} runserver
+
