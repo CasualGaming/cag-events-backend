@@ -23,6 +23,16 @@ class UserSerializerPrivate(serializers.ModelSerializer):
         UserProfile.objects.get_or_create(user=user, **profile_data)
         return user
 
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile')
+        instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        if profile_data is not None:
+            UserProfile.objects.update(user=instance, **profile_data)
+        instance.save()
+        return instance
+
 
 class UserSerializerPublic(serializers.ModelSerializer):
 
