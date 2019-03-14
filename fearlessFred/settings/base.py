@@ -131,3 +131,16 @@ REST_FRAMEWORK = {
         'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
     ]
 }
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'oauth': {
+            'type': 'oauth2',
+            'flow': 'accessCode',
+            'authorizationUrl': env('OIDC_OP_AUTHORIZATION_ENDPOINT'),
+            'tokenUrl': env('OIDC_OP_TOKEN_ENDPOINT'),
+        }
+    },
+    'USE_SESSION_AUTH': False,
+
+}
