@@ -1,0 +1,8 @@
+django
+djangorestframework
+django-environ
+django-rest-swagger
+mozilla-django-oidc
+coreapi
+pyyaml
+psycopg2-binary

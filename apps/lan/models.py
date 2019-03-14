@@ -9,6 +9,15 @@ from django.db import models
 from apps.userprofile.models import UserProfile
 
 
+class LAN(models.Model):
+    title = models.CharField(max_length=64)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    location = models.CharField(max_length=64)
+
+    class Meta:
+        ordering = ('start_date',)
+
 # class LAN(TranslatableModel):
 #     title = models.CharField("title", max_length=100)
 #     start_date = models.DateTimeField("start date")
@@ -63,19 +72,19 @@ from apps.userprofile.models import UserProfile
 #     description = models.TextField("description")
 
 
-class Attendee(models.Model):
-    user = models.ForeignKey(User)
-    lan = models.ForeignKey(LAN)
-    has_paid = models.BooleanField("has paid", default=False)
-    arrived = models.BooleanField("has arrived", default=False)
-
-    def __unicode__(self):
-        return self.user.get_full_name() + " - " + self.lan.title
-
-    class Meta:
-        ordering = ['-userprofile', 'lan', ]
-        unique_together = ("userprofile", "lan")
-        index_together = ["userprofile", "lan"]
+# class Attendee(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     lan = models.ForeignKey(LAN, on_delete=models.CASCADE)
+#     has_paid = models.BooleanField("has paid", default=False)
+#     arrived = models.BooleanField("has arrived", default=False)
+#
+#     def __unicode__(self):
+#         return self.user.get_full_name() + " - " + self.lan.title
+#
+#     class Meta:
+#         ordering = ['-userprofile', 'lan', ]
+#         unique_together = ("userprofile", "lan")
+#         index_together = ["userprofile", "lan"]
 
 
 # class TicketType(TranslatableModel):
@@ -124,24 +133,24 @@ class Attendee(models.Model):
 #     class Meta:
 #         index_together = ["userprofile", "ticket_type"]
 #
-
-class Directions(models.Model):
-    lan = models.ForeignKey(LAN)
-    title = models.TextField("title", null=True)
-    description = models.TextField("directions", null=True)
-
-    def __unicode__(self):
-        return " direction " + str(self.pk)
-
-
-class Stream(models.Model):
-    title = models.CharField("title", max_length=100)
-    description = models.TextField("description", help_text="Short description that will show on front page.")
-    link = models.TextField("link", help_text="Embedding link for twitch etc. Include the complete IFrame.")
-    active = models.BooleanField(default=False, help_text="No more than one stream can be active at any given time.")
-
-    def is_active(self):
-        return self.active
-
-    def __unicode__(self):
-        return self.title
+#
+# class Directions(models.Model):
+#     lan = models.ForeignKey(LAN, on_delete=models.CASCADE)
+#     title = models.TextField("title", null=True)
+#     description = models.TextField("directions", null=True)
+#
+#     def __unicode__(self):
+#         return " direction " + str(self.pk)
+#
+#
+# class Stream(models.Model):
+#     title = models.CharField("title", max_length=100)
+#     description = models.TextField("description", help_text="Short description that will show on front page.")
+#     link = models.TextField("link", help_text="Embedding link for twitch etc. Include the complete IFrame.")
+#     active = models.BooleanField(default=False, help_text="No more than one stream can be active at any given time.")
+#
+#     def is_active(self):
+#         return self.active
+#
+#     def __unicode__(self):
+#         return self.title
