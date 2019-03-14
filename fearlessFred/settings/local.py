@@ -1,11 +1,20 @@
 from .base import *
-
 DEBUG = env('DEBUG')
 TEMPLATE_DEBUG = DEBUG
 
-DATABASES = {
-    'default': env.db()
-}
+# TODO fix
+#####
+DATABASES = {}
+useSqlite = env('USE_SQLITE')
+if useSqlite:
+    DATABASES['default'] = env.db('SQLITE_URL', default='sqlite:////'+os.path.join(BASE_DIR+'db.sqlite3'))
+else:
+    DATABASES['default'] = env.db()
+
+#DATABASES = {
+#    #'default': env.db(),
+#}
+#####
 
 STUDLAN_FROM_MAIL = env('STUDLAN_FROM_MAIL')
 SUPPORT_MAIL = env('SUPPORT_MAIL')
