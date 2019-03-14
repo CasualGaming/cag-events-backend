@@ -14,8 +14,8 @@ fi
 # Activate venv and deactivate on exit
 machine="$(uname -s)"
 case "${machine}" in
-    Linux*) source .venv/bin/activate;;
     MINGW*) source .venv/Scripts/activate;;
+    *) source .venv/bin/activate;;
 esac
 trap deactivate EXIT
 

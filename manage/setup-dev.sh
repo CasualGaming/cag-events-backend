@@ -8,8 +8,8 @@ manage/setup-base.sh
 # Activate venv and deactivate on exit
 machine="$(uname -s)"
 case "${machine}" in
-    Linux*) source .venv/bin/activate;;
     MINGW*) source .venv/Scripts/activate;;
+    *) source.venv/bin/activate;;
 esac
 
 export DJANGO_SETTINGS_MODULE=fearlessFred.settings.local
