@@ -9,7 +9,7 @@ manage/setup-base.sh
 machine="$(uname -s)"
 case "${machine}" in
     MINGW*) source .venv/Scripts/activate;;
-    *) source.venv/bin/activate;;
+    *) source .venv/bin/activate;;
 esac
 
 export DJANGO_SETTINGS_MODULE=fearlessFred.settings.local
