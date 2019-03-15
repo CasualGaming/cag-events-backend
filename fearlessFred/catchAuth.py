@@ -14,6 +14,7 @@ class FredOIDCAB(OIDCAuthenticationBackend):
         groups = claims.get('groups', [])
 
         if 'supermen' in groups:
+            user.is_staff = True
             user.is_superuser = True
 
         for group in groups:

@@ -102,6 +102,7 @@ WSGI_APPLICATION = 'fearlessFred.wsgi.application'
 # ]
 
 AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
     'fearlessFred.catchAuth.FredOIDCAB',
 )
 
