@@ -24,6 +24,9 @@ OIDC_OP_USER_ENDPOINT = env('OIDC_OP_USER_ENDPOINT')
 OIDC_RP_SIGN_ALGO = env('OIDC_RP_SIGN_ALGO')
 OIDC_OP_JWKS_ENDPOINT = env('OIDC_OP_JWKS_ENDPOINT')
 
+LOGIN_REDIRECT_URL = "http://localhost:8000"
+LOGOUT_REDIRECT_URL = "http://localhost:8000"
+
 
 # Application definition
 
@@ -128,6 +131,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
         'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
     ]
 }

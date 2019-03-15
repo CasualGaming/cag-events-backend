@@ -40,6 +40,6 @@ urlpatterns = [
     path('swagger/', swagger_schema_view),
     path('admin/', admin.site.urls),
     #path('users/', include(userprofile_urls)),
-    #path('auth/', include('rest_framework.urls')),
+    path('auth/', include('rest_framework.urls')),
     path('oidc/', include('mozilla_django_oidc.urls')),
 ]
