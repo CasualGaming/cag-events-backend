@@ -3,9 +3,9 @@ from rest_framework import serializers
 from .models import Article
 
 
-class ArticleSerializer(serializers.ModelSerializer):
+class ArticleSerializer(serializers.HyperlinkedModelSerializer):
     creator = serializers.ReadOnlyField(source='creator.username')
 
     class Meta:
         model = Article
-        fields = ('created', 'creator', 'title', 'body',)
+        fields = '__all__'
