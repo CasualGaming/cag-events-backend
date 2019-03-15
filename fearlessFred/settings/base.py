@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'apps.userprofile',
     'apps.lan',
     'apps.news',
+    'apps.sponsor',
 
 
     'django.contrib.admin',

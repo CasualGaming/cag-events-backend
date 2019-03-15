@@ -25,11 +25,13 @@ from apps.lan.views import LANViewSet
 from apps.news.views import ArticleViewSet
 #from apps.userprofile import urls as userprofile_urls
 from apps.userprofile.views import UserViewSet
+from apps.sponsor.views import SponsorViewSet
 
 router = DefaultRouter()
 router.register(r'lan', LANViewSet)
 router.register(r'news', ArticleViewSet)
 router.register(r'users', UserViewSet)
+router.register(r'sponsor', SponsorViewSet)
 
 swagger_schema_view = get_swagger_view(title='Fearless Fred API')
 schema_view = get_schema_view(title='Fearless Fred API', permission_classes=[IsAuthenticatedOrReadOnly])
