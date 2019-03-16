@@ -1,5 +1,6 @@
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 from django.contrib.auth.models import Group
+from apps.userprofile.models import UserProfile
 
 
 class FredOIDCAB(OIDCAuthenticationBackend):
@@ -7,9 +8,13 @@ class FredOIDCAB(OIDCAuthenticationBackend):
     def create_user(self, claims):
         user = super(FredOIDCAB, self).create_user(claims)
 
-        user.first_name = claims.get('first_name', '')
-        user.last_name = claims.get('last_name', '')
+        return self.update_user(user, claims)
+
+    def update_user(self, user, claims):
+        user.first_name = claims.get('given_name', '')
+        user.last_name = claims.get('family_name', '')
         user.username = claims.get('preferred_username', '')
+        user.email = claims.get('email', '')
 
         groups = claims.get('groups', [])
 
@@ -23,7 +28,16 @@ class FredOIDCAB(OIDCAuthenticationBackend):
 
         user.save()
 
-        return user
+        address = claims.get('address', {})
 
-    def update_user(self, user, claims):
+        profile_data = {
+            'nick': claims.get('preferred_username', ''),
+            'date_of_birth': claims.get('birthdate', ''),
+            'phone': claims.get('phone_number', ''),
+            'address': address['street_address'],
+            'zip_code': address['postal_code']
+        }
+
+        UserProfile.objects.update_or_create(user=user, defaults=profile_data)
+
         return user

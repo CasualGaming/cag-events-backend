@@ -32,15 +32,6 @@ class UserProfile(models.Model):
             return True
         return False
 
-    @receiver(models.signals.post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            UserProfile.objects.create(user=instance)
-
-    @receiver(models.signals.post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        instance.profile.save()
-
 
 # class AliasType(models.Model):
 #     description = models.CharField('Description', max_length=100, help_text='Short description')
