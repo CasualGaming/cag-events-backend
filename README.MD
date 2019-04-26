@@ -1,9 +1,11 @@
-# Requirements
+# CaG Events Back-End
+
+## Requirements
 
 - docker 18.06.0
 - docker-compose 1.22.00
 
-# Starting project
+## Starting project
 
 ### Create env file
 
