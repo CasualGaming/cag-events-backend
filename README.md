@@ -1,4 +1,5 @@
 # CaG Events Back-End
+Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
 
 ## Requirements
 
