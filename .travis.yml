@@ -25,15 +25,15 @@ jobs:
     # Testing stage
     - stage: test
       name: Validate Django project
-      install: pip install -r requirements/test.txt
+      install: pip install -r requirements/base.txt
       script: manage/ci/validate-django.sh
     - stage: test
       name: Run tests
-      install: pip install -r requirements/test.txt
+      install: pip install -r requirements/testing.txt
       script: manage/ci/test.sh
     - stage: test
       name: Run linter (flake8)
-      install: pip install -r requirements/test.txt
+      install: pip install -r requirements/testing.txt
       script: flake8
     - stage: test
       name: Validate venv dev setup
@@ -58,6 +58,7 @@ jobs:
           token: $SONARCLOUD_TOKEN
       git:
         depth: false
+      install: true # NOP
       script: sonar-scanner
 
     # Deploy to registry stage

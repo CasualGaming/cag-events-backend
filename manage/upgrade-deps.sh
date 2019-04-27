@@ -13,10 +13,11 @@ trap deactivate EXIT
 cp requirements/all.txt requirements/all.old.txt
 
 echo "Updating requirements files ..."
-pip-compile --quiet --upgrade requirements/all.in
+pip-compile --quiet --upgrade requirements/base.in
 pip-compile --quiet --upgrade requirements/development.in
 pip-compile --quiet --upgrade requirements/production.in
 pip-compile --quiet --upgrade requirements/testing.in
+pip-compile --quiet --upgrade requirements/all.in
 
 echo "Dependency changes (if any):"
 diff requirements/all.old.txt requirements/all.txt || true
