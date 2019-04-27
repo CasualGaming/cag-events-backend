@@ -1,7 +1,7 @@
 import os
 import environ
 
-root = environ.Path(__file__) - 3
+root = environ.Path(__file__) - 2
 BASE_DIR = root()
 
 env = environ.Env(DEBUG=(bool, True))
@@ -70,8 +70,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR + '/static'
 WSGI_APPLICATION = 'core.wsgi.application'
 ROOT_URLCONF = 'core.urls'
-LOGIN_REDIRECT_URL = "http://localhost:8000"
-LOGOUT_REDIRECT_URL = "http://localhost:8000"
+LOGIN_REDIRECT_URL = 'http://localhost:8000'
+LOGOUT_REDIRECT_URL = 'http://localhost:8000'
 
 # Database
 DATABASES = {

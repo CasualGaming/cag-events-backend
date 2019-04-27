@@ -3,7 +3,7 @@
 DEV_SETTINGS_FILE="dev-setup/venv/env.original"
 SETTINGS_FILE="env"
 LOG_DIR="log"
-MANAGE="python3 manage.py"
+MANAGE="python manage.py"
 
 # Activate venv and deactivate on exit
 source manage/activate-venv.sh

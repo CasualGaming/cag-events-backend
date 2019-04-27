@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SETTINGS_FILE="env"
-MANAGE="python3 manage.py"
+MANAGE="python manage.py"
 
 # Activate venv and deactivate on exit
 source manage/activate-venv.sh
