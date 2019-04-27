@@ -5,10 +5,10 @@
 # - SONARCLOUD_TOKEN (secure)
 # - SONARCLOUD_ORG
 
-# virtualenv is implicit for python
+dist: xenial
 language: python
 python:
-  - "3.6"
+  - "3.7"
 
 services:
   - docker
