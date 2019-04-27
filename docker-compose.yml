@@ -4,9 +4,9 @@ services:
   app:
     build: .
     env_file:
-      - fearlessFred/settings/.env
+      - core/settings/.env
     volumes:
-    - ./:/app
+    - $PWD/:/app
     - static:/app/static
     networks:
       - main
@@ -25,7 +25,7 @@ services:
   nginx:
     image: nginx
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - $PWD/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - static:/app/static
     ports:
     - "80:80"

@@ -10,7 +10,7 @@ Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
 
 ### Create env file
 
-    cp fearlessFred/settings/.env.example fearlessFred/settings/.env
+    cp core/settings/.env.example core/settings/.env
 
 ### Setup database
 

@@ -2,7 +2,7 @@ from rest_framework import viewsets
 
 from .models import Article
 from .serializers import ArticleSerializer
-from fearlessFred.permissions import IsStaffOrReadOnly
+from core.permissions import IsStaffOrReadOnly
 
 
 class ArticleViewSet(viewsets.ModelViewSet):

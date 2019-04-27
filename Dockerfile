@@ -1,20 +1,18 @@
 FROM python:3.6-slim
 
-MAINTAINER Mathias Flått
-
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+#ENV PYTHONDONTWRITEBYTECODE 1
+#ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-COPY requirements/ /app/requirements/
-COPY ./apps/  /app/apps/
-COPY fearlessFred  /app/fearlessFred/
-COPY ./manage.py  /app/
+COPY requirements requirements/
+COPY core core/
+COPY apps apps/
+COPY manage.py .
 
-RUN pip install -r /app/requirements/local.txt && python manage.py collectstatic --settings=fearlessFred.settings.local --noinput
+RUN pip install -r /app/requirements/all.txt
+RUN python manage.py collectstatic --settings=core.settings.local --noinput
 RUN rm -rf /app/requirements
-
 
 EXPOSE 8001
 

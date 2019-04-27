@@ -12,7 +12,7 @@ case "${machine}" in
     *) source .venv/bin/activate;;
 esac
 
-export DJANGO_SETTINGS_MODULE=fearlessFred.settings.local
+export DJANGO_SETTINGS_MODULE=core.settings.local
 
 #source .venv/bin/activate
 trap deactivate EXIT

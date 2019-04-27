@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'fearlessFred.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -80,7 +80,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'fearlessFred.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 
 
@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'fearlessFred.wsgi.application'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'fearlessFred.catchAuth.FredOIDCAB',
+    'core.catch_auth.FredOIDCAB',
 )
 
 # Internationalization

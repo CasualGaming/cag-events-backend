@@ -26,7 +26,7 @@ fi
 [[ ! -e log ]] && mkdir -p log
 
 # Add dev app settings
-APP_SETTINGS_FILE=fearlessFred/settings/local.py
+APP_SETTINGS_FILE=core/settings/local.py
 
 DEV_APP_SETTINGS_FILE=sample-configs/local-dev.py
 if [[ ! -e $APP_SETTINGS_FILE ]]; then
