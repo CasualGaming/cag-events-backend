@@ -5,6 +5,10 @@ SETTINGS_FILE="env"
 LOG_DIR="log"
 MANAGE="python3 manage.py"
 
+# Activate venv and deactivate on exit
+source manage/activate-venv.sh
+trap deactivate EXIT
+
 set -eu # Exit on error and undefined var is error
 
 # Add settings file
@@ -16,10 +20,6 @@ fi
 
 # Add other dirs and files
 [[ ! -e $LOG_DIR ]] && mkdir -p $LOG_DIR
-
-# Activate venv and deactivate on exit
-source manage/activate-venv.sh
-trap deactivate EXIT
 
 # Install requirements inside venv, and check for outdated packages
 echo

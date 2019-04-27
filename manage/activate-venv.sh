@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Note: Do not use "set -u" before sourcing this script, virtualenv's activate may trigger it.
+
 VENV_DIR=".venv"
 
 if ! [[ -e $VENV_DIR ]]; then
