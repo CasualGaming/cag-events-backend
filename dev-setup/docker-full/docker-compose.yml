@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: cag-events-backend-full-app
+    build:
+      context: $PWD
+      dockerfile: $PWD/Dockerfile
+    environment:
+      - APP_UID=800 # Fake
+      - APP_GID=800 # Fake
+      - SUPERUSER_USERNAME=superman
+      - SUPERUSER_EMAIL=superman@example.com
+      - SUPERUSER_PASSWORD=loislane
+      - SUPERUSER_INACTIVE=false
+    volumes:
+      - $PWD/apps:/app/apps:ro
+      - $PWD/core:/app/core:ro
+      - $PWD/templates:/app/templates:ro
+      - $PWD/dev-setup/docker-full/env:/app/env:ro
+      - $PWD/dev-setup/docker-full/uwsgi.ini:/app/uwsgi.ini:ro
+      - $PWD/log/app:/app/log:rw
+      - /tmp/cag-events-backend/static:/app/static:rw
+    networks:
+      - main
+    depends_on:
+      - db
+
+  db:
+    container_name: cag-events-backend-full-db
+    image: postgres:11-alpine
+    volumes:
+      - /tmp/cag-events-backend/db:/var/lib/postgresql/data/:rw
+    networks:
+      - main
+
+  proxy:
+    container_name: cag-events-backend-full-proxy
+    image: nginx:1.15-alpine
+    volumes:
+      - $PWD/dev-setup/docker-full/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /tmp/cag-events-backend/static:/app/static:ro
+      - $PWD/log/nginx:/var/log/nginx:rw
+    ports:
+    - "80:80"
+    networks:
+    - main
+    depends_on:
+    - app
+
+networks:
+  main:

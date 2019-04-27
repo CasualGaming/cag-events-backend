@@ -261,9 +261,9 @@ celerybeat-schedule
 .env
 
 # virtualenv
-venv/
-ENV/
-.venv/
+/venv/
+/ENV/
+/.venv/
 
 # Spyder project settings
 .spyderproject
@@ -278,5 +278,12 @@ ENV/
 log/
 *.db
 *.sqlite*
-static/
-.vscode/
+/static/
+/.vscode/
+/requirements/*.old.txt
+/tmp/
+env
+/static/
+/db/
+/db.sqlite
+/.log
