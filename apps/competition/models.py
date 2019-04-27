@@ -1,11 +1,10 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # import datetime
 # # from translatable.models import TranslatableModel, get_translation_model
 #
 # from django.contrib.auth.models import User
-# from django.db import models
+from django.db import models
 # from django.db.models import Q
 # from django.db.models.signals import post_save
 # from django.utils import translation
@@ -14,6 +13,7 @@
 # from apps.lan.models import LAN
 # from apps.userprofile.models import Alias, AliasType
 #
+
 
 class Activity(models.Model):
 

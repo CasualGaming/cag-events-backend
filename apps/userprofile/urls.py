@@ -1,7 +1,10 @@
-from django.urls import path
-from rest_framework.urlpatterns import format_suffix_patterns
+# -*- coding: utf-8 -*-
 
-#from .views import UserView, UserDetailViewSet
+# from django.urls import path
+
+# from rest_framework.urlpatterns import format_suffix_patterns
+
+# from .views import UserView, UserDetailViewSet
 
 # urlpatterns = [
 #     path('', UserView.as_view(), name='userprofile-list'),

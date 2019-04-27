@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+# from datetime import datetime
 
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.db import models
 # from translatable.models import TranslatableModel, get_translation_model
 
-from apps.userprofile.models import UserProfile
+# from apps.userprofile.models import UserProfile
 
 
 class LAN(models.Model):

@@ -1,4 +1,5 @@
-import os
+# -*- coding: utf-8 -*-
+
 import environ
 
 root = environ.Path(__file__) - 2
@@ -46,8 +47,7 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR + '/templates']
-        ,
+        'DIRS': [BASE_DIR + '/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,7 +75,7 @@ LOGOUT_REDIRECT_URL = 'http://localhost:8000'
 
 # Database
 DATABASES = {
-    'default': env.db('DATABASE_URL')
+    'default': env.db('DATABASE_URL'),
 }
 
 # Email
@@ -148,7 +148,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
-    ]
+    ],
 }
 
 # Swagger
@@ -159,7 +159,7 @@ SWAGGER_SETTINGS = {
             'flow': 'accessCode',
             'authorizationUrl': env('OIDC_OP_AUTHORIZATION_ENDPOINT'),
             'tokenUrl': env('OIDC_OP_TOKEN_ENDPOINT'),
-        }
+        },
     },
     'USE_SESSION_AUTH': False,
 }

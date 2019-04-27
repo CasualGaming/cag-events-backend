@@ -1,5 +1,9 @@
-from mozilla_django_oidc.auth import OIDCAuthenticationBackend
+# -*- coding: utf-8 -*-
+
 from django.contrib.auth.models import Group
+
+from mozilla_django_oidc.auth import OIDCAuthenticationBackend
+
 from apps.userprofile.models import UserProfile
 
 
@@ -35,7 +39,7 @@ class FredOIDCAB(OIDCAuthenticationBackend):
             'date_of_birth': claims.get('birthdate', ''),
             'phone': claims.get('phone_number', ''),
             'address': address['street_address'],
-            'zip_code': address['postal_code']
+            'zip_code': address['postal_code'],
         }
 
         UserProfile.objects.update_or_create(user=user, defaults=profile_data)
