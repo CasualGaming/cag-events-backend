@@ -1,0 +1,75 @@
+# Required env vars:
+# - DOCKER_REPO
+# - DOCKER_USER (secure)
+# - DOCKER_PASSWORD (secure)
+# - SONARCLOUD_TOKEN (secure)
+# - SONARCLOUD_ORG
+
+# virtualenv is implicit for python
+language: python
+python:
+  - "3.6"
+
+services:
+  - docker
+
+cache: pip
+
+stages:
+  - name: test
+  - name: deploy-registry
+    if: type = push
+
+jobs:
+  include:
+    # Testing stage
+    - stage: test
+      name: Validate Django project
+      install: pip install -r requirements/test.txt
+      script: manage/ci/validate-django.sh
+    - stage: test
+      name: Run tests
+      install: pip install -r requirements/test.txt
+      script: manage/ci/test.sh
+    - stage: test
+      name: Run linter (flake8)
+      install: pip install -r requirements/test.txt
+      script: flake8
+    - stage: test
+      name: Validate venv dev setup
+      install: true # NOP
+      script: manage/ci/validate-venv.sh
+    - stage: test
+      name: Validate Docker simple dev setup
+      install: true # NOP
+      script: manage/ci/validate-docker-simple.sh
+    - stage: test
+      name: Validate Docker full dev env
+      install: true # NOP
+      script: manage/ci/validate-docker-full.sh
+      # SonarCloud does not fail the build if the SonarCloud quality gate fails,
+      # but SonarCloud has a GitHub PR status check which can be made required.
+    - stage: test
+      name: Analyze source code (SonarCloud)
+      language: java
+      addons:
+        sonarcloud:
+          organization: $SONARCLOUD_ORG
+          token: $SONARCLOUD_TOKEN
+      git:
+        depth: false
+      script: sonar-scanner
+
+    # Deploy to registry stage
+    # TODO Release branch with version tag as commit message
+    #- stage: deploy-registry
+    #  name: Build and deploy stable to registry
+    #  # Requires tag "vX.Y.Z" without suffix
+    #  if: (tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$)
+    #  install: true # NOP
+    #  script: manage/ci-deploy-registry.sh stable $TRAVIS_TAG
+    #- stage: deploy-registry
+    #  name: Build and deploy bleeding to registry
+    #  if: (branch = master)
+    #  install: true # NOP
+    #  script: manage/ci-deploy-registry.sh bleeding

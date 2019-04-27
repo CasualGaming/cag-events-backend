@@ -3,7 +3,7 @@
 set -eu # Exit on error and undefined var is error
 
 SETTINGS_FILE="env"
-MANAGE="python manage.py"
+MANAGE="python3 manage.py"
 
 # Check if settings exist
 if [[ ! -e $SETTINGS_FILE ]]; then

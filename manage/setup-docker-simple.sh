@@ -5,7 +5,7 @@ SETTINGS_FILE="dev-setup/docker-simple/env"
 DB_FILE="db.sqlite"
 DC_FILE="dev-setup/docker-simple/docker-compose.yml"
 DC="docker-compose -f $DC_FILE"
-DC_MANAGE="$DC run app python manage.py"
+DC_MANAGE="$DC run app python3 manage.py"
 
 set -eu # Exit on error and undefined var is error
 

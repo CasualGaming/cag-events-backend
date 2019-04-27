@@ -3,7 +3,7 @@
 DEV_SETTINGS_FILE="dev-setup/venv/env.original"
 SETTINGS_FILE="env"
 LOG_DIR="log"
-MANAGE="python manage.py"
+MANAGE="python3 manage.py"
 
 set -eu # Exit on error and undefined var is error
 
