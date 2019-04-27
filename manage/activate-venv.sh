@@ -2,8 +2,6 @@
 
 VENV_DIR=".venv"
 
-set -eu
-
 if ! [[ -e $VENV_DIR ]]; then
     echo "Virtualenv not found, creating it ..."
 

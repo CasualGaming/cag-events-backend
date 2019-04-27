@@ -1,5 +1,13 @@
+[![GitHub release](https://img.shields.io/github/release/CasualGaming/cag-events-backend.svg)](https://github.com/CasualGaming/cag-events-backend/releases)
+[![Build Status](https://travis-ci.org/CasualGaming/cag-events-backend.svg?branch=master)](https://travis-ci.org/CasualGaming/cag-events-backend)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?branch=master&project=CasualGaming_cag-events-backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=CasualGaming_cag-events-backend)
+
 # CaG Events Back-End
 Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
+
+* [Travis CI](https://travis-ci.com/CasualGaming/cag-events-backend)
+* [Docker Hub](https://hub.docker.com/r/casualgaming/cag-events-backend)
+* [SonarCloud](https://sonarcloud.io/dashboard?id=CasualGaming_cag-events-backend)
 
 ## Requirements
 
@@ -12,9 +20,10 @@ Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
 
 There are 4 methods to run the local server. All of them should support both Linux, MacOS and Windows (w/ BASH and stuff).
 
-### Method 1: Manually (OUTDATED) (Not Recommended)
+### Method 1: Manually
 
-- **OUTDATED** Not recommended.
+- **OUTDATED**
+- Not recommended.
 
 #### Create env file
 
