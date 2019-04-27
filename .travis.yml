@@ -38,15 +38,15 @@ jobs:
     - stage: test
       name: Validate venv dev setup
       install: true # NOP
-      script: manage/ci/validate-venv.sh
+      script: manage/setup-venv.sh
     - stage: test
       name: Validate Docker simple dev setup
       install: true # NOP
-      script: manage/ci/validate-docker-simple.sh
+      script: manage/setup-docker-simple.sh
     - stage: test
       name: Validate Docker full dev env
       install: true # NOP
-      script: manage/ci/validate-docker-full.sh
+      script: manage/setup-docker-full.sh
       # SonarCloud does not fail the build if the SonarCloud quality gate fails,
       # but SonarCloud has a GitHub PR status check which can be made required.
     - stage: test

@@ -9,7 +9,7 @@ if ! [[ -e $VENV_DIR ]]; then
 
     # The essentials
     # Make sure the user bin dir is added to PATH
-    pip3 install --user --quiet --upgrade pip virtualenv setuptools wheel pip-tools
+    pip3 install --quiet pip virtualenv setuptools wheel pip-tools
 
     # Windows uses Python 3 as "python", and has no "python3" or "python2"
     # Linux uses Python 2 as "python", but has "python3" and "python2"

@@ -10,7 +10,7 @@ if [[ $CI != "true" ]]; then
 fi
 
 # Setup files and dirs
-cp dev-setup/test/env.original env
+cp dev-setup/venv/env.original env
 mkdir -p log
 
 # Collect static files

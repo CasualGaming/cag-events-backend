@@ -10,7 +10,7 @@ fi
 set -eu # Exit on error and undefined var is error
 
 # Setup files and dirs
-cp dev-setup/test/env.original env
+cp dev-setup/venv/env.original env
 mkdir -p log
 
 # Run Django tests
