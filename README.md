@@ -9,84 +9,95 @@ Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
 * [Docker Hub](https://hub.docker.com/r/casualgaming/cag-events-backend)
 * [SonarCloud](https://sonarcloud.io/dashboard?id=CasualGaming_cag-events-backend)
 
-## Requirements
+# Tools
 
-- Python 3 w/ pip
-- Docker
-- Docker Compose
-- ++
+* [Git](https://git-scm.com) or [GitHub for Windows](https://windows.github.com/)
+* Python 3.7 w/ pip
+* Docker and Docker Compose (recommended)
+* Travis Tool (optional)
+
+## Configure Git
+```bash
+git config --global core.autocrlf false
+git config --global user.name <username>
+git config --global user.email <email-address>
+```
+
+... or use GitHub for Windows.
+
+## (Optional) Install Travis Tool
+Optional, used for encrypting Travis CI secrets and files and stuff.
+```
+sudo apt install ruby-dev rubygems
+sudo gem install travis
+```
 
 ## Running
 
-There are 4 methods to run the local server. All of them should support both Linux, MacOS and Windows (w/ BASH and stuff).
-
-### Method 1: Manually
-
-- **OUTDATED**
-- Not recommended.
-
-#### Create env file
-
-    cp core/settings/.env.example core/settings/.env
-
-#### Setup database
-
-    docker-compose run app python /app/manage.py migrate --noinput
-
-    docker-compose run app python /app/manage.py createsuperuser
-
-#### Start project
-
-
-    //If you need to update staticfiles, requirements or nginx.
-    docker-compose up -d --build
-
-    //For normal usage, comes with hot reloading
-    docker-compose up -d
-
-    //Error output on django engine
-    docker-compose logs -f app
-
-    //Shutting down project
-    docker-compose down
-
-Project should be now available at [localhost](http://localhost)
-
-### Method 2: Using Virtualenv
-
-- Better than manual.
-- Uses the Django dev server (hot reloading).
-- Uses a SQLite DB back-end.
-- Migrates and collects static on setup.
+There are scripts to do most stuff. The server can be run either with venv and the Django dev server, within Docker with the Django dev serverm, or within Docker with the uWSGI and nging web servers.
 
 ```bash
-manage/setup-venv.sh
-manage/run-venv.sh
+# Clean-up run stuff
+manage/clean.sh
+
+# Setup the virtualenv and stuff (used both for dev stuff and for running in venv)
+manage/setup.sh
+
+# Run the dev server in venv
+manage/run.sh
+
+# Activate the venv, for running stuff manually (create it if it doesn't exit)
+source manage/activate-venv.sh
+
+# Check dependencies
+manage/check-deps.sh
+
+# Upgrade dependencies
+manage/upgrade-deps.sh
+
+# Run all checks (Django validity, unit tests, linter, etc.)
+manage/check.sh
+
+# Run tests
+manage/test.sh
+
+# Run linter
+manage/lint.sh
+
+# Make new migrations (without applying them)
+manage/make-migrations.sh
 ```
 
-### Method 3: Using Docker Compose, The Simple Way
+### Running in Docker, The Simple Way
 
 - The recommended way for development.
-- Uses the Django dev server (hot reloading).
+- Uses the Django dev server within the container (with hot reloading).
 - Uses a SQLite DB back-end.
-- Migrates on start.
 - Has development requirements in addition.
 
 ```bash
-manage/setup-docker-simple.sh
-manage/run-docker-simple.sh
+# First time and after image/requirement/migration/etc changes
+manage/docker-simple/setup.sh
+
+# Start the dev server
+manage/docker-simple/run.sh
+
+# Run any command in the container (not while already running)
+manage/docker-simple/cmd.sh <cmd>
+
+# Run any Django manage command in the container (not while already running)
+manage/docker-simple/manage.sh <cmd>
 ```
 
-### Method 4: Using Docker Compose, The Full Way
+### Running in Docker, The Full Way
 
 - The recommended way for testing.
 - Uses and nginx proxy.
 - Uses a PostgreSQL DB back-end.
 - Migrates and collects static on start.
 - Most similar to deployment.
-- All the bells and whistles.
 
 ```bash
-manage/setup-docker-full.sh
-manage/run-docker-full.sh
+manage/docker-full/setup.sh
+manage/docker-full/run.sh
 ```

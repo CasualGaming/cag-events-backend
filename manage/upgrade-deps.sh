@@ -22,8 +22,7 @@ pip-compile --quiet --upgrade requirements/all.in
 echo
 echo "Dependency changes (if any):"
 diff requirements/all.old.txt requirements/all.txt || true
+rm -f requirements/all.old.txt
 
 echo
 echo "Done. Now check the changelogs for updated deps and make sure they didn't break anything."
-
-rm -f requirements/all.old.txt
