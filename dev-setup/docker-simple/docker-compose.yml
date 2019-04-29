@@ -2,10 +2,11 @@ version: '3.6'
 
 services:
   app:
-    container_name: cag-events-backend-simple-app
+    container_name: cag-events-backend-app
     build:
       context: $PWD
       dockerfile: $PWD/Dockerfile
+    command: python3 manage.py runserver 0.0.0.0:8000
     environment:
       - APP_UID=800 # Fake
       - APP_GID=800 # Fake
@@ -13,9 +14,6 @@ services:
       - SUPERUSER_EMAIL=superman@example.com
       - SUPERUSER_PASSWORD=loislane
       - SUPERUSER_INACTIVE=false
-      - DEV_SERVER=true
-      - SKIP_STATIC_FILES=true
-      - SKIP_VALIDATION=true
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
     volumes:
@@ -23,9 +21,9 @@ services:
       - $PWD/core:/app/core:ro
       - $PWD/templates:/app/templates:ro
       - $PWD/dev-setup/docker-simple/env:/app/env:ro
-      - $PWD/db.sqlite:/app/db.sqlite:rw
+      - $PWD/db.sqlite3:/app/db.sqlite3:rw
     ports:
-      - "80:8000"
+      - "8000:8000"
     networks:
       - main
 

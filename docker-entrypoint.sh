@@ -16,9 +16,6 @@ SUPERUSER_USERNAME=${SUPERUSER_USERNAME:=}
 SUPERUSER_EMAIL=${SUPERUSER_EMAIL:=}
 SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:=}
 SUPERUSER_INACTIVE=${SUPERUSER_INACTIVE:=}
-DEV_SERVER=${DEV_SERVER:=}
-SKIP_STATIC_FILES=${SKIP_STATIC_FILES:=}
-SKIP_VALIDATION=${SKIP_VALIDATION:=}
 
 # Check if settings exist
 if [[ ! -e $SETTINGS_FILE ]]; then
@@ -27,21 +24,20 @@ if [[ ! -e $SETTINGS_FILE ]]; then
 fi
 
 # Collect static files
-if [[ $SKIP_STATIC_FILES != "true" ]]; then
-    echo "Collecting static files ..."
-    $MANAGE collectstatic --noinput --clear | egrep -v "^Deleting" || true
-fi
+echo
+echo "Collecting static files ..."
+$MANAGE collectstatic --noinput --clear | egrep -v "^Deleting" || true
 
 # Run migration, but skip initial if matching table names already exist
+echo
 echo "Migrating database ..."
 $MANAGE migrate --fake-initial
-echo
 
 # Clear expired sessions
 $MANAGE clearsessions
 
 # Optionally add superuser
-# Warning: These should be trusted to avoid code injection
+echo
 if [[ ! -z $SUPERUSER_USERNAME ]]; then
     echo "Adding superuser ..."
     # FIXME disable superiser
@@ -74,18 +70,16 @@ else:
 
 quit()
 END
-    echo
     echo "If a superuser was created, please change its password in the app"
 fi
 
 # Validate
-if [[ $SKIP_VALIDATION != "true" ]]; then
-    echo "Checking validity ..."
-    $MANAGE check --deploy --fail-level=ERROR
-    echo
-fi
+echo
+echo "Checking validity ..."
+$MANAGE check --deploy --fail-level=ERROR
 
 # Add group and user to run the app
+echo
 if ! grep -q "^${APP_GROUP}:" /etc/group; then
     if [[ ! -z $APP_GID ]]; then
         groupadd -r -g $APP_GID $APP_GROUP
@@ -100,7 +94,6 @@ if ! grep -q "^${APP_USER}:" /etc/passwd; then
         useradd -r -g $APP_GROUP $APP_USER
     fi
     echo "Added user: $(id $APP_USER)"
-    echo
 fi
 
 # Setup permissions and stuff
@@ -109,13 +102,8 @@ set +e
 echo "Trying to chown all files ..."
 chown -R $APP_USER:$APP_GROUP . 2>/dev/null
 set -e
-echo
 
 # Run server
-if [[ $DEV_SERVER == "true" ]]; then
-    echo "Starting Django dev server ..."
-    exec python3 manage.py runserver 0.0.0.0:8000
-else
-    echo "Starting uWSGI server ..."
-    exec uwsgi --ini uwsgi.ini
-fi
+echo
+echo "Starting uWSGI server ..."
+exec uwsgi --ini uwsgi.ini

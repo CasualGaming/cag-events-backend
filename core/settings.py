@@ -2,11 +2,11 @@
 
 import environ
 
-root = environ.Path(__file__) - 2
-BASE_DIR = root()
+base_dir = environ.Path(__file__) - 2
 
+# Read env file
 env = environ.Env(DEBUG=(bool, True))
-environ.Env.read_env(BASE_DIR + '/env')
+environ.Env.read_env(base_dir('env'))
 
 INSTALLED_APPS = [
     # Local
@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Thirdparty
+    # Third-party
     'rest_framework',
     'rest_framework_swagger',
     'mozilla_django_oidc',
@@ -47,7 +47,7 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR + '/templates'],
+        'DIRS': [base_dir('templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -61,17 +61,16 @@ TEMPLATES = [
 ]
 
 # General
+BASE_DIR = base_dir
 DEBUG = env('DEBUG')
 TEMPLATE_DEBUG = DEBUG
 SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 SITE_NAME = env('SITE_NAME')
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR + '/static'
 WSGI_APPLICATION = 'core.wsgi.application'
 ROOT_URLCONF = 'core.urls'
-LOGIN_REDIRECT_URL = 'http://localhost:8000'
-LOGOUT_REDIRECT_URL = 'http://localhost:8000'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Database
 DATABASES = {
@@ -79,26 +78,30 @@ DATABASES = {
 }
 
 # Email
-DEFAULT_MAIL = env('DEFAULT_MAIL')
-SUPPORT_MAIL = env('SUPPORT_MAIL')
-EMAIL_BACKEND = env('EMAIL_BACKEND')
-# Mailgun (https://pypi.org/project/django-mailgun/)
-MAILGUN_ACCESS_KEY = env('MAILGUN_ACCESS_KEY')
-MAILGUN_SERVER_NAME = env('MAILGUN_SERVER_NAME')
+DEFAULT_MAIL = env('DEFAULT_MAIL', default='app@localhost')
+SUPPORT_MAIL = env('SUPPORT_MAIL', default='support@localhost')
+EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+# Mailgun
+MAILGUN_ACCESS_KEY = env('MAILGUN_ACCESS_KEY', default='')
+MAILGUN_SERVER_NAME = env('MAILGUN_SERVER_NAME', default='')
 
 # Security
 CSRF_COOKIE_PATH = '/'
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SECURE = env('CSRF_COOKIE_SECURE')
+CSRF_COOKIE_SECURE = env('CSRF_COOKIE_SECURE', default=True)
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE')
+SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE', default=True)
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 
+# Static files
+STATIC_URL = '/static/'
+STATIC_ROOT = base_dir('static')
+
 # i18n
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Europe/Oslo'
+TIME_ZONE = env('TIME_ZONE', default='UTC')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -116,7 +119,7 @@ LOGGING = {
         'error_file': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'log/error.log',
+            'filename': base_dir(env('LOG_DIR', default='log'), 'error.log'),
             'maxBytes': 5 * 1024 * 1024,  # 5 MB
             'backupCount': 5,
             'formatter': 'standard',
@@ -132,13 +135,13 @@ LOGGING = {
 }
 
 # OIDC
-OIDC_RP_CLIENT_ID = env('OIDC_RP_CLIENT_ID')
-OIDC_RP_CLIENT_SECRET = env('OIDC_RP_CLIENT_SECRET')
-OIDC_OP_AUTHORIZATION_ENDPOINT = env('OIDC_OP_AUTHORIZATION_ENDPOINT')
-OIDC_OP_TOKEN_ENDPOINT = env('OIDC_OP_TOKEN_ENDPOINT')
-OIDC_OP_USER_ENDPOINT = env('OIDC_OP_USER_ENDPOINT')
-OIDC_RP_SIGN_ALGO = env('OIDC_RP_SIGN_ALGO')
-OIDC_OP_JWKS_ENDPOINT = env('OIDC_OP_JWKS_ENDPOINT')
+OIDC_RP_CLIENT_ID = env('OIDC_RP_CLIENT_ID', default='')
+OIDC_RP_CLIENT_SECRET = env('OIDC_RP_CLIENT_SECRET', default='')
+OIDC_OP_AUTHORIZATION_ENDPOINT = env('OIDC_OP_AUTHORIZATION_ENDPOINT', default='')
+OIDC_OP_TOKEN_ENDPOINT = env('OIDC_OP_TOKEN_ENDPOINT', default='')
+OIDC_OP_USER_ENDPOINT = env('OIDC_OP_USER_ENDPOINT', default='')
+OIDC_RP_SIGN_ALGO = env('OIDC_RP_SIGN_ALGO', default='')
+OIDC_OP_JWKS_ENDPOINT = env('OIDC_OP_JWKS_ENDPOINT', default='')
 
 # DRF
 REST_FRAMEWORK = {
@@ -157,8 +160,8 @@ SWAGGER_SETTINGS = {
         'oauth': {
             'type': 'oauth2',
             'flow': 'accessCode',
-            'authorizationUrl': env('OIDC_OP_AUTHORIZATION_ENDPOINT'),
-            'tokenUrl': env('OIDC_OP_TOKEN_ENDPOINT'),
+            'authorizationUrl': env('OIDC_OP_AUTHORIZATION_ENDPOINT', default=''),
+            'tokenUrl': env('OIDC_OP_TOKEN_ENDPOINT', default=''),
         },
     },
     'USE_SESSION_AUTH': False,

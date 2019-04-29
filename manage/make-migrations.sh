@@ -17,3 +17,6 @@ fi
 
 echo "Making migrations ..."
 $MANAGE makemigrations
+
+echo
+echo "Done. They were not been applied to any DB."

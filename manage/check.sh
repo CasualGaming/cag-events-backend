@@ -15,26 +15,25 @@ if [[ ! -e $SETTINGS_FILE ]]; then
     exit -1
 fi
 
-# Collect static files
+echo
 echo "Collecting static files ..."
 $MANAGE collectstatic --no-input --clear | egrep -v "^Deleting" || true
 
-# Run migration, but skip initial if matching table names already exist
-echo "Running migration ..."
-$MANAGE migrate --fake-initial --no-input
+echo
+echo "Checking migrations ..."
+$MANAGE makemigrations --check --no-input --dry-run
+$MANAGE migrate --fake-initial --no-input --plan
 
-# Check if new migrations can be made
-$MANAGE makemigrations --dry-run --check --no-input
-
-# Validate
+echo
 echo "Checking validity ..."
 $MANAGE check --deploy --fail-level=ERROR
 
-# Run Django tests
+echo
+echo "Running tests ..."
 $MANAGE test --no-input
 
-# Run flake8 static code analysis
-# Uses settings from .flake8
+echo
+echo "Running linter ..."
 flake8
 
 echo

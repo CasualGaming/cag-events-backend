@@ -11,3 +11,4 @@ if [[ ! -e $SETTINGS_FILE ]]; then
 fi
 
 $DC up
+$DC down

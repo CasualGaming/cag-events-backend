@@ -2,7 +2,7 @@
 
 DEV_SETTINGS_FILE="dev-setup/docker-full/env.original"
 SETTINGS_FILE="dev-setup/docker-full/env"
-DB_CONTAINER_ID="cag-events-backend-full-db"
+DB_CONTAINER_ID="cag-events-backend-db"
 DB_SUPERUSER="postgres"
 DB_USER="dev_user"
 DB_PASSWORD="dev_password"
@@ -51,4 +51,4 @@ $DC_MANAGE check
 
 echo
 echo "Stopping ..."
-$DC stop
+$DC down

@@ -17,12 +17,13 @@ cache: pip
 
 stages:
   - name: test
-  - name: deploy-registry
+  - name: test-dev-setup
+  - name: deploy
     if: type = push
 
 jobs:
   include:
-    # Testing stage
+    # Test stage
     - stage: test
       name: Validate Django project
       install: pip install -r requirements/base.txt
@@ -35,18 +36,6 @@ jobs:
       name: Run linter (flake8)
       install: pip install -r requirements/testing.txt
       script: flake8
-    - stage: test
-      name: Validate venv dev setup
-      install: true # NOP
-      script: manage/setup-venv.sh
-    - stage: test
-      name: Validate Docker simple dev setup
-      install: true # NOP
-      script: manage/setup-docker-simple.sh
-    - stage: test
-      name: Validate Docker full dev env
-      install: true # NOP
-      script: manage/setup-docker-full.sh
       # SonarCloud does not fail the build if the SonarCloud quality gate fails,
       # but SonarCloud has a GitHub PR status check which can be made required.
     - stage: test
@@ -61,15 +50,29 @@ jobs:
       install: true # NOP
       script: sonar-scanner
 
-    # Deploy to registry stage
+      # Test dev setup stage
+    - stage: test-dev-setup
+      name: Validate venv dev setup
+      install: true # NOP
+      script: manage/setup.sh
+    - stage: test-dev-setup
+      name: Validate Docker simple dev setup
+      install: true # NOP
+      script: manage/docker-simple/setup.sh
+    - stage: test-dev-setup
+      name: Validate Docker full dev env
+      install: true # NOP
+      script: manage/docker-full/setup.sh
+
+    # Deploy stage
     # TODO Release branch with version tag as commit message
-    #- stage: deploy-registry
+    #- stage: deploy
     #  name: Build and deploy stable to registry
     #  # Requires tag "vX.Y.Z" without suffix
     #  if: (tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$)
     #  install: true # NOP
     #  script: manage/ci-deploy-registry.sh stable $TRAVIS_TAG
-    #- stage: deploy-registry
+    #- stage: deploy
     #  name: Build and deploy bleeding to registry
     #  if: (branch = master)
     #  install: true # NOP

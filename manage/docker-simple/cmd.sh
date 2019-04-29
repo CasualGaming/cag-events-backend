@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Syntax: ./cmd.sh <cmd>
+# Runs the specified command in the container.
+
 SETTINGS_FILE="dev-setup/docker-simple/env"
 DC_FILE="dev-setup/docker-simple/docker-compose.yml"
 DC="docker-compose -f $DC_FILE"
@@ -10,4 +13,4 @@ if [[ ! -e $SETTINGS_FILE ]]; then
     exit -1
 fi
 
-$DC up
+$DC run app $@

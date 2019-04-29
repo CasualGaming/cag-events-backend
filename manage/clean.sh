@@ -8,7 +8,7 @@ fi
 
 # Data
 rm -rf env
-rm -rf db.sqlite
+rm -rf db.sqlite3
 rm -rf static
 rm -rf log
 rm -rf dev-setup/docker-simple/env
