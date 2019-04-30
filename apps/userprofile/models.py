@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+
 import uuid
 from datetime import date
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext as _
-from django.dispatch import receiver
+# from django.dispatch import receiver
 
 
 class UserProfile(models.Model):
@@ -20,10 +22,10 @@ class UserProfile(models.Model):
         return self.user.username
 
     def get_month(self):
-        return '%02d' % self.date_of_birth.month
+        return '{0:02d}'.format(self.date_of_birth.month)
 
     def get_day(self):
-        return '%02d' % self.date_of_birth.day
+        return '{0:02d}'.format(self.date_of_birth.day)
 
     def has_address(self):
         if self.address and self.zip_code:

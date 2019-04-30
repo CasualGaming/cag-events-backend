@@ -1,7 +1,3 @@
-# REST-assured ignores
-#
-
-
 dev.db
 .idea/
 .vagrant/
@@ -261,9 +257,9 @@ celerybeat-schedule
 .env
 
 # virtualenv
-venv/
-ENV/
-.venv/
+/venv/
+/ENV/
+/.venv/
 
 # Spyder project settings
 .spyderproject
@@ -271,11 +267,17 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# Other
 /static_cdn/
 .idea
 .vagrant
-
-log/
-*.db
-*.sqlite*
-static/
+/static/
+/.vscode/
+/requirements/*.old.txt
+/tmp/
+env
+/static/
+/db/
+/db.sqlite
+/db.sqlite3
+/log

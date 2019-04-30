@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+
 from rest_framework import viewsets
-from fearlessFred.permissions import IsStaffOrReadOnly
+
+from core.permissions import IsStaffOrReadOnly
 
 from .models import Sponsor, SponsorRelation
-from .serializers import SponsorSerializer, SponsorRelationSerializer
+from .serializers import SponsorRelationSerializer, SponsorSerializer
 
 
 class SponsorViewSet(viewsets.ModelViewSet):

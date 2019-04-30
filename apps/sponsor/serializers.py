@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from rest_framework import serializers
 
 from .models import Sponsor, SponsorRelation
 
 
 class SponsorSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.ReadOnlyField()
+    uid = serializers.ReadOnlyField()
 
     class Meta:
         model = Sponsor

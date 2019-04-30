@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+
 from rest_framework import viewsets
+
+from core.permissions import IsStaffOrReadOnly
 
 from .models import Article
 from .serializers import ArticleSerializer
-from fearlessFred.permissions import IsStaffOrReadOnly
 
 
 class ArticleViewSet(viewsets.ModelViewSet):

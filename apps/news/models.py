@@ -1,10 +1,11 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-import datetime
 
-from django.db import models
+# import datetime
+
 from django.contrib.auth.models import User
-#from translatable.models import TranslatableModel, get_translation_model
+from django.db import models
+# from translatable.models import TranslatableModel, get_translation_model
+
 from apps.lan.models import LAN
 
 
@@ -40,4 +41,3 @@ class Article(models.Model):
 #
 #     def __unicode__(self):
 #         return self.translated_title
-    

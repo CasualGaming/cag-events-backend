@@ -1,13 +1,16 @@
-#from django.http import Http404
-#from rest_framework import generics, status
-from rest_framework.response import Response
-#from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+# -*- coding: utf-8 -*-
+
+# from django.http import Http404
+
 from rest_framework import mixins
+# from rest_framework import generics, status
+from rest_framework.response import Response
+# from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 
 from .models import User
-from .permissions import IsOwnerOrAdmin, IsAuthOrPost
-from .serializers import UserSerializerPublic, UserSerializerPrivate
+from .permissions import IsAuthOrPost, IsOwnerOrAdmin
+from .serializers import UserSerializerPrivate, UserSerializerPublic
 
 
 class UserViewSet(mixins.RetrieveModelMixin,
@@ -74,4 +77,3 @@ class UserViewSet(mixins.RetrieveModelMixin,
 #         user = self.get_object(pk)
 #         user.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
-
