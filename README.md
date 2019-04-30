@@ -11,10 +11,12 @@ Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
 
 # Tools
 
-* [Git](https://git-scm.com) or [GitHub for Windows](https://windows.github.com/)
-* Python 3.7 w/ pip
-* Docker and Docker Compose (recommended)
-* Travis Tool (optional)
+- [Git](https://git-scm.com) or [GitHub for Windows](https://windows.github.com/)
+- Python 3.7 w/ pip
+- Docker and Docker Compose (recommended)
+- VS Code (optional)
+  - flake8 linter extension
+- Travis Tool (optional)
 
 ## Configure Git
 ```bash
@@ -101,3 +103,10 @@ manage/docker-simple/manage.sh <cmd>
 manage/docker-full/setup.sh
 manage/docker-full/run.sh
 ```
+
+## (Dunno what to call this)
+
+- All changes to the application must be added to the changelog (`CHANGELOG.md`), excluding changes that update build tools, changes to the code that doesn't affecting the application, etc.
+- Add docstrings to all significant classes and functions.
+- The code should be linted. If the code is not formatted correctly, CI will fail. Run `manage/lint.sh` to run the linter.
+- Don't upgrade deps without making sure that they don't break anything. Read the changelogs. Run `manage/upgrade-deps.sh` to upgrade the deps.
