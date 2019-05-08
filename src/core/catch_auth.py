@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
-from apps.userprofile.models import UserProfile
+from userprofile.models import UserProfile
 
 
 class FredOIDCAB(OIDCAuthenticationBackend):

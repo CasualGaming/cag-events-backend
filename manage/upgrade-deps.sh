@@ -21,7 +21,7 @@ pip-compile --quiet --upgrade requirements/production.in
 pip-compile --quiet --upgrade requirements/testing.in
 pip-compile --quiet --upgrade requirements/all.in
 # For dependency analyzers etc.
-cp requirements/all.in requirements.txt
+cp requirements/all.txt requirements.txt
 
 echo
 echo "Dependency changes (if any):"

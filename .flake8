@@ -1,5 +1,5 @@
 [flake8]
-application_import_names = core, apps
+application_import_names = core, authentication, competition, lan, news, payment, seating, sponsor, team, userprofile
 exclude = **/__init__.py, **/migrations, .venv
 # B901 blind except: statement (duplicate of E722)
 # E501 line too long

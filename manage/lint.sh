@@ -1,7 +1,5 @@
 #!/bin/bash
 
-MANAGE="python manage.py"
-
 set -e # Exit on error
 
 # Activate venv and deactivate on exit

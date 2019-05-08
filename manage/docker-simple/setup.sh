@@ -3,12 +3,12 @@
 # Configures the container, including building the image, creating the container,
 # installing extra deps, collecting static files, migrating the DB, etc.
 
-DEV_SETTINGS_FILE="dev-setup/docker-simple/env.original"
-SETTINGS_FILE="dev-setup/docker-simple/env"
+DEV_SETTINGS_FILE="setup/docker-simple/env.original"
+SETTINGS_FILE="setup/docker-simple/env"
 DB_FILE="db.sqlite3"
-DC_FILE="dev-setup/docker-simple/docker-compose.yml"
+DC_FILE="setup/docker-simple/docker-compose.yml"
 DC="docker-compose -f $DC_FILE"
-DC_MANAGE="$DC run app python3 manage.py"
+DC_MANAGE="$DC run app python3 src/manage.py"
 
 set -eu # Exit on error and undefined var is error
 

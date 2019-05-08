@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
-from apps.lan.models import LAN, TicketType
+from lan.models import LAN, TicketType
 
 
 class Layout(models.Model):

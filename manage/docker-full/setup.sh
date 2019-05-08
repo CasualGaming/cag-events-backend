@@ -1,15 +1,15 @@
 #!/bin/bash
 
-DEV_SETTINGS_FILE="dev-setup/docker-full/env.original"
-SETTINGS_FILE="dev-setup/docker-full/env"
+DEV_SETTINGS_FILE="setup/docker-full/env.original"
+SETTINGS_FILE="setup/docker-full/env"
 DB_CONTAINER_ID="cag-events-backend-db"
 DB_SUPERUSER="postgres"
 DB_USER="dev_user"
 DB_PASSWORD="dev_password"
 DB_NAME="dev_db"
-DC_FILE="dev-setup/docker-full/docker-compose.yml"
+DC_FILE="setup/docker-full/docker-compose.yml"
 DC="docker-compose -f $DC_FILE"
-DC_MANAGE="$DC run app python3 manage.py"
+DC_MANAGE="$DC run app python3 src/manage.py"
 
 set -eu # Exit on error and undefined var is error
 

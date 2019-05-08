@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MANAGE="python3 manage.py"
+MANAGE="python3 src/manage.py"
 
 set -eu # Exit on error and undefined var is error
 
@@ -10,7 +10,7 @@ if [[ $CI != "true" ]]; then
 fi
 
 # Setup files and dirs
-cp dev-setup/venv/env.original env
+cp setup/venv/env.original env
 mkdir -p log
 
 # Collect static files

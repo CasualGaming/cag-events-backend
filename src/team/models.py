@@ -3,7 +3,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from apps.lan.models import Attendee
+from lan.models import Attendee
 
 
 class Team(models.Model):

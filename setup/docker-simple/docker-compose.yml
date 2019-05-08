@@ -2,11 +2,11 @@ version: '3.6'
 
 services:
   app:
-    container_name: cag-events-backend-app
+    container_name: cag-events-backend-app-simple
     build:
       context: $PWD
       dockerfile: $PWD/Dockerfile
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python3 src/manage.py runserver 0.0.0.0:8000
     environment:
       - APP_UID=800 # Fake
       - APP_GID=800 # Fake
@@ -17,10 +17,9 @@ services:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
     volumes:
-      - $PWD/apps:/app/apps:ro
-      - $PWD/core:/app/core:ro
+      - $PWD/src:/app/src:ro
       - $PWD/templates:/app/templates:ro
-      - $PWD/dev-setup/docker-simple/env:/app/env:ro
+      - $PWD/setup/docker-simple/env:/app/env:ro
       - $PWD/db.sqlite3:/app/db.sqlite3:rw
     ports:
       - "8000:8000"

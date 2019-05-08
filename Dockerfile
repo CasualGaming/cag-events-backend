@@ -4,9 +4,7 @@ WORKDIR /app
 
 # Application files
 COPY requirements requirements/
-COPY core core/
-COPY apps apps/
-COPY manage.py ./
+COPY src src/
 COPY docker-entrypoint.sh ./
 COPY uwsgi.ini ./
 RUN mkdir -p log
@@ -18,7 +16,7 @@ COPY LICENSE ./
 COPY MAINTAINERS ./
 
 # Configure
-RUN pip install -r /app/requirements/production.txt
+RUN pip install -r requirements/production.txt
 
 # HTTP
 EXPOSE 8000

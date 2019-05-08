@@ -3,7 +3,7 @@
 set -eu # Exit on error and undefined var is error
 
 # Constants
-MANAGE="python3 manage.py"
+MANAGE="python3 src/manage.py"
 SETTINGS_FILE="/app/env"
 LOG_DIR="/app/log"
 APP_USER="app"

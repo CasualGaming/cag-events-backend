@@ -2,7 +2,7 @@
 
 import environ
 
-base_dir = environ.Path(__file__) - 2
+base_dir = environ.Path(__file__) - 3
 
 # Read env file
 env = environ.Env(DEBUG=(bool, True))
@@ -10,10 +10,10 @@ environ.Env.read_env(base_dir("env"))
 
 INSTALLED_APPS = [
     # Local
-    "apps.userprofile",
-    "apps.lan",
-    "apps.news",
-    "apps.sponsor",
+    "userprofile",
+    "lan",
+    "news",
+    "sponsor",
 
     # Django
     "django.contrib.admin",

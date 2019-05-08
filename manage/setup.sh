@@ -1,9 +1,9 @@
 #!/bin/bash
 
-DEV_SETTINGS_FILE="dev-setup/venv/env.original"
+DEV_SETTINGS_FILE="setup/venv/env.original"
 SETTINGS_FILE="env"
 LOG_DIR="log"
-MANAGE="python manage.py"
+MANAGE="python src/manage.py"
 
 set -e # Exit on error
 

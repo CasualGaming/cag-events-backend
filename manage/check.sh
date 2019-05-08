@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SETTINGS_FILE="env"
-MANAGE="python manage.py"
+MANAGE="python src/manage.py"
 
 set -e # Exit on error
 

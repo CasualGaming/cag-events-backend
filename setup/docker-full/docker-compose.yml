@@ -17,8 +17,8 @@ services:
       - $PWD/apps:/app/apps:ro
       - $PWD/core:/app/core:ro
       - $PWD/templates:/app/templates:ro
-      - $PWD/dev-setup/docker-full/env:/app/env:ro
-      - $PWD/dev-setup/docker-full/uwsgi.ini:/app/uwsgi.ini:ro
+      - $PWD/setup/docker-full/env:/app/env:ro
+      - $PWD/setup/docker-full/uwsgi.ini:/app/uwsgi.ini:ro
       - $PWD/log/app:/app/log:rw
       - /tmp/cag-events-backend/static:/app/static:rw
     networks:
@@ -38,7 +38,7 @@ services:
     container_name: cag-events-backend-proxy
     image: nginx:1.15-alpine
     volumes:
-      - $PWD/dev-setup/docker-full/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - $PWD/setup/docker-full/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - /tmp/cag-events-backend/static:/app/static:ro
       - $PWD/log/nginx:/var/log/nginx:rw
     ports:

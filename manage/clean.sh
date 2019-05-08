@@ -2,8 +2,8 @@
 
 # Docker
 if command -v docker-compose 1>/dev/null 2>&1; then
-    docker-compose -f dev-setup/docker-simple/docker-compose.yml down
-    docker-compose -f dev-setup/docker-full/docker-compose.yml down
+    docker-compose -f setup/docker-simple/docker-compose.yml down
+    docker-compose -f setup/docker-full/docker-compose.yml down
 fi
 
 # Data
@@ -11,8 +11,8 @@ rm -rf env
 rm -rf db.sqlite3
 rm -rf static
 rm -rf log
-rm -rf dev-setup/docker-simple/env
-rm -rf dev-setup/docker-full/env
+rm -rf setup/docker-simple/env
+rm -rf setup/docker-full/env
 rm -rf /tmp/cag-events-backend
 
 # Venv

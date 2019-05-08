@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SETTINGS_FILE="dev-setup/docker-full/env"
-DC_FILE="dev-setup/docker-full/docker-compose.yml"
+SETTINGS_FILE="setup/docker-full/env"
+DC_FILE="setup/docker-full/docker-compose.yml"
 DC="docker-compose -f $DC_FILE"
 
 # Check if settings exist

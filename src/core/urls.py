@@ -9,11 +9,14 @@ from rest_framework.schemas import get_schema_view
 
 from rest_framework_swagger.views import get_swagger_view
 
-from apps.lan.views import LANViewSet
-from apps.news.views import ArticleViewSet
-# from apps.userprofile import urls as userprofile_urls
-from apps.sponsor.views import SponsorViewSet
-from apps.userprofile.views import UserViewSet
+from lan.views import LANViewSet
+
+from news.views import ArticleViewSet
+
+# from userprofile import urls as userprofile_urls
+from sponsor.views import SponsorViewSet
+
+from userprofile.views import UserViewSet
 
 router = DefaultRouter()
 router.register(r"lan", LANViewSet)
