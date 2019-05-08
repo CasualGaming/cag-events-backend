@@ -10,7 +10,7 @@ class SponsorSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Sponsor
-        fields = '__all__'
+        fields = "__all__"
 
 
 class SponsorRelationSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,4 +18,4 @@ class SponsorRelationSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = SponsorRelation
-        fields = ['priority', 'sponsor']
+        fields = ["priority", "sponsor"]

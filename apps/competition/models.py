@@ -17,69 +17,69 @@ from django.db import models
 
 class Activity(models.Model):
 
-    title = models.CharField('title', max_length=50)
-    image_url = models.CharField('Image url', max_length=100, blank=True,
-                                 help_text='Use a mirrored image of at least a height of 150px.')
-    desc = models.TextField('description')
+    title = models.CharField("title", max_length=50)
+    image_url = models.CharField("Image url", max_length=100, blank=True,
+                                 help_text="Use a mirrored image of at least a height of 150px.")
+    desc = models.TextField("description")
 
     def __unicode__(self):
         return self.title
 
     @models.permalink
     def get_absolute_url(self):
-        return ('activity_details', (), {'activity_id': self.id})
+        return ("activity_details", (), {"activity_id": self.id})
 
     class Meta:
-        ordering = ['title']
-        verbose_name = 'activity'
-        verbose_name_plural = 'activities'
+        ordering = ["title"]
+        verbose_name = "activity"
+        verbose_name_plural = "activities"
 
 
 # class Competition(TranslatableModel):
 #
-#     STATUS_OPTIONS = ((1, _(u'Open')), (2, _(u'Closed')), (3, _(u'In progress')),
-#                       (4, _(u'Finished')))
+#     STATUS_OPTIONS = ((1, _(u"Open")), (2, _(u"Closed")), (3, _(u"In progress")),
+#                       (4, _(u"Finished")))
 #
-#     TOURNAMENT_FORMATS = (('single elimination', 'Single elimination'), ('double elimination', 'Double elimination'))
+#     TOURNAMENT_FORMATS = (("single elimination", "Single elimination"), ("double elimination", "Double elimination"))
 #
 #     statuses = {
-#         1: ['Registration open', 'success'],
-#         2: ['Registration closed', 'danger'],
-#         3: ['Competition in progress', 'warning'],
-#         4: ['Competition finished', 'info'],
+#         1: ["Registration open", "success"],
+#         2: ["Registration closed", "danger"],
+#         3: ["Competition in progress", "warning"],
+#         4: ["Competition finished", "info"],
 #     }
 #
-#     status = models.SmallIntegerField('status', choices=STATUS_OPTIONS)
+#     status = models.SmallIntegerField("status", choices=STATUS_OPTIONS)
 #     activity = models.ForeignKey(Activity)
 #     lan = models.ForeignKey(LAN)
-#     challonge_url = models.CharField('Challonge url', max_length=50, blank=True, null=True)
-#     use_teams = models.BooleanField('use teams', default=False,
-#                                     help_text='If checked, participants will be ignored, and will '
-#                                     'instead use teams. If left unchecked teams will be ignored, '
-#                                     'and participants will be used.')
+#     challonge_url = models.CharField("Challonge url", max_length=50, blank=True, null=True)
+#     use_teams = models.BooleanField("use teams", default=False,
+#                                     help_text="If checked, participants will be ignored, and will "
+#                                     "instead use teams. If left unchecked teams will be ignored, "
+#                                     "and participants will be used.")
 #     team_size = models.IntegerField(default=5, blank=True)
-#     enforce_team_size = models.BooleanField('enforce teams', default=False,
-#                                             help_text='If checked, teams will require x members (specified in team_size) before being able '
-#                                             'to sign up.')
-#     enforce_payment = models.BooleanField('enforce payment', default=False,
-#                                             help_text='If checked, teams will require x members (specified in team_size) with valid tickets before'
-#                                           ' being able to sign up.')
-#     require_alias = models.BooleanField('require alias', default=False, help_text="If checked, players will need to register"
+#     enforce_team_size = models.BooleanField("enforce teams", default=False,
+#                                             help_text="If checked, teams will require x members (specified in team_size) before being able "
+#                                             "to sign up.")
+#     enforce_payment = models.BooleanField("enforce payment", default=False,
+#                                             help_text="If checked, teams will require x members (specified in team_size) with valid tickets before"
+#                                           " being able to sign up.")
+#     require_alias = models.BooleanField("require alias", default=False, help_text="If checked, players will need to register"
 #                                         "an alias for the Activity that the competition belongs to.")
 #     start_time = models.DateTimeField(blank=True, null=True)
-#     max_match_points = models.SmallIntegerField('Maximum match points', default=1, help_text="This number represents how many points are needed"
+#     max_match_points = models.SmallIntegerField("Maximum match points", default=1, help_text="This number represents how many points are needed"
 #                                                 " to win a match. E.g. 3 in a BO 5 or 16 in BO 30")
-#     tournament_format = models.CharField('Tournament format', max_length=20, blank=True,
+#     tournament_format = models.CharField("Tournament format", max_length=20, blank=True,
 #                                          null=True, choices=TOURNAMENT_FORMATS)
 #
 #     def get_teams(self):
 #         if self.use_teams:
-#             return map(lambda x: getattr(x, 'team'), Participant.objects.filter(~Q(team=None), Q(competition=self)))
+#             return map(lambda x: getattr(x, "team"), Participant.objects.filter(~Q(team=None), Q(competition=self)))
 #         else:
 #             return []
 #
 #     def get_users(self):
-#         return map(lambda x: getattr(x, 'userprofile'), Participant.objects.filter(~Q(user=None), Q(competition=self)))
+#         return map(lambda x: getattr(x, "userprofile"), Participant.objects.filter(~Q(user=None), Q(competition=self)))
 #
 #     def get_participants(self):
 #         participants = Participant.objects.filter(competition=self)
@@ -119,19 +119,19 @@ class Activity(models.Model):
 #
 #     @models.permalink
 #     def get_absolute_url(self):
-#         return ('competition_details', (), {'competition_id': self.id})
+#         return ("competition_details", (), {"competition_id": self.id})
 #
 #     class Meta:
-#         ordering = ['status',]
+#         ordering = ["status",]
 #
 #
 # class CompetitionTranslation(get_translation_model(Competition, "competition")):
-#     translated_title = models.CharField('title', max_length=50)
-#     translated_description = models.TextField('description',
-#         help_text='Markdown-enabled. You may also use regular (x)HTML markup. For '
-#         'blockquotes use the following markup:<br/><br/>&lt;blockquote&gt;<br/>&n'
-#         'bsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;Quote-text& lt;/p&gt;<br/>&nbsp;&nbsp;&nbsp;&nbsp;&lt;'
-#         'small&gt;Reference&lt;/small&gt;<br/>&lt;/blockquote&gt;')
+#     translated_title = models.CharField("title", max_length=50)
+#     translated_description = models.TextField("description",
+#         help_text="Markdown-enabled. You may also use regular (x)HTML markup. For "
+#         "blockquotes use the following markup:<br/><br/>&lt;blockquote&gt;<br/>&n"
+#         "bsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;Quote-text& lt;/p&gt;<br/>&nbsp;&nbsp;&nbsp;&nbsp;&lt;"
+#         "small&gt;Reference&lt;/small&gt;<br/>&lt;/blockquote&gt;")
 #
 #     def __unicode__(self):
 #         return self.translated_title
@@ -139,9 +139,9 @@ class Activity(models.Model):
 
 # class Participant(models.Model):
 #     user = models.ForeignKey(User, null=True)
-#     team = models.ForeignKey('team.Team', null=True)
+#     team = models.ForeignKey("team.Team", null=True)
 #     competition = models.ForeignKey(Competition)
-#     cid = models.CharField('cid', max_length=50, null=True)
+#     cid = models.CharField("cid", max_length=50, null=True)
 #
 #     def __unicode__(self):
 #         if self.user:
@@ -157,22 +157,22 @@ class Activity(models.Model):
 #
 #     class Meta:
 #         unique_together = (
-#             ('userprofile', 'competition',),
-#             ('team', 'competition',),
+#             ("userprofile", "competition",),
+#             ("team", "competition",),
 #         )
-#         ordering = ['userprofile', 'team']
+#         ordering = ["userprofile", "team"]
 #
 #
 # class Match(models.Model):
-#     matchid = models.CharField('matchid', max_length=50)
-#     player1 = models.ForeignKey(Participant, related_name='player1', null=True)
-#     player2 = models.ForeignKey(Participant, related_name='player2', null=True)
+#     matchid = models.CharField("matchid", max_length=50)
+#     player1 = models.ForeignKey(Participant, related_name="player1", null=True)
+#     player2 = models.ForeignKey(Participant, related_name="player2", null=True)
 #     competition = models.ForeignKey(Competition)
-#     p1_reg_score = models.CharField('p1_reg_score', max_length=50, null=True)
-#     p2_reg_score = models.CharField('p2_reg_score', max_length=50, null=True)
-#     final_score = models.CharField('final_score', max_length=50, null=True)
-#     state = models.CharField('state', max_length=50)
-#     winner = models.ForeignKey(Participant, related_name='winner', null=True)
+#     p1_reg_score = models.CharField("p1_reg_score", max_length=50, null=True)
+#     p2_reg_score = models.CharField("p2_reg_score", max_length=50, null=True)
+#     final_score = models.CharField("final_score", max_length=50, null=True)
+#     state = models.CharField("state", max_length=50)
+#     winner = models.ForeignKey(Participant, related_name="winner", null=True)
 #
 #     def get_p1(self):
 #         if self.player1:
@@ -200,13 +200,13 @@ class Activity(models.Model):
 #
 #     def is_valid_score_reporter(self, user, player_id):
 #         if self.player1.team is None and self.player2.team is None:
-#             if (user == self.player1.user and player_id == '1') or (user == self.player2.user and player_id == '2'):
+#             if (user == self.player1.user and player_id == "1") or (user == self.player2.user and player_id == "2"):
 #                 return True
 #         else:
-#             if user == (self.player1.team.leader and player_id == '1')\
-#                     or user == (self.player2.team.leader and player_id == '2'):
+#             if user == (self.player1.team.leader and player_id == "1")\
+#                     or user == (self.player2.team.leader and player_id == "2"):
 #                 return True
-#             if user in (self.player1.team.members.all() and player_id == '1')\
-#                     or (user in self.player2.members.all() and player_id == '2'):
+#             if user in (self.player1.team.members.all() and player_id == "1")\
+#                     or (user in self.player2.members.all() and player_id == "2"):
 #                 return True
 #         return False

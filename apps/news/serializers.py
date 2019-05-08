@@ -6,8 +6,8 @@ from .models import Article
 
 
 class ArticleSerializer(serializers.HyperlinkedModelSerializer):
-    creator = serializers.ReadOnlyField(source='creator.username')
+    creator = serializers.ReadOnlyField(source="creator.username")
 
     class Meta:
         model = Article
-        fields = '__all__'
+        fields = "__all__"

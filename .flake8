@@ -7,3 +7,4 @@ exclude = **/__init__.py, **/migrations, .venv
 # W503 line break before binary operator
 # W504 line break after binary operator
 ignore = B901, E501, Q003, W503, W504
+inline-quotes = double

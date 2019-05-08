@@ -21,7 +21,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
     queryset = User.objects.all()
     serializer_class = UserSerializerPublic
     permission_classes = [IsAuthOrPost, IsOwnerOrAdmin]
-    lookup_field = 'username'
+    lookup_field = "username"
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

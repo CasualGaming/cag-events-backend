@@ -8,8 +8,8 @@ from django.db import models
 
 class RegisterToken(models.Model):
     user = models.ForeignKey(User)
-    token = models.CharField('token', max_length=32)
-    created = models.DateTimeField('created', editable=False, auto_now_add=True)
+    token = models.CharField("token", max_length=32)
+    created = models.DateTimeField("created", editable=False, auto_now_add=True)
 
     @property
     def is_valid(self):

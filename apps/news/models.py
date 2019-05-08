@@ -17,11 +17,11 @@ class Article(models.Model):
     body = models.TextField()
 
     class Meta:
-        ordering = ('created',)
+        ordering = ("created",)
 
 
 # class Article():
-#     pub_date = models.DateTimeField('published', default=datetime.datetime.now)
+#     pub_date = models.DateTimeField("published", default=datetime.datetime.now)
 #     relevant_to = models.ManyToManyField(LAN, blank=True)
 #     pinned = models.BooleanField(default=False)
 #
@@ -30,14 +30,14 @@ class Article(models.Model):
 #
 #     @models.permalink
 #     def get_absolute_url(self):
-#         return ('news_single', (), {'article_id': self.id})
+#         return ("news_single", (), {"article_id": self.id})
 #
 #     class Meta:
-#         ordering = ['-pub_date']
+#         ordering = ["-pub_date"]
 
 # class ArticleTranslation(get_translation_model(Article, "Article")):
-#     translated_title = models.CharField('title', max_length=50)
-#     translated_body = models.TextField('body')
+#     translated_title = models.CharField("title", max_length=50)
+#     translated_body = models.TextField("body")
 #
 #     def __unicode__(self):
 #         return self.translated_title

@@ -16,7 +16,7 @@ class LAN(models.Model):
     location = models.CharField(max_length=64)
 
     class Meta:
-        ordering = ('start_date',)
+        ordering = ("start_date",)
 
 # class LAN(TranslatableModel):
 #     title = models.CharField("title", max_length=100)
@@ -27,21 +27,21 @@ class LAN(models.Model):
 #
 #     @property
 #     def attendees(self):
-#         return map(lambda x: getattr(x, 'userprofile'), Attendee.objects.filter(lan=self))
+#         return map(lambda x: getattr(x, "userprofile"), Attendee.objects.filter(lan=self))
 #
 #     @property
 #     def paid_attendees(self):
-#         return map(lambda x: getattr(x, 'userprofile'), Attendee.objects.filter(lan=self, has_paid=True))
+#         return map(lambda x: getattr(x, "userprofile"), Attendee.objects.filter(lan=self, has_paid=True))
 #
 #     def status(self):
 #         now = datetime.now()
 #         if now < self.start_date:
-#             return 'upcoming'
+#             return "upcoming"
 #         else:
 #             if now < self.end_date:
-#                 return 'in progress'
+#                 return "in progress"
 #             else:
-#                 return 'ended'
+#                 return "ended"
 #
 #     def tickets(self):
 #         ticket_types = TicketType.objects.filter(lan=self)
@@ -59,13 +59,13 @@ class LAN(models.Model):
 #
 #     @models.permalink
 #     def get_absolute_url(self):
-#         return 'lan_details', (), {'lan_id': self.id}
+#         return "lan_details", (), {"lan_id": self.id}
 #
 #     def __unicode__(self):
 #         return self.title
 #
 #     class Meta:
-#         ordering = ['start_date']
+#         ordering = ["start_date"]
 #
 
 # class LANTranslation(get_translation_model(LAN, "LAN")):
@@ -82,7 +82,7 @@ class LAN(models.Model):
 #         return self.user.get_full_name() + " - " + self.lan.title
 #
 #     class Meta:
-#         ordering = ['-userprofile', 'lan', ]
+#         ordering = ["-userprofile", "lan", ]
 #         unique_together = ("userprofile", "lan")
 #         index_together = ["userprofile", "lan"]
 

@@ -110,3 +110,7 @@ manage/docker-full/run.sh
 - Add docstrings to all significant classes and functions.
 - The code should be linted. If the code is not formatted correctly, CI will fail. Run `manage/lint.sh` to run the linter.
 - Don't upgrade deps without making sure that they don't break anything. Read the changelogs. Run `manage/upgrade-deps.sh` to upgrade the deps.
+
+## Code Style
+
+- Double quotes all the way. Single quotes may be used to avoid escaping double quotes within the string. (Single quotes was used here previously.)

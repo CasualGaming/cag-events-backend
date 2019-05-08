@@ -8,4 +8,4 @@ from .models import LAN
 class LANSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = LAN
-        fields = '__all__'
+        fields = "__all__"
