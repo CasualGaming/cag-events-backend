@@ -9,6 +9,8 @@ DB_FILE="db.sqlite3"
 DC_FILE="setup/docker-simple/docker-compose.yml"
 DC="docker-compose -f $DC_FILE"
 DC_MANAGE="$DC run app python3 src/manage.py"
+# Set to true if run by CI
+CI=$CI
 
 set -eu # Exit on error and undefined var is error
 
@@ -39,7 +41,11 @@ $DC up --no-start
 
 echo
 echo "Installing extra dependencies ..."
-$DC run --no-deps app pip3 install --quiet -r requirements/development.txt
+if [[ $CI != "true" ]]; then
+    $DC run --no-deps app pip3 install --quiet -r requirements/development.txt
+else
+    $DC run --no-deps app pip3 install -r requirements/development.txt
+fi
 
 echo
 echo "Configuring app ..."
