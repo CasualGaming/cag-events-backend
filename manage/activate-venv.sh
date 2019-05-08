@@ -9,7 +9,7 @@ if ! [[ -e $VENV_DIR ]]; then
 
     # The essentials
     # Make sure the user bin dir is added to PATH
-    pip3 install --quiet pip virtualenv setuptools wheel pip-tools
+    pip3 install --quiet pip virtualenv setuptools wheel
 
     # Windows uses Python 3 as "python", and has no "python3" or "python2"
     # Linux uses Python 2 as "python", but has "python3" and "python2"
@@ -18,6 +18,7 @@ if ! [[ -e $VENV_DIR ]]; then
         *) PYTHON_PATH="$(which python3)" ;;
     esac
 
+    # Create venv
     if [[ ! -d .venv ]]; then
         echo "Creating venv ..."
         # Don't use symlinks if in VirtualBox shared folder
@@ -28,9 +29,19 @@ if ! [[ -e $VENV_DIR ]]; then
             virtualenv -p $PYTHON_PATH $VENV_DIR
         fi
     fi
-fi
 
-case "$(uname -s)" in
-    MINGW*) source $VENV_DIR/Scripts/activate ;;
-    *) source $VENV_DIR/bin/activate ;;
-esac
+    # Enter venv
+    case "$(uname -s)" in
+        MINGW*) source $VENV_DIR/Scripts/activate ;;
+        *) source $VENV_DIR/bin/activate ;;
+    esac
+
+    # Install extra packages inside venv
+    pip install --quiet pip-tools
+else
+    # Enter existing venv directly
+    case "$(uname -s)" in
+        MINGW*) source $VENV_DIR/Scripts/activate ;;
+        *) source $VENV_DIR/bin/activate ;;
+    esac
+fi
