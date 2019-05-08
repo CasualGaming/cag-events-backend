@@ -3,6 +3,8 @@
 SETTINGS_FILE="env"
 MANAGE="python manage.py"
 
+set -e # Exit on error
+
 # Activate venv and deactivate on exit
 source manage/activate-venv.sh
 trap deactivate EXIT

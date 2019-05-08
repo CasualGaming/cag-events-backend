@@ -2,6 +2,8 @@
 
 export CUSTOM_COMPILE_COMMAND="manage/update-deps.sh"
 
+set -e # Exit on error
+
 # Activate venv and deactivate on exit
 source manage/activate-venv.sh
 trap deactivate EXIT

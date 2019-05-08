@@ -14,8 +14,8 @@ cryptography==2.6.1       # via josepy, mozilla-django-oidc, pyopenssl
 django-environ==0.4.5
 django-mailgun==0.9.1
 django-rest-swagger==2.2.0
-django==2.2
-djangorestframework==3.9.2
+django==2.2.1
+djangorestframework==3.9.3
 idna==2.8                 # via requests
 itypes==1.1.0             # via coreapi
 jinja2==2.10.1            # via coreschema
@@ -33,5 +33,5 @@ simplejson==3.16.0        # via django-rest-swagger
 six==1.12.0               # via cryptography, django-mailgun, josepy, pyopenssl
 sqlparse==0.3.0           # via django
 uritemplate==3.0.0        # via coreapi
-urllib3==1.24.2           # via requests
+urllib3==1.24.3           # via requests
 uwsgi==2.0.18

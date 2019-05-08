@@ -3,6 +3,8 @@
 # Added to .txt headers
 export CUSTOM_COMPILE_COMMAND="manage/update-deps.sh"
 
+set -e # Exit on error
+
 # Activate venv and deactivate on exit
 source manage/activate-venv.sh
 trap deactivate EXIT
@@ -18,6 +20,8 @@ pip-compile --quiet --upgrade requirements/development.in
 pip-compile --quiet --upgrade requirements/production.in
 pip-compile --quiet --upgrade requirements/testing.in
 pip-compile --quiet --upgrade requirements/all.in
+# For dependency analyzers etc.
+cp requirements/all.in requirements.txt
 
 echo
 echo "Dependency changes (if any):"
