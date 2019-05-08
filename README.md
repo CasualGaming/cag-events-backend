@@ -1,7 +1,7 @@
-[![GitHub release](https://img.shields.io/github/release/CasualGaming/cag-events-backend.svg)](https://github.com/CasualGaming/cag-events-backend/releases)
-[![Build Status](https://travis-ci.com/CasualGaming/cag-events-backend.svg?branch=master)](https://travis-ci.org/CasualGaming/cag-events-backend)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?branch=master&project=CasualGaming_cag-events-backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=CasualGaming_cag-events-backend)
-[![Known Vulnerabilities](https://snyk.io/test/github/CasualGaming/cag-events-backend/badge.svg)](https://snyk.io/test/github/CasualGaming/cag-events-backend)
+[![Release](https://img.shields.io/github/release/CasualGaming/cag-events-backend.svg)](https://github.com/CasualGaming/cag-events-backend/releases)
+[![Travis CI](https://travis-ci.com/CasualGaming/cag-events-backend.svg?branch=master)](https://travis-ci.com/CasualGaming/cag-events-backend)
+[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?branch=master&project=CasualGaming_cag-events-backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=CasualGaming_cag-events-backend)
+[![Snyk](https://snyk.io/test/github/CasualGaming/cag-events-backend/badge.svg)](https://snyk.io/test/github/CasualGaming/cag-events-backend)
 
 # CaG Events Back-End
 Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
