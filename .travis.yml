@@ -16,23 +16,23 @@ services:
 cache: pip
 
 stages:
-  - name: test
-  - name: test-dev-setup
-  - name: deploy
+  - name: Test
+  - name: Test dev setups
+  - name: Deploy
     if: type = push
 
 jobs:
   include:
     # Test stage
-    - stage: test
+    - stage: Test
       name: Validate Django project
       install: pip install -r requirements/base.txt
       script: manage/ci/validate-django.sh
-    - stage: test
+    - stage: Test
       name: Run tests
       install: pip install -r requirements/testing.txt
       script: manage/ci/test.sh
-    - stage: test
+    - stage: Test
       name: Run linter (flake8)
       install: pip install -r requirements/testing.txt
       script: flake8
@@ -51,28 +51,28 @@ jobs:
       script: sonar-scanner
 
       # Test dev setup stage
-    - stage: test-dev-setup
+    - stage: Test dev setups
       name: Validate venv dev setup
       install: true # NOP
       script: manage/setup.sh
-    - stage: test-dev-setup
+    - stage: Test dev setups
       name: Validate Docker simple dev setup
       install: true # NOP
       script: manage/docker-simple/setup.sh
-    - stage: test-dev-setup
+    - stage: Test dev setups
       name: Validate Docker full dev env
       install: true # NOP
       script: manage/docker-full/setup.sh
 
     # Deploy stage
     # TODO Release branch with version tag as commit message
-    #- stage: deploy
+    #- stage: Deploy
     #  name: Build and deploy stable to registry
     #  # Requires tag "vX.Y.Z" without suffix
     #  if: (tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$)
     #  install: true # NOP
     #  script: manage/ci-deploy-registry.sh stable $TRAVIS_TAG
-    #- stage: deploy
+    #- stage: Deploy
     #  name: Build and deploy bleeding to registry
     #  if: (branch = master)
     #  install: true # NOP

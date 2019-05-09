@@ -2,6 +2,8 @@
 
 # Note: Do not use "set -u" before sourcing this script, virtualenv's activate may trigger it.
 
+SYSTEM_PACKAGES="virtualenv setuptools wheel"
+VENV_PACKAGES="pip-tools"
 VENV_DIR=".venv"
 
 if ! [[ -e $VENV_DIR ]]; then
@@ -9,7 +11,7 @@ if ! [[ -e $VENV_DIR ]]; then
 
     # The essentials
     # Make sure the user bin dir is added to PATH
-    pip3 install --quiet pip virtualenv setuptools wheel
+    pip3 install --quiet $SYSTEM_PACKAGES
 
     # Windows uses Python 3 as "python", and has no "python3" or "python2"
     # Linux uses Python 2 as "python", but has "python3" and "python2"
@@ -37,7 +39,7 @@ if ! [[ -e $VENV_DIR ]]; then
     esac
 
     # Install extra packages inside venv
-    pip install --quiet pip-tools
+    pip install --quiet $VENV_PACKAGES
 else
     # Enter existing venv directly
     case "$(uname -s)" in
