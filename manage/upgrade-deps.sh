@@ -20,8 +20,12 @@ pip-compile --quiet --upgrade requirements/development.in
 pip-compile --quiet --upgrade requirements/production.in
 pip-compile --quiet --upgrade requirements/testing.in
 pip-compile --quiet --upgrade requirements/all.in
-# For dependency analyzers etc.
-cp requirements/all.txt requirements.txt
+
+# Create requirements.txt for dependency analyzers etc.
+echo "#" > requirements.txt
+echo "# This file contains all requirements and is meant for dependency analyzers etc." >> requirements.txt
+echo "# Do not use this file to install requirements, use one of the \"requirements/*.txt\" files instead." >> requirements.txt
+cat requirements/all.txt >> requirements.txt
 
 echo
 echo "Dependency changes (if any):"
