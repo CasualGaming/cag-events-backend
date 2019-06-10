@@ -11,7 +11,12 @@ if ! [[ -e $VENV_DIR ]]; then
 
     # The essentials
     # Make sure the user bin dir is added to PATH
-    pip3 install --user --quiet $SYSTEM_PACKAGES
+    # Users need "--user", while CI doesn't allow it
+    if [[ $CI == "true" ]]; then
+        pip3 install --quiet $SYSTEM_PACKAGES
+    else
+        pip3 install --user --quiet $SYSTEM_PACKAGES
+    fi
 
     # Windows uses Python 3 as "python", and has no "python3" or "python2"
     # Linux uses Python 2 as "python", but has "python3" and "python2"
