@@ -115,3 +115,6 @@ manage/docker-full/run.sh
 ## Code Style
 
 - Double quotes all the way. Single quotes may be used to avoid escaping double quotes within the string. (Single quotes was used here previously.)
+
+## License
+This project is licensed under GPLv3, see LICENSE for the full license text.
