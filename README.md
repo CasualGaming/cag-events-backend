@@ -71,6 +71,12 @@ manage/lint.sh
 manage/make-migrations.sh
 ```
 
+### OpenID Connect
+
+- Casual Gaming ID realm details: `https://id.casualgaming.no/auth/realms/<realm>/.well-known/openid-configuration`
+- We use the "casualgaming-dev" realm for local testing.
+- [Mozilla Django OIDC settings](https://mozilla-django-oidc.readthedocs.io/en/stable/settings.html)
+
 ### Running in Docker, The Simple Way
 
 - The recommended way for development.
