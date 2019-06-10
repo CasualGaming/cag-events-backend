@@ -10,11 +10,11 @@ cffi==1.12.3              # via cryptography
 chardet==3.0.4            # via requests
 coreapi==2.3.3
 coreschema==0.0.4         # via coreapi
-cryptography==2.6.1       # via josepy, mozilla-django-oidc, pyopenssl
+cryptography==2.7         # via josepy, mozilla-django-oidc, pyopenssl
 django-environ==0.4.5
 django-rest-swagger==2.2.0
-django==2.2.1
-djangorestframework==3.9.3
+django==2.2.2
+djangorestframework==3.9.4
 idna==2.8                 # via requests
 itypes==1.1.0             # via coreapi
 jinja2==2.10.1            # via coreschema
@@ -26,10 +26,13 @@ psycopg2-binary==2.8.2
 pycparser==2.19           # via cffi
 pyopenssl==19.0.0         # via josepy
 pytz==2019.1              # via django
-pyyaml==5.1
-requests==2.21.0          # via coreapi, mozilla-django-oidc
+pyyaml==5.1.1
+requests==2.22.0          # via coreapi, mozilla-django-oidc
 simplejson==3.16.0        # via django-rest-swagger
 six==1.12.0               # via cryptography, josepy, pyopenssl
 sqlparse==0.3.0           # via django
 uritemplate==3.0.0        # via coreapi
-urllib3==1.24.3           # via requests
+urllib3==1.25.3           # via requests
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools==41.0.1        # via josepy
