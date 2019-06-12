@@ -17,7 +17,7 @@ class UserProfileSerializer(ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ("birth_date", "gender", "country", "postal_code", "street_address", "phone_number")
+        fields = ("birth_date", "gender", "country", "postal_code", "street_address", "phone_number", "membership_years", "is_member")
 
 
 class UserSerializer(ModelSerializer):

@@ -21,6 +21,8 @@ class UserProfile(models.Model):
     postal_code = models.CharField(_(u"postal code"), null=True, blank=True, max_length=10)
     street_address = models.CharField(_(u"street address"), null=True, blank=True, max_length=100)
     phone_number = models.CharField(_(u"phone number"), null=True, blank=True, max_length=20)
+    membership_years = models.CharField(_(u"membership years"), null=True, blank=True, max_length=500)
+    is_member = models.BooleanField(_(u"membership status"), default=False)
 
     def __str__(self):
         return self.user.username

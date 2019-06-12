@@ -44,7 +44,7 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    # "django.contrib.auth.backends.ModelBackend",
+    "django.contrib.auth.backends.ModelBackend",
     "auth.backends.OidcAuthBackend",
 )
 
@@ -58,7 +58,9 @@ SITE_NAME = env("SITE_NAME")
 WSGI_APPLICATION = "wsgi.application"
 ROOT_URLCONF = "urls"
 AUTH_USER_MODEL = "user.User"
+LOGIN_URL = "/auth/login"
 LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL_FAILURE = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Database
@@ -142,12 +144,10 @@ LOGGING = {
 
 # DRF
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
         "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
+        # Keeps the user logged in after OIDC auth
+        "rest_framework.authentication.SessionAuthentication",
     ],
 }
 
@@ -159,7 +159,7 @@ OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
 OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
 OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
 OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
-OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60
+# OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60
 
 # Swagger
 SWAGGER_SETTINGS = {
