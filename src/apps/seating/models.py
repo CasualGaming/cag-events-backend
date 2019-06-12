@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import datetime
 
 from django.db import models
@@ -12,8 +10,8 @@ from apps.user.models import User
 class Layout(models.Model):
     title = models.CharField("title", max_length=50)
     description = models.CharField("description", max_length=250)
-    number_of_seats = models.IntegerField("number of seats")
-    template = models.TextField("SVG layout for seating", null=True, blank=True)
+    seat_count = models.IntegerField("number of seats")
+    template = models.TextField("svg layout for seating", null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -22,30 +20,30 @@ class Layout(models.Model):
             super(Layout, self).save(*args, **kwargs)
             dependant_seatings = Seating.objects.filter(layout=self)
             for seating in dependant_seatings:
-                seating.number_of_seats = self.number_of_seats
+                seating.seat_count = self.seat_count
                 seating.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
 class Seating(models.Model):
-    lan = models.ForeignKey(Event)
+    event = models.ForeignKey(Event)
     title = models.CharField("title", max_length=50)
-    desc = models.CharField("description", max_length=250)
-    number_of_seats = models.IntegerField("number of seats", default=0, help_text="This field is automatically updated "
-                                          "to match the chosen layout. Change the chosen layout to alter this field")
+    description = models.CharField("description", max_length=250)
+    # This field is automatically updated to match the chosen layout. Change the chosen layout to alter this field.
+    seat_count = models.IntegerField("number of seats", default=0)
     closing_date = models.DateTimeField("closing date")
     layout = models.ForeignKey(Layout)
-    ticket_types = models.ManyToManyField(TicketType, blank=True, related_name="ticket_types")
+    ticket_types = models.ManyToManyField(TicketType, blank=True, related_name="seatings")
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.number_of_seats = self.layout.number_of_seats
+            self.seat_count = self.layout.seat_count
             super(Seating, self).save(*args, **kwargs)
             self.populate_seats()
         else:
-            self.number_of_seats = self.layout.number_of_seats
+            self.seat_count = self.layout.seat_count
             super(Seating, self).save(*args, **kwargs)
 
     def get_user_registered(self):
@@ -54,7 +52,7 @@ class Seating(models.Model):
     def get_total_seats(self):
         return Seat.objects.filter(Q(seating=self)).order_by("placement")
 
-    def get_number_of_seats(self):
+    def get_seat_count(self):
         return Seat.objects.filter(Q(seating=self)).count()
 
     def is_open(self):
@@ -63,15 +61,15 @@ class Seating(models.Model):
     def get_free_seats(self):
         return Seat.objects.filter(Q(user=None), Q(seating=self)).count()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @models.permalink
     def get_absolute_url(self):
-        return "seating_details", (), {"lan_id": self.lan.id, "seating_id": self.id}
+        return "seating_details", (), {"event_id": self.event.id, "seating_id": self.id}
 
     def populate_seats(self):
-        for k in range(0, self.number_of_seats):
+        for k in range(0, self.seat_count):
             seat = Seat(seating=self, placement=(k + 1))
             seat.save()
 
@@ -81,5 +79,5 @@ class Seat(models.Model):
     seating = models.ForeignKey(Seating)
     placement = models.IntegerField("placement id")
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.id)

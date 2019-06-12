@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # import datetime
 # # from translatable.models import TranslatableModel, get_translation_model
 #
@@ -16,13 +14,11 @@ from django.db import models
 
 
 class Activity(models.Model):
-
     title = models.CharField("title", max_length=50)
-    image_url = models.CharField("Image url", max_length=100, blank=True,
-                                 help_text="Use a mirrored image of at least a height of 150px.")
+    image_url = models.CharField("image url", max_length=100, blank=True)
     desc = models.TextField("description")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @models.permalink

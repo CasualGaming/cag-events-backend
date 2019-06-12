@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.db import models
 
 from apps.event.models import Attendee
@@ -9,15 +7,15 @@ from apps.user.models import User
 class Team(models.Model):
     title = models.CharField("title", max_length=50)
     tag = models.CharField("tag", max_length=10, unique=True)
-    leader = models.ForeignKey(User, blank=False, related_name="newteamleader")
-    members = models.ManyToManyField(User, related_name="new_team_members", through="Member")
+    leader = models.ForeignKey(User, blank=False, related_name="lead_teams")
+    members = models.ManyToManyField(User, related_name="teams", through="TeamMember")
 
     @models.permalink
     def get_absolute_url(self):
         return ("show_team", (), {"team_id": self.id})
 
     def number_of_team_members(self):
-        return Member.objects.filter(team=self).count()
+        return TeamMember.objects.filter(team=self).count()
 
     def number_of_aliases(self, competition):
         aliases = 0
@@ -50,19 +48,19 @@ class Team(models.Model):
                     paid += 1
         return paid
 
-    def __unicode__(self):
+    def __str__(self):
         return "[{0}] {1}".format(self.tag, self.title)
 
     class Meta:
         ordering = ["tag", "title"]
 
 
-class Member(models.Model):
+class TeamMember(models.Model):
     team = models.ForeignKey(Team)
     user = models.ForeignKey(User)
     date_joined = models.DateTimeField("date joined", auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.username
 
     class Meta:
@@ -72,5 +70,5 @@ class Member(models.Model):
 
 class Invitation(models.Model):
     team = models.ForeignKey(Team)
-    invitee = models.ForeignKey(User, related_name="Invitee")
+    invitee = models.ForeignKey(User, related_name="team_invite")
     token = models.CharField("token", max_length=32, editable=False)

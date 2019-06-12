@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.db import models
 
 # from translatable.models import TranslatableModel, get_translation_model
@@ -8,14 +6,13 @@ from apps.event.models import Event
 
 
 class Sponsor(models.Model):
-    title = models.CharField("name", max_length=50)
-    banner = models.CharField("Banner url", max_length=100, blank=True,
-                              help_text="Use a mirrored image of at least a height of 150px.")
-    logo = models.CharField("Logo url", max_length=100, blank=True,
-                            help_text="Use a mirrored image of at least a height of 150px.")
-    website = models.URLField("website", max_length=200)
+    title = models.CharField("title", max_length=50)
+    banner_url = models.CharField("banner", max_length=100, blank=True)
+    logo_url = models.URLField("logo", max_length=100, blank=True)
+    website = models.URLField("website", max_length=200, blank=True)
+    events = models.ManyToManyField(Event, related_name="sponsors", through="SponsorRelation")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -24,12 +21,13 @@ class Sponsor(models.Model):
 
 
 class SponsorRelation(models.Model):
-    lan = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
-    priority = models.IntegerField("priority", help_text="higher priority means closer to the top of the sponsor list.")
+    # Higher priority means closer to the top of the sponsor list
+    priority = models.IntegerField("priority", default=10)
 
-    # def __unicode__(self):
-    #     return unicode(self.lan) + " - " + unicode(self.sponsor)
+    def __str__(self):
+        return self.event.title + " + " + self.sponsor.title
 
     class Meta:
         ordering = ["-priority"]

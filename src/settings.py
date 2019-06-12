@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import environ
 
 base_dir = environ.Path(__file__) - 2

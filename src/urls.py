@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.contrib import admin
 from django.urls import include, path
 
@@ -17,11 +15,11 @@ schema_view = get_schema_view(title="CaG Events API")
 swagger_schema_view = get_swagger_view(title="CaG Events API")
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("schema/", schema_view),
-    path("swagger/", swagger_schema_view),
-    path("auth/", include("rest_framework.urls")),
-    path("oidc/", include("mozilla_django_oidc.urls")),
+    path(r"admin/", admin.site.urls),
+    path(r"schema/", schema_view),
+    path(r"swagger/", swagger_schema_view),
+    path(r"auth/", include("rest_framework.urls")),
+    path(r"oidc/", include("mozilla_django_oidc.urls")),
 ]
 
 router = DefaultRouter()

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # import datetime
 from django.db import models
 # from translatable.models import TranslatableModel, get_translation_model
@@ -9,11 +7,14 @@ from apps.user.models import User
 
 
 class Article(models.Model):
+    title = models.CharField(max_length=100, blank=False)
     created = models.DateTimeField(auto_now_add=True)
     relevant_to = models.ManyToManyField(Event, blank=True)
     creator = models.ForeignKey(User, blank=False, on_delete=models.PROTECT)
-    title = models.CharField(max_length=64, blank=False)
     body = models.TextField()
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         ordering = ("created",)

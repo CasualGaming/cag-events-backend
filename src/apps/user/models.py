@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import ugettext as _
 # from django.dispatch import receiver
 
 
@@ -15,14 +12,14 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
-    birth_date = models.DateField(_(u"date of birth"), null=True, blank=True)
-    gender = models.CharField(_(u"gender"), null=True, blank=True, max_length=50)
-    country = models.CharField(_(u"country"), null=True, blank=True, max_length=50)
-    postal_code = models.CharField(_(u"postal code"), null=True, blank=True, max_length=10)
-    street_address = models.CharField(_(u"street address"), null=True, blank=True, max_length=100)
-    phone_number = models.CharField(_(u"phone number"), null=True, blank=True, max_length=20)
-    membership_years = models.CharField(_(u"membership years"), null=True, blank=True, max_length=500)
-    is_member = models.BooleanField(_(u"membership status"), default=False)
+    birth_date = models.DateField("date of birth", null=True, blank=True)
+    gender = models.CharField("gender", null=True, blank=True, max_length=50)
+    country = models.CharField("country", null=True, blank=True, max_length=50)
+    postal_code = models.CharField("postal code", null=True, blank=True, max_length=10)
+    street_address = models.CharField("street address", null=True, blank=True, max_length=100)
+    phone_number = models.CharField("phone number", null=True, blank=True, max_length=20)
+    membership_years = models.CharField("membership years", null=True, blank=True, max_length=500)
+    is_member = models.BooleanField("membership status", default=False)
 
     def __str__(self):
         return self.user.username

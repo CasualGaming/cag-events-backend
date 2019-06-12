@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from rest_framework.serializers import BaseSerializer, ModelSerializer
 
 from .models import User, UserProfile
