@@ -10,6 +10,7 @@ class IsOwnerOrAdmin(permissions.BasePermission):
 
 
 class IsStaffOrReadOnly(permissions.BasePermission):
+    """DEPRECATED: Don't misuse staff status"""
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -17,6 +18,7 @@ class IsStaffOrReadOnly(permissions.BasePermission):
 
 
 class IsSuperUserOrReadOnly(permissions.BasePermission):
+    """DEPRECATED: Don't use superuser status directly"""
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True

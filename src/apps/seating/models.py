@@ -2,11 +2,11 @@
 
 import datetime
 
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
-from apps.lan.models import Lan, TicketType
+from apps.event.models import Event, TicketType
+from apps.user.models import User
 
 
 class Layout(models.Model):
@@ -30,7 +30,7 @@ class Layout(models.Model):
 
 
 class Seating(models.Model):
-    lan = models.ForeignKey(Lan)
+    lan = models.ForeignKey(Event)
     title = models.CharField("title", max_length=50)
     desc = models.CharField("description", max_length=250)
     number_of_seats = models.IntegerField("number of seats", default=0, help_text="This field is automatically updated "
@@ -49,7 +49,7 @@ class Seating(models.Model):
             super(Seating, self).save(*args, **kwargs)
 
     def get_user_registered(self):
-        return map(lambda x: getattr(x, "userprofile"), Seat.objects.filter(~Q(user=None), Q(seating=self)))
+        return map(lambda x: getattr(x, "user"), Seat.objects.filter(~Q(user=None), Q(seating=self)))
 
     def get_total_seats(self):
         return Seat.objects.filter(Q(seating=self)).order_by("placement")

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib.auth.models import User
 from django.db import models
 
-from apps.lan.models import Lan
+from apps.event.models import Event
+from apps.user.models import User
 
 
 class Payment(models.Model):
-    lan = models.ForeignKey(Lan)
+    lan = models.ForeignKey(Event)
     user = models.ForeignKey(User)
     payed_date = models.DateField()
 

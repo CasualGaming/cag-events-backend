@@ -1,38 +1,38 @@
 # -*- coding: utf-8 -*-
 
 import uuid
-from datetime import date
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext as _
 # from django.dispatch import receiver
 
 
-class UserProfile(models.Model):
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
-    nick = models.CharField(_(u"nick"), max_length=20, help_text="Specify a nick name (display name).", db_index=True)
-    date_of_birth = models.DateField(_(u"Date of birth"), default=date.today)
-    address = models.CharField(_(u"Street address"), max_length=100)
-    zip_code = models.CharField(_(u"Zip code"), max_length=4)
-    phone = models.CharField(_(u"Phone number"), max_length=20)
+class User(AbstractUser):
+    uuid = models.UUIDField("uuid", primary_key=True, db_index=True, default=uuid.uuid4)
+    username = models.CharField("Username", unique=True, db_index=True, max_length=20)
 
-    def __unicode__(self):
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
+    birth_date = models.DateField(_(u"date of birth"), null=True, blank=True)
+    gender = models.CharField(_(u"gender"), null=True, blank=True, max_length=50)
+    country = models.CharField(_(u"country"), null=True, blank=True, max_length=50)
+    postal_code = models.CharField(_(u"postal code"), null=True, blank=True, max_length=10)
+    street_address = models.CharField(_(u"street address"), null=True, blank=True, max_length=100)
+    phone_number = models.CharField(_(u"phone number"), null=True, blank=True, max_length=20)
+
+    def __str__(self):
         return self.user.username
 
     def get_month(self):
-        return "{0:02d}".format(self.date_of_birth.month)
+        return "{0:02d}".format(self.birth_date.month)
 
     def get_day(self):
-        return "{0:02d}".format(self.date_of_birth.day)
+        return "{0:02d}".format(self.birth_date.day)
 
     def has_address(self):
-        if self.address and self.zip_code:
-            if not self.address.strip() or not self.zip_code.strip():
-                return False
-            return True
-        return False
+        return self.street_address and self.postal_code
 
 
 # class AliasType(models.Model):

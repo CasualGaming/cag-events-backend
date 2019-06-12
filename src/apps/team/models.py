@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib.auth.models import User
 from django.db import models
 
-from apps.lan.models import Attendee
+from apps.event.models import Attendee
+from apps.user.models import User
 
 
 class Team(models.Model):
@@ -66,8 +66,8 @@ class Member(models.Model):
         return self.user.username
 
     class Meta:
-        unique_together = ("team", "userprofile")
-        ordering = ["userprofile"]
+        unique_together = ("team", "user")
+        ordering = ["user"]
 
 
 class Invitation(models.Model):

@@ -9,7 +9,7 @@ from django.db import models
 # from apps.userprofile.models import UserProfile
 
 
-class Lan(models.Model):
+class Event(models.Model):
     title = models.CharField(max_length=64)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()

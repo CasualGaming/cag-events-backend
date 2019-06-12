@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
 # import datetime
-
-from django.contrib.auth.models import User
 from django.db import models
 # from translatable.models import TranslatableModel, get_translation_model
 
-from apps.lan.models import Lan
+from apps.event.models import Event
+from apps.user.models import User
 
 
 class Article(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    relevant_to = models.ManyToManyField(Lan, blank=True)
+    relevant_to = models.ManyToManyField(Event, blank=True)
     creator = models.ForeignKey(User, blank=False, on_delete=models.PROTECT)
     title = models.CharField(max_length=64, blank=False)
     body = models.TextField()
@@ -22,7 +21,7 @@ class Article(models.Model):
 
 # class Article():
 #     pub_date = models.DateTimeField("published", default=datetime.datetime.now)
-#     relevant_to = models.ManyToManyField(Lan, blank=True)
+#     relevant_to = models.ManyToManyField(Event, blank=True)
 #     pinned = models.BooleanField(default=False)
 #
 #     def count(self):

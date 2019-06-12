@@ -13,3 +13,13 @@
 #
 #
 # urlpatterns = format_suffix_patterns(urlpatterns, allowed=["json", "html"])
+
+from rest_framework.routers import DefaultRouter
+
+from . import views
+
+urlpatterns = []
+
+router = DefaultRouter()
+router.register(r"", views.UserViewSet)
+urlpatterns += router.urls

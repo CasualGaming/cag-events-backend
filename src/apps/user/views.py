@@ -2,33 +2,58 @@
 
 # from django.http import Http404
 
-from rest_framework import mixins
+# from rest_framework import mixins
 # from rest_framework import generics, status
-from rest_framework.response import Response
 # from rest_framework.views import APIView
-from rest_framework.viewsets import GenericViewSet
+# from rest_framework.viewsets import GenericViewSet
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from auth.permissions import IsOwnerOrAdmin
+# from auth.permissions import IsOwnerOrAdmin
 
+# from .permissions import IsAuthOrPost
 from .models import User
-from .permissions import IsAuthOrPost
-from .serializers import UserSerializerPrivate, UserSerializerPublic
+from .permissions import UserPermission, UserPublicPermission
+from .serializers import UserListSerializer, UserPublicSerializer, UserSerializer
 
 
-class UserViewSet(mixins.RetrieveModelMixin,
-                  mixins.UpdateModelMixin,
-                  mixins.DestroyModelMixin,
-                  mixins.ListModelMixin,
-                  GenericViewSet):
+class UserViewSet(ReadOnlyModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializerPublic
-    permission_classes = [IsAuthOrPost, IsOwnerOrAdmin]
     lookup_field = "username"
+    serializer_class = UserSerializer
+    permission_classes = [UserPermission]
 
-    def retrieve(self, request, *args, **kwargs):
+    def get_serializer_class(self):
+        if self.action == "list":
+            return UserListSerializer
+        return super(ReadOnlyModelViewSet, self).get_serializer_class()
+
+    @action(url_path="public", methods=["get"], detail=True, permission_classes=[UserPublicPermission])
+    def retrieve_public(self, request, username):
         instance = self.get_object()
-        serializer = UserSerializerPrivate(instance)
+        serializer = UserPublicSerializer(instance)
         return Response(serializer.data)
+
+# class PublicUserViewSet(ReadOnlyModelViewSet):
+#    queryset = User.objects.all()
+#    serializer_class = PublicUserSerializer
+
+
+# class UserViewSet(mixins.RetrieveModelMixin,
+#                  mixins.UpdateModelMixin,
+#                  mixins.DestroyModelMixin,
+#                  mixins.ListModelMixin,
+#                  GenericViewSet):
+#    queryset = User.objects.all()
+#    serializer_class = UserSerializerPublic
+#    permission_classes = [IsAuthOrPost, IsOwnerOrAdmin]
+#    lookup_field = "username"
+#
+#    def retrieve(self, request, *args, **kwargs):
+#        instance = self.get_object()
+#        serializer = UserSerializerPrivate(instance)
+#        return Response(serializer.data)
 
 # class UserView(generics.ListCreateAPIView):
 #     """

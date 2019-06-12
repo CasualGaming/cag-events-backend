@@ -71,11 +71,10 @@ manage/lint.sh
 manage/make-migrations.sh
 ```
 
-### OpenID Connect
+### Keycloak/OpenID Connect
 
-- Casual Gaming ID realm details: `https://id.casualgaming.no/auth/realms/<realm>/.well-known/openid-configuration`
-- We use the "casualgaming-dev" realm for local testing.
-- [Mozilla Django OIDC settings](https://mozilla-django-oidc.readthedocs.io/en/stable/settings.html)
+- Keycloak realm details: `/auth/realms/<realm>/.well-known/openid-configuration`
+- Keycloak admin login: `/auth/admin/master/console/`
 
 ### Running in Docker, The Simple Way
 

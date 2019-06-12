@@ -4,7 +4,7 @@ from django.db import models
 
 # from translatable.models import TranslatableModel, get_translation_model
 
-from apps.lan.models import Lan
+from apps.event.models import Event
 
 
 class Sponsor(models.Model):
@@ -24,7 +24,7 @@ class Sponsor(models.Model):
 
 
 class SponsorRelation(models.Model):
-    lan = models.ForeignKey(Lan, on_delete=models.CASCADE)
+    lan = models.ForeignKey(Event, on_delete=models.CASCADE)
     sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
     priority = models.IntegerField("priority", help_text="higher priority means closer to the top of the sponsor list.")
 

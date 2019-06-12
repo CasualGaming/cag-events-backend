@@ -3,33 +3,30 @@
 from django.contrib import admin
 from django.urls import include, path
 
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import get_schema_view
 
 from rest_framework_swagger.views import get_swagger_view
 
-from apps.lan.views import LanViewSet
-from apps.news.views import ArticleViewSet
-# from apps.userprofile import urls as userprofile_urls
+from apps.article.views import ArticleViewSet
+from apps.event.views import EventViewSet
 from apps.sponsor.views import SponsorViewSet
-from apps.userprofile.views import UserViewSet
+from apps.user.views import UserViewSet
 
-router = DefaultRouter()
-router.register(r"lan", LanViewSet)
-router.register(r"news", ArticleViewSet)
-router.register(r"users", UserViewSet)
-router.register(r"sponsor", SponsorViewSet)
-
+schema_view = get_schema_view(title="CaG Events API")
 swagger_schema_view = get_swagger_view(title="CaG Events API")
-schema_view = get_schema_view(title="CaG Events API", permission_classes=[IsAuthenticatedOrReadOnly])
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("admin/", admin.site.urls),
     path("schema/", schema_view),
     path("swagger/", swagger_schema_view),
-    path("admin/", admin.site.urls),
-    # path("users/", include(userprofile_urls)),
     path("auth/", include("rest_framework.urls")),
     path("oidc/", include("mozilla_django_oidc.urls")),
 ]
+
+router = DefaultRouter()
+router.register(r"event", EventViewSet)
+router.register(r"article", ArticleViewSet)
+router.register(r"user", UserViewSet)
+router.register(r"sponsor", SponsorViewSet)
+urlpatterns += router.urls

@@ -3,21 +3,20 @@
 import environ
 
 base_dir = environ.Path(__file__) - 2
-
-# Read env file
+src_dir = environ.Path(__file__) - 1
 env = environ.Env(DEBUG=(bool, True))
 environ.Env.read_env(base_dir("env"))
 
 INSTALLED_APPS = [
     # Local
     # "apps.competition",
-    "apps.lan",
-    "apps.news",
+    "apps.event",
+    "apps.article",
     # "apps.payment",
     # "apps.seating",
     "apps.sponsor",
     # "apps.team",
-    "apps.userprofile",
+    "apps.user",
 
     # Django
     "django.contrib.admin",
@@ -41,17 +40,37 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
 AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
+    # "django.contrib.auth.backends.ModelBackend",
     "auth.backends.OidcAuthBackend",
 )
 
+# Basics
+BASE_DIR = base_dir
+DEBUG = env("DEBUG")
+TEMPLATE_DEBUG = DEBUG
+SECRET_KEY = env("SECRET_KEY")
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+SITE_NAME = env("SITE_NAME")
+WSGI_APPLICATION = "wsgi.application"
+ROOT_URLCONF = "urls"
+AUTH_USER_MODEL = "user.User"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+# Database
+DATABASES = {
+    "default": env.db("DATABASE_URL"),
+}
+
+# Templates
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [base_dir("templates")],
+        "DIRS": [src_dir("templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -63,23 +82,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# General
-BASE_DIR = base_dir
-DEBUG = env("DEBUG")
-TEMPLATE_DEBUG = DEBUG
-SECRET_KEY = env("SECRET_KEY")
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
-SITE_NAME = env("SITE_NAME")
-WSGI_APPLICATION = "wsgi.application"
-ROOT_URLCONF = "urls"
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
-
-# Database
-DATABASES = {
-    "default": env.db("DATABASE_URL"),
-}
 
 # Email
 DEFAULT_MAIL = env("DEFAULT_MAIL", default="app@localhost")
@@ -138,15 +140,6 @@ LOGGING = {
     },
 }
 
-# OIDC
-OIDC_RP_CLIENT_ID = env("OIDC_RP_CLIENT_ID", default="")
-OIDC_RP_CLIENT_SECRET = env("OIDC_RP_CLIENT_SECRET", default="")
-OIDC_OP_AUTHORIZATION_ENDPOINT = env("OIDC_OP_AUTHORIZATION_ENDPOINT", default="")
-OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
-OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
-OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
-OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
-
 # DRF
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
@@ -157,6 +150,16 @@ REST_FRAMEWORK = {
         "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
     ],
 }
+
+# OIDC
+OIDC_RP_CLIENT_ID = env("OIDC_RP_CLIENT_ID", default="")
+OIDC_RP_CLIENT_SECRET = env("OIDC_RP_CLIENT_SECRET", default="")
+OIDC_OP_AUTHORIZATION_ENDPOINT = env("OIDC_OP_AUTHORIZATION_ENDPOINT", default="")
+OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
+OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
+OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
+OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60
 
 # Swagger
 SWAGGER_SETTINGS = {
