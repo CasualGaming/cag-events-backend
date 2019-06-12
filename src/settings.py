@@ -26,7 +26,6 @@ INSTALLED_APPS = [
 
     # Third-party
     "rest_framework",
-    "rest_framework_swagger",
     "mozilla_django_oidc",
 ]
 
@@ -158,16 +157,3 @@ OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
 OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
 OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
 # OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60
-
-# Swagger
-SWAGGER_SETTINGS = {
-    "SECURITY_DEFINITIONS": {
-        "oauth": {
-            "type": "oauth2",
-            "flow": "accessCode",
-            "authorizationUrl": env("OIDC_OP_AUTHORIZATION_ENDPOINT", default=""),
-            "tokenUrl": env("OIDC_OP_TOKEN_ENDPOINT", default=""),
-        },
-    },
-    "USE_SESSION_AUTH": False,
-}
