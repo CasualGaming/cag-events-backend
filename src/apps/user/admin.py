@@ -1,8 +1,9 @@
 from django.contrib import admin
-from django.contrib import messages
+# from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.sessions.models import Session
-from django.forms import models
+from django.contrib.auth.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
+# from django.contrib.sessions.models import Session
+from django.forms import ValidationError, models
 
 from .models import User, UserProfile
 
@@ -23,33 +24,52 @@ class UserProfileInline(admin.StackedInline):
     formset = NoDeleteInline
 
 
+class ImmutableUserChangeForm(UserChangeForm):
+    def clean(self):
+        raise ValidationError("This model is immutable.")
+
+
+class ImmutableUserCreationForm(UserCreationForm):
+    def clean(self):
+        raise ValidationError("Manually creating instances of this model is not allowed.")
+
+
+class ImmutableAdminPasswordChangeForm(AdminPasswordChangeForm):
+    def clean(self):
+        raise ValidationError("This model is immutable.")
+
+
 class UserProfileAdmin(UserAdmin):
     inlines = (UserProfileInline,)
-    list_display = ("username", "email", "first_name", "last_name", "is_staff", "is_active", "date_joined", "last_login")
+    list_display = ("username", "email", "first_name", "last_name", "is_staff", "is_superuser", "is_active", "date_joined", "last_login")
     list_filter = ("groups", "is_staff", "is_superuser", "is_active")
     filter_horizontal = ("groups",)
-    actions = ["activate_users", "deactivate_users", "forcefully_logout_users"]
+    form = ImmutableUserChangeForm
+    add_form = ImmutableUserCreationForm
+    change_password_form = ImmutableAdminPasswordChangeForm
 
-    def activate_users(self, request, queryset):
-        queryset.update(is_active=True)
+    # actions = ["activate_users", "deactivate_users", "logout_users"]
 
-    def deactivate_users(self, request, queryset):
-        for user in queryset:
-            if user.id == request.user.id:
-                self.message_user(request, "You cannot deactivate yourself! No actions were performed.", level=messages.WARNING)
-                return
-        queryset.update(is_active=False)
+    # def activate_users(self, request, queryset):
+    #     queryset.update(is_active=True)
 
-    def forcefully_logout_users(self, request, queryset):
-        for session in Session.objects.all():
-            session_user = int(session.get_decoded().get("_auth_user_id"))
-            for user in queryset:
-                if user.id == session_user:
-                    session.delete()
+    # def deactivate_users(self, request, queryset):
+    #     for user in queryset:
+    #         if user.id == request.user.id:
+    #             self.message_user(request, "You cannot deactivate yourself! No actions were performed.", level=messages.WARNING)
+    #             return
+    #     queryset.update(is_active=False)
 
-    activate_users.short_description = "Activate"
-    deactivate_users.short_description = "Deactivate"
-    forcefully_logout_users.short_description = "Forcefully logout"
+    # def logout_users(self, request, queryset):
+    #     for session in Session.objects.all():
+    #         session_user = int(session.get_decoded().get("_auth_user_id"))
+    #         for user in queryset:
+    #             if user.id == session_user:
+    #                 session.delete()
+
+    # activate_users.short_description = "Activate"
+    # deactivate_users.short_description = "Deactivate"
+    # forcefully_logout_users.short_description = "Forcefully logout"
 
 
 admin.site.register(User, UserProfileAdmin)

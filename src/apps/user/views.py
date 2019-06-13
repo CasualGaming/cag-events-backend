@@ -8,10 +8,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+
 # from auth.permissions import IsOwnerOrAdmin
 
-# from .permissions import IsAuthOrPost
 from .models import User
+# from .permissions import IsAuthOrPost
 from .permissions import UserPermission, UserPublicPermission
 from .serializers import UserListSerializer, UserPublicSerializer, UserSerializer
 
@@ -28,7 +29,7 @@ class UserViewSet(ReadOnlyModelViewSet):
         return super(ReadOnlyModelViewSet, self).get_serializer_class()
 
     @action(url_path="public", methods=["get"], detail=True, permission_classes=[UserPublicPermission])
-    def retrieve_public(self, request, username):
+    def get_public(self, request, username):
         instance = self.get_object()
         serializer = UserPublicSerializer(instance)
         return Response(serializer.data)

@@ -18,13 +18,13 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = [EventPermission]
 
     @action(url_path="articles", methods=["get"], detail=True, permission_classes=[])
-    def retrieve_articles(self, request, *args, **kwargs):
+    def get_articles(self, request, *args, **kwargs):
         queryset = self.get_object().article_set.all()
         serializer = ArticleSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
 
     @action(url_path="articles", methods=["get"], detail=True, permission_classes=[])
-    def retrieve_sponsors(self, request, *args, **kwargs):
+    def get_sponsors(self, request, *args, **kwargs):
         queryset = self.get_object().sponsorrelation_set.all()
         serializer = SponsorRelationSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)

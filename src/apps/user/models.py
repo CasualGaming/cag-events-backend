@@ -1,13 +1,68 @@
 import uuid
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
+from django.core.mail import send_mail
 from django.db import models
-# from django.dispatch import receiver
+from django.utils import timezone
 
 
-class User(AbstractUser):
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, **extra_fields):
+        """
+        Create and save a user with the given username, email, and password.
+        """
+        if not username:
+            raise ValueError("The given username must be set")
+
+        email = self.normalize_email(email)
+        username = self.model.normalize_username(username)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_unusable_password()
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
     uuid = models.UUIDField("uuid", primary_key=True, db_index=True, default=uuid.uuid4)
-    username = models.CharField("Username", unique=True, db_index=True, max_length=20)
+    username = models.CharField("username", unique=True, db_index=True, max_length=50)
+    pretty_username = models.CharField("pretty username", unique=True, max_length=50)
+    first_name = models.CharField("first name", max_length=50, blank=True)
+    last_name = models.CharField("last name", max_length=50, blank=True)
+    email = models.EmailField("email address", blank=True)
+    # If the user has access to the admin panel
+    is_staff = models.BooleanField("staff status", default=False)
+    # If the user can log into the site
+    is_active = models.BooleanField("active", default=True)
+    date_joined = models.DateTimeField("date joined", default=timezone.now)
+
+    objects = UserManager()
+
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
+
+    class Meta:
+        verbose_name = "user"
+        verbose_name_plural = "users"
+
+    def clean(self):
+        self.email = self.objects.normalize_email(self.email)
+
+    def get_full_name(self):
+        """
+        Return the combined full name.
+        """
+        full_name = "{0} {1}".format(self.first_name, self.last_name)
+        return full_name.strip()
+
+    def get_short_name(self):
+        """Return the short name for the user."""
+        return self.first_name
+
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """Send an email to this user."""
+        send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
 class UserProfile(models.Model):
