@@ -1,11 +1,12 @@
 from django.contrib import admin
 # from django.contrib import messages
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
+from django.contrib.auth.models import Group
 # from django.contrib.sessions.models import Session
 from django.forms import ValidationError, models
 
-from .models import User, UserProfile
+from .models import GroupExtension, User, UserProfile
 
 
 class NoDeleteInline(models.BaseInlineFormSet):
@@ -39,6 +40,7 @@ class ImmutableAdminPasswordChangeForm(AdminPasswordChangeForm):
         raise ValidationError("This model is immutable.")
 
 
+@admin.register(User)
 class UserProfileAdmin(UserAdmin):
     inlines = (UserProfileInline,)
     list_display = ("username", "email", "first_name", "last_name", "is_staff", "is_superuser", "is_active", "date_joined", "last_login")
@@ -72,4 +74,17 @@ class UserProfileAdmin(UserAdmin):
     # forcefully_logout_users.short_description = "Forcefully logout"
 
 
-admin.site.register(User, UserProfileAdmin)
+class GroupExtensionInline(admin.StackedInline):
+    model = GroupExtension
+    formset = NoDeleteInline
+
+
+admin.site.unregister(Group)
+
+
+@admin.register(Group)
+class GroupExtensionAdmin(GroupAdmin):
+    inlines = (GroupExtensionInline,)
+    search_fields = ("name",)
+    ordering = ("name",)
+    filter_horizontal = ("permissions",)

@@ -9,7 +9,8 @@ from apps.event.views import EventViewSet
 from apps.sponsor.views import SponsorViewSet
 from apps.user.views import UserViewSet
 
-schema_view = get_schema_view(title="CaG Events API")
+admin.site.site_header = "CaG Events"
+schema_view = get_schema_view(title="CaG Events")
 
 urlpatterns = [
     path(r"admin/", admin.site.urls),

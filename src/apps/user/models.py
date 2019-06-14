@@ -1,9 +1,9 @@
-import uuid
-
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import Group, PermissionsMixin
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 
 
@@ -24,7 +24,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    uuid = models.UUIDField("uuid", primary_key=True, db_index=True, default=uuid.uuid4)
+    subject_id = models.UUIDField("subject id", unique=True, db_index=True)
     username = models.CharField("username", unique=True, db_index=True, max_length=50)
     pretty_username = models.CharField("pretty username", unique=True, max_length=50)
     first_name = models.CharField("first name", max_length=50, blank=True)
@@ -33,7 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # If the user has access to the admin panel
     is_staff = models.BooleanField("staff status", default=False)
     # If the user can log into the site
-    is_active = models.BooleanField("active", default=True)
+    is_active = models.BooleanField("active status", default=False)
     date_joined = models.DateTimeField("date joined", default=timezone.now)
 
     objects = UserManager()
@@ -47,7 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "users"
 
     def clean(self):
-        self.email = self.objects.normalize_email(self.email)
+        self.email = self.__class__.objects.normalize_email(self.email)
 
     def get_full_name(self):
         """
@@ -76,6 +76,10 @@ class UserProfile(models.Model):
     membership_years = models.CharField("membership years", null=True, blank=True, max_length=500)
     is_member = models.BooleanField("membership status", default=False)
 
+    class Meta:
+        verbose_name = "user profile"
+        verbose_name_plural = "user profiles"
+
     def __str__(self):
         return self.user.username
 
@@ -87,6 +91,38 @@ class UserProfile(models.Model):
 
     def has_address(self):
         return self.street_address and self.postal_code
+
+
+class GroupExtension(models.Model):
+    group = models.OneToOneField(Group, related_name="extension", on_delete=models.CASCADE)
+    is_superuser = models.BooleanField("superuser status", default=False)
+    is_staff = models.BooleanField("staff status", default=False)
+    is_active = models.BooleanField("active status", default=False)
+
+    class Meta:
+        verbose_name = "group extension"
+        verbose_name_plural = "group extensions"
+
+    def __str__(self):
+        return self.group.name
+
+
+@receiver(post_save, sender=GroupExtension)
+def group_extension_save_listener(sender, instance, **kwargs):
+    """Update all users in group to ensure consistency."""
+    for user in instance.group.user_set.all():
+        is_superuser = False
+        is_staff = False
+        is_active = False
+        for group in user.groups.all():
+            group_ext = group.extension
+            is_superuser = is_superuser or group_ext.is_superuser
+            is_staff = is_staff or group_ext.is_staff
+            is_active = is_active or group_ext.is_active
+        user.is_superuser = is_superuser
+        user.is_staff = is_staff
+        user.is_active = is_active
+        user.save()
 
 
 # class AliasType(models.Model):

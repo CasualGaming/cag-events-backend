@@ -142,8 +142,9 @@ LOGGING = {
 # DRF
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        # For front-ends using the Authorization header
         "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
-        # Keeps the user logged in after OIDC auth
+        # For browsing the back-end directly from the web browser
         "rest_framework.authentication.SessionAuthentication",
     ],
 }
@@ -156,4 +157,6 @@ OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
 OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
 OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
 OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
-# OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60
+OIDC_DRF_AUTH_BACKEND = "auth.backends.OidcAuthBackend"
+# How often the used must be synchronized from OIDC
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60

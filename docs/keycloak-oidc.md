@@ -1,7 +1,7 @@
-# Keycloak (OIDC)
+# Keycloak (OpenID Connect)
 
-## Realm Settings
-
+## Realm Settings and Authentication
+- **TODO** Flows and executions and stuff.
 - Create a single realm for all instances of CaG Events.
 - Generel settings:
   - Set display name to the desired login prompt title.
@@ -12,16 +12,20 @@
 - Configure email settings (use Mailgun or something).
 - Token settings:
   - Increase SSO session idle and max to appropriate durations (too short is annoying).
-
-## Realm Authentication
-- **TODO** Unique usernames.
-- **TODO** Flows and executions.
 - Configure ReCAPTCHA.
 - Configure password policies.
 - Configure terms and conditions.
 
 ## Realm Identity Providers and User Federation
 - **TODO** Use social login through identity providers?
+
+## Groups, Statuses and Permissions
+- CaG Events maps OIDC groups to existing local groups.
+- Users are disabled, are not staff, are not superadmin and have no permissions by default.
+- Users are active, staff and superadmin if any of its groups are. They inherit all permissions from groups they are members of.
+- Local groups with its statuses and permissions are configured completely locally, as opposed to being configured by Keycloak groups.
+- CaG Events adds two default groups: "user" and "admin". Users in "user" can log into the site, users in "admin" have all permissions and have access to the admin panel.
+- Keycloak users should have a default group such as "users", so that they can log into CaG Events.
 
 ## Clients
 - **TODO** Export client for use as template?

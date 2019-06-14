@@ -6,7 +6,7 @@ from django.core.exceptions import SuspiciousOperation
 
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
-from apps.user.models import User, UserProfile
+from apps.user.models import GroupExtension, User, UserProfile
 
 
 class OidcAuthBackend(OIDCAuthenticationBackend):
@@ -15,17 +15,17 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
     membership_years_regex = re.compile(r"^([0-9]{4},)*([0-9]{4})?$")
 
     def filter_users_by_claims(self, claims):
-        uuid = self.get_claim(claims, "sub")
+        subject_id = self.get_claim(claims, "sub")
         try:
-            return User.objects.filter(uuid=uuid)
+            return User.objects.filter(subject_id=subject_id)
         except User.DoesNotExist:
             return User.objects.none()
 
     def create_user(self, claims):
-        uuid = self.get_claim(claims, "sub")
+        subject_id = self.get_claim(claims, "sub")
         username = self.get_claim(claims, "username")
         email_address = self.get_claim(claims, "email")
-        user = User.objects.create_user(uuid=uuid, username=username, email=email_address)
+        user = User.objects.create_user(subject_id=subject_id, username=username, email=email_address)
         UserProfile.objects.create(user=user)
         return self.update_user(user, claims)
 
@@ -47,21 +47,27 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
         user.profile.postal_code = self.get_claim(address_claims, "postal_code")
         user.profile.street_address = self.get_claim(address_claims, "street_address")
 
-        groups = self.get_claim(claims, "groups")
-
-        user.is_staff = False
-        user.is_superuser = False
-        # TMP set superuser group in config
-        if "supermen" in groups:
-            user.is_staff = True
-            user.is_superuser = True
-
+        # Update groups and statuses
         user.groups.clear()
-        # TMP don't add groups automatically
-        for group in groups:
-            g, created = Group.objects.get_or_create(name=group)
-            user.groups.add(g)
+        is_staff = False
+        is_superuser = False
+        is_active = False
+        group_names = self.get_claim(claims, "groups")
+        for group_name in group_names:
+            try:
+                group = Group.objects.get(name=group_name)
+                group_ext = GroupExtension.objects.get(group=group)
+                user.groups.add(group)
+                is_superuser = is_superuser or group_ext.is_superuser
+                is_staff = is_staff or group_ext.is_staff
+                is_active = is_active or group_ext.is_active
+            except Group.DoesNotExist:
+                continue
+        user.is_staff = is_staff
+        user.is_superuser = is_superuser
+        user.is_active = is_active
 
+        # Update membership years and status
         (membership_years, is_member) = self.get_membership_years(claims, "membership_years")
         user.profile.membership_years = membership_years
         user.profile.is_member = is_member
