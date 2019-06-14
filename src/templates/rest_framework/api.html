@@ -1,4 +1,5 @@
 {% extends "rest_framework/base.html" %}
+{% load rest_framework_extras %}
 
 {% block title %}
 {% if name %}{{ name }} – {% endif %}CaG Events
@@ -6,4 +7,8 @@
 
 {% block branding %}
 <a class='navbar-brand' href='/'>CaG Events</a>
+{% endblock %}
+
+{% block userlinks %}
+{% userlinks_list request user %}
 {% endblock %}

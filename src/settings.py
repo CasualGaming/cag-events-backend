@@ -72,6 +72,9 @@ TEMPLATES = [
         "DIRS": [src_dir("templates")],
         "APP_DIRS": True,
         "OPTIONS": {
+            "libraries": {
+                "rest_framework_extras": "template_tags.rest_framework_extras",
+            },
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
