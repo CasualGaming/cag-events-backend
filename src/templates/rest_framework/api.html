@@ -1,0 +1,10 @@
+{% extends "rest_framework/base.html" %}
+{% load rest_framework %}
+
+{% block title %}
+{% if name %}{{ name }} – {% endif %}CaG Events API
+{% endblock %}
+
+{% block branding %}
+<a class='navbar-brand' href='/'>CaG Events API</a>
+{% endblock %}
