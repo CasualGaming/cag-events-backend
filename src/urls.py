@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
@@ -9,8 +10,8 @@ from apps.event.views import EventViewSet
 from apps.sponsor.views import SponsorViewSet
 from apps.user.views import UserViewSet
 
-admin.site.site_header = "CaG Events"
-schema_view = get_schema_view(title="CaG Events")
+admin.site.site_header = settings.SITE_NAME
+schema_view = get_schema_view(title=settings.SITE_NAME)
 
 urlpatterns = [
     path(r"admin/", admin.site.urls),

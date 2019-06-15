@@ -1,12 +1,12 @@
-FROM python:3.6
+FROM python:3.7
 
 WORKDIR /app
 
 # Application files
-COPY requirements requirements/
-COPY src src/
-COPY docker-entrypoint.sh ./
-COPY uwsgi.ini ./
+COPY requirements requirements
+COPY src src
+COPY setup/prod/docker-entrypoint.sh ./
+COPY setup/prod/uwsgi.ini ./
 RUN mkdir -p log
 
 # Extra files
@@ -15,8 +15,8 @@ COPY CONTRIBUTORS ./
 COPY LICENSE ./
 COPY MAINTAINERS ./
 
-# Configure
-RUN pip install -r requirements/production.txt
+# Configure app
+RUN pip3 install -r requirements/production.txt
 
 # HTTP
 EXPOSE 8000

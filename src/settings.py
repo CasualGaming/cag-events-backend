@@ -2,8 +2,9 @@ import environ
 
 base_dir = environ.Path(__file__) - 2
 src_dir = environ.Path(__file__) - 1
+
 env = environ.Env(DEBUG=(bool, True))
-environ.Env.read_env(base_dir("env"))
+environ.Env.read_env(base_dir("config.env"))
 
 INSTALLED_APPS = [
     # Local
@@ -44,31 +45,31 @@ MIDDLEWARE = [
     "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
-# Basics
-BASE_DIR = base_dir
-DEBUG = env("DEBUG")
-TEMPLATE_DEBUG = DEBUG
-SITE_NAME = env("SITE_NAME")
-WSGI_APPLICATION = "wsgi.application"
-ROOT_URLCONF = "urls"
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
-SECRET_KEY = env("SECRET_KEY")
-
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "auth.backends.OidcAuthBackend",
 )
 
-# Auth stuff
+DATABASES = {
+    "default": env.db("DATABASE_URL"),
+}
+
+# Variable stuff
+BASE_DIR = base_dir
+DEBUG = env("DEBUG")
+TEMPLATE_DEBUG = DEBUG
+SITE_NAME = env("SITE_NAME")
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+SECRET_KEY = env("SECRET_KEY")
+
+# Constant stuff
+WSGI_APPLICATION = "wsgi.application"
+ROOT_URLCONF = "urls"
 AUTH_USER_MODEL = "user.User"
 LOGIN_URL = "/auth/login"
 LOGIN_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL_FAILURE = "/"
 LOGOUT_REDIRECT_URL = "/"
-
-DATABASES = {
-    "default": env.db("DATABASE_URL"),
-}
 
 # Email
 DEFAULT_MAIL = env("DEFAULT_MAIL", default="app@localhost")
@@ -107,8 +108,8 @@ TEMPLATES = [
     },
 ]
 
-# More template/admin stuff
-GRAPPELLI_ADMIN_TITLE = "CaG Events"
+# Admin theme
+GRAPPELLI_ADMIN_TITLE = SITE_NAME
 GRAPPELLI_SWITCH_USER = True
 
 # Static files
@@ -161,6 +162,8 @@ REST_FRAMEWORK = {
 }
 
 # OIDC
+OIDC_DRF_AUTH_BACKEND = "auth.backends.OidcAuthBackend"
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = env("OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS", default=(15 * 60))
 OIDC_RP_CLIENT_ID = env("OIDC_RP_CLIENT_ID", default="")
 OIDC_RP_CLIENT_SECRET = env("OIDC_RP_CLIENT_SECRET", default="")
 OIDC_OP_AUTHORIZATION_ENDPOINT = env("OIDC_OP_AUTHORIZATION_ENDPOINT", default="")
@@ -168,6 +171,3 @@ OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
 OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
 OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
 OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
-OIDC_DRF_AUTH_BACKEND = "auth.backends.OidcAuthBackend"
-# How often the used must be synchronized from OIDC
-OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60

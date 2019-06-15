@@ -1,25 +1,26 @@
 #!/bin/bash
 
-# Added to .txt headers
-export CUSTOM_COMPILE_COMMAND="manage/update-deps.sh"
+# Upgrades pip requirements/dependencies.
 
-set -e # Exit on error
-
-# Activate venv and deactivate on exit
-source manage/activate-venv.sh
-trap deactivate EXIT
+CUSTOM_COMPILE_COMMAND="manage/deps-upgrade.sh"
+DC_FILE="setup/simple/docker-compose.yml"
+CMD="docker-compose -f $DC_FILE run --rm -e CUSTOM_COMPILE_COMMAND=$CUSTOM_COMPILE_COMMAND app"
 
 set -eu # Exit on error and undefined var is error
 
 [[ ! -f requirements/all.txt ]] && touch requirements/all.txt
 cp requirements/all.txt requirements/all.old.txt
 
-echo "Updating requirements files ..."
-pip-compile --quiet --upgrade requirements/base.in
-pip-compile --quiet --upgrade requirements/development.in
-pip-compile --quiet --upgrade requirements/production.in
-pip-compile --quiet --upgrade requirements/testing.in
-pip-compile --quiet --upgrade requirements/all.in
+echo "Upgrading requirements for base ..."
+$CMD pip-compile --quiet --upgrade requirements/base.in
+echo "Upgrading requirements for testing ..."
+$CMD pip-compile --quiet --upgrade requirements/testing.in
+echo "Upgrading requirements for development ..."
+$CMD pip-compile --quiet --upgrade requirements/development.in
+echo "Upgrading requirements for production ..."
+$CMD pip-compile --quiet --upgrade requirements/production.in
+echo "Upgrading requirements for all ..."
+$CMD pip-compile --quiet --upgrade requirements/all.in
 
 # Create requirements.txt for dependency analyzers etc.
 echo "#" > requirements.txt

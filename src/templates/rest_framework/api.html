@@ -2,11 +2,11 @@
 {% load rest_framework_extras %}
 
 {% block title %}
-{% if name %}{{ name }} – {% endif %}CaG Events
+{% if name %}{{ name }} – {% endif %}{% site_name %}
 {% endblock %}
 
 {% block branding %}
-<a class='navbar-brand' href='/'>CaG Events</a>
+<a class='navbar-brand' href='/'>{% site_name %}</a>
 {% endblock %}
 
 {% block userlinks %}

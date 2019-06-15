@@ -1,45 +1,48 @@
 #!/bin/bash
 
-DEV_SETTINGS_FILE="setup/venv/env.original"
-SETTINGS_FILE="env"
-LOG_DIR="log"
-MANAGE="python src/manage.py"
+# Configures the container, including building the image, creating the container,
+# installing extra deps, collecting static files, migrating the DB, etc.
 
-set -e # Exit on error
-
-# Activate venv and deactivate on exit
-source manage/activate-venv.sh
-trap deactivate EXIT
+LOCAL_DIR=".local/simple"
+CONFIG_FILE="$LOCAL_DIR/config.env"
+DB_FILE="$LOCAL_DIR/db.sqlite3"
+CONFIG_TEMPLATE_FILE="setup/simple/config.template.env"
+DC_FILE="setup/simple/docker-compose.yml"
+DC="docker-compose -f $DC_FILE"
 
 set -eu # Exit on error and undefined var is error
 
-# Add settings file
-if [[ ! -e $SETTINGS_FILE ]]; then
-    echo "Adding sample settings file ..."
-    mkdir -p $(dirname $SETTINGS_FILE)
-    cp $DEV_SETTINGS_FILE $SETTINGS_FILE
+mkdir -p $LOCAL_DIR
+
+# Add config file and exit if missing
+if [[ ! -e $CONFIG_FILE ]]; then
+    echo "Creating new config file ..."
+    cp $CONFIG_TEMPLATE_FILE $CONFIG_FILE
+
+    echo
+    echo "ATTENTION!"
+    echo "A new config file has been created: $CONFIG_FILE"
+    echo "Please configure it and then re-run this script."
+    exit 0
 fi
 
-# Add other dirs and files
-[[ ! -e $LOG_DIR ]] && mkdir -p $LOG_DIR
+# Create DB file (so Docker doesn't make it a directory)
+if [[ ! -e $DB_FILE ]]; then
+    echo "Creating DB file ..."
+    touch $DB_FILE
+fi
 
-# Install requirements inside venv, and check for outdated packages
 echo
-echo "Installing requirements ..."
-pip install --quiet -r requirements/development.txt
+echo "Removing any previous Docker Compose setup ..."
+$DC down
 
-# Collect static files
 echo
-echo "Collecting static files ..."
-# Ignore admin app, use theme instead
-$MANAGE collectstatic -i admin --noinput --clear | egrep -v "^Deleting" || true
+echo "Building image ..."
+$DC build app
 
-# Run migration, but skip initial if matching table names already exist
 echo
-echo "Running migration ..."
-$MANAGE migrate --fake-initial
+echo "Creating containers ..."
+$DC up --no-start
 
-# Add superuser
-#echo "Adding superuser ..."
-#echo "Press CTRL+C to cancel"
-#$MANAGE createsuperuser
+echo
+manage/update.sh

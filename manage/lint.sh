@@ -1,13 +1,11 @@
 #!/bin/bash
 
-set -e # Exit on error
+# Runs linter.
 
-# Activate venv and deactivate on exit
-source manage/activate-venv.sh
-trap deactivate EXIT
+CMD="manage/cmd.sh"
 
 set -eu # Exit on error and undefined var is error
 
 # Run flake8 static code analysis
 # Uses settings from .flake8
-flake8
+$CMD flake8

@@ -1,10 +1,12 @@
 [flake8]
-application_import_names = apps, auth
+application_import_names = apps, auth, misc
 exclude = **/__init__.py, **/migrations, .venv
+
+inline-quotes = double
+
 # B901 blind except: statement (duplicate of E722)
 # E501 line too long
 # Q003 Change outer quotes to avoid escaping inner quotes
 # W503 line break before binary operator
 # W504 line break after binary operator
 ignore = B901, E501, Q003, W503, W504
-inline-quotes = double

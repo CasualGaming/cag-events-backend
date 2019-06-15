@@ -4,22 +4,19 @@ set -eu # Exit on error and undefined var is error
 
 # Constants
 MANAGE="python3 src/manage.py"
-SETTINGS_FILE="/app/env"
-LOG_DIR="/app/log"
+APP_DIR="/app"
+CONFIG_FILE="$APP_DIR/config.env"
+LOG_DIR="$APP_DIR/log"
 APP_USER="app"
 APP_GROUP="app"
 
 # Optional env vars
 APP_UID=${APP_UID:=}
 APP_GID=${APP_GID:=}
-SUPERUSER_USERNAME=${SUPERUSER_USERNAME:=}
-SUPERUSER_EMAIL=${SUPERUSER_EMAIL:=}
-SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:=}
-SUPERUSER_INACTIVE=${SUPERUSER_INACTIVE:=}
 
-# Check if settings exist
-if [[ ! -e $SETTINGS_FILE ]]; then
-    echo "App settings not found: $SETTINGS_FILE" 1>&2
+# Check if config file exists
+if [[ ! -e $CONFIG_FILE ]]; then
+    echo "App config not found: $CONFIG_FILE" 1>&2
     exit -1
 fi
 
@@ -57,8 +54,8 @@ if ! grep -q "^${APP_USER}:" /etc/passwd; then
     else
         useradd -r -g $APP_GROUP $APP_USER
     fi
-    echo "Added user: $(id $APP_USER)"
 fi
+echo "App user: $(id $APP_USER)"
 
 # Setup permissions and stuff
 # Note: Volumes from vboxsf cannot be chowned

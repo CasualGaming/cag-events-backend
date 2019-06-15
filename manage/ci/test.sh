@@ -1,5 +1,6 @@
 #!/bin/bash
 
+CONFIG_TEMPLATE_FILE="setup/config.template.env"
 MANAGE="python3 src/manage.py"
 
 if [[ $CI != "true" ]]; then
@@ -10,7 +11,7 @@ fi
 set -eu # Exit on error and undefined var is error
 
 # Setup files and dirs
-cp setup/venv/env.original env
+cp $CONFIG_TEMPLATE_FILE config.env
 mkdir -p log
 
 # Run Django tests

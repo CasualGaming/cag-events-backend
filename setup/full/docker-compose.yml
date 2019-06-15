@@ -1,0 +1,53 @@
+version: '3.6'
+
+services:
+  app:
+    container_name: ceb-full-app
+    build:
+      context: ../..
+      dockerfile: ./setup/prod/Dockerfile
+    #environment:
+    #- APP_UID=$APP_UID
+    #- APP_GID=$APP_GID
+    volumes:
+    - ../../src/:/app/src/:ro
+    - ../../requirements/:/app/requirements/:ro
+    - ./uwsgi.ini:/app/uwsgi.ini:ro
+    - ../../.local/full/config.env:/app/config.env:ro
+    - ../../.local/full/static/:/app/static/:rw
+    - ../../.local/full/log/app/:/app/log/:rw
+    networks:
+    - ceb-full
+    depends_on:
+    - database
+
+  database:
+    container_name: ceb-full-database
+    image: postgres:11-alpine
+    environment:
+    - POSTGRES_PASSWORD=dev_postgres_password
+    volumes:
+    - ceb-full-database-data:/var/lib/postgresql/data/:rw
+    networks:
+    - ceb-full
+
+  reverse_proxy:
+    container_name: ceb-full-reverse-proxy
+    image: nginx:1.15-alpine
+    volumes:
+    - ../../setup/full/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    - ../../.local/full/static:/app/static:ro
+    - ../../.local/full/log/nginx:/var/log/nginx:rw
+    ports:
+    - "8000:80"
+    networks:
+    - ceb-full
+    depends_on:
+    - app
+
+volumes:
+  ceb-full-database-data:
+    external: true
+
+networks:
+  ceb-full:

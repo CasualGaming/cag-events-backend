@@ -1,26 +1,23 @@
 #!/bin/bash
 
-# Docker
-if command -v docker-compose 1>/dev/null 2>&1; then
-    docker-compose -f setup/docker-simple/docker-compose.yml down
-    docker-compose -f setup/docker-full/docker-compose.yml down
-fi
+# Remove local run data, virtualenv, Python caches, etc.
 
-# Data
-rm -rf env
-rm -rf db.sqlite3
-rm -rf static
-rm -rf log
-rm -rf setup/docker-simple/env
-rm -rf setup/docker-full/env
-rm -rf /tmp/cag-events-backend
+FULL_DB_VOLUME="ceb-full-database-data"
 
-# Venv
+echo "Cleaning Docker ..."
+docker-compose -f setup/simple/docker-compose.yml down
+docker-compose -f setup/full/docker-compose.yml down
+docker volume ls -q --filter "name=$FULL_DB_VOLUME" | grep -q . \
+&& docker volume rm $FULL_DB_VOLUME
+
+echo "Cleaning local data ..."
+rm -rf .local
+
+echo "Cleaning virtualenv ..."
 rm -rf .venv
 
-# Python
-find . -name "__pycache__" -exec rm -rf {} \; -prune
-#find . -name "*.pyc" -exec rm -rf {} \;
+echo "Cleaning Python cache ..."
+find src -name "__pycache__" -exec rm -rf {} \; -prune
 
-# Other
+echo "Cleaning other stuff ..."
 rm -f requirements/*.old.txt

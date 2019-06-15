@@ -1,20 +1,8 @@
 #!/bin/bash
 
-SETTINGS_FILE="env"
-MANAGE="python src/manage.py"
+# Runs the Django dev server in the container.
 
-set -e # Exit on error
+DC_FILE="setup/simple/docker-compose.yml"
+DC="docker-compose -f $DC_FILE"
 
-# Activate venv and deactivate on exit
-source manage/activate-venv.sh
-trap deactivate EXIT
-
-set -eu # Exit on error and undefined var is error
-
-# Check if settings exist
-if [[ ! -e $SETTINGS_FILE ]]; then
-    echo "App settings not found: $SETTINGS_FILE" 1>&2
-    exit -1
-fi
-
-$MANAGE runserver 0.0.0.0:8000
+$DC up --no-recreate

@@ -3,10 +3,10 @@
 # Note: Do not use "set -u" before sourcing this script, virtualenv's activate may trigger it.
 
 SYSTEM_PACKAGES="virtualenv setuptools wheel"
-VENV_PACKAGES="pip-tools"
+EXTRA_PACKAGES=""
 VENV_DIR=".venv"
 
-if ! [[ -e $VENV_DIR ]]; then
+if [[ ! -e $VENV_DIR ]]; then
     echo "Virtualenv not found, creating it ..."
 
     # The essentials
@@ -27,7 +27,8 @@ if ! [[ -e $VENV_DIR ]]; then
 
     # Create venv
     if [[ ! -d .venv ]]; then
-        echo "Creating venv ..."
+        echo
+        echo "Creating virtualenv ..."
         # Don't use symlinks if in VirtualBox shared folder
         if ( df -t vboxsf . 1>/dev/null 2>/dev/null ); then
             echo "VirtualBox shared folder detected"
@@ -44,7 +45,9 @@ if ! [[ -e $VENV_DIR ]]; then
     esac
 
     # Install extra packages inside venv
-    pip install --quiet $VENV_PACKAGES
+    if [[ ! -z $EXTRA_PACKAGES ]]; then
+        pip install --quiet $EXTRA_PACKAGES
+    fi
 else
     # Enter existing venv directly
     case "$(uname -s)" in
