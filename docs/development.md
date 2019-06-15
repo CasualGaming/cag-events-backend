@@ -15,7 +15,7 @@
 
 - Git ([Git CLI](https://git-scm.com) or [GitHub for Windows](https://windows.github.com/))
 - Python 3.7 w/ pip
-- Docker and Docker Compose (recommended)
+- Docker and Docker Compose
 - VS Code (optional)
   - flake8 linter extension
 - Travis Tool (optional)
@@ -38,89 +38,58 @@ sudo gem install travis
 
 ## Running
 
-### Settings
+### Running the Simple Container
+This is the intended way to run the dev server and other tools. It consists of a Django dev server inside a Docker container. Scripts in `manage`, except `manage/ci`, `manage/full` and `manage/venv`, are used to interact with the server and other tools. Configs for it are found in `setup/simple` (don't change these) and `.local/simple` (change these instead). We (Casual Gaming) use our Keycloak server with realm "dev" with client "cag-events-local" for local testing.
 
-- **TODO**
-- OpenID Connect:
-  - At CaG, we use our Keycloak server with realm "dev" with client "cag-events-local" for local testing.
-
-### Scripts
-
-There are scripts to do most stuff. The server can be run either with venv and the Django dev server, within Docker with the Django dev serverm, or within Docker with the uWSGI and nging web servers.
+Setting up and running the dev server:
 
 ```bash
-# Clean-up/delete run stuff like the DB, logs, etc.
-manage/clean.sh
-
-# Setup the virtualenv and stuff, required for most scripts below
+# First time only
+# If it tells you to fix the config; fix the config and run it again
 manage/setup.sh
 
-# Run the dev server in venv
+# For updating installed requirements, re-collect static files and run migrations,
+# not needed the first time
+manage/update.sh
+
+# Start the dev server
+# Press CTRL+C to stop it
 manage/run.sh
 
-# Manually create and activate the venv, for running stuff manually
-source manage/activate-venv.sh
-
-# Check dependencies
-manage/check-deps.sh
-
-# Upgrade dependencies
-manage/upgrade-deps.sh
-
-# Run all checks except for outdated deps (Django validity, unit tests, linter, etc.)
-manage/check.sh
-
-# Run tests
+# Run unit tests and linter
 manage/test.sh
-
-# Run linter
 manage/lint.sh
 
-# Make new migrations (without applying them)
-manage/make-migrations.sh
+# Run a bunch of tests, do this before committing and pushing
+manage/check.sh
+
+# Delete all local files like databases, configs, etc.,
+# in case you need to start over
+manage/clean.sh
+
+# Most scripts in there have comments inside regarding what they do
 ```
 
-### Running in Docker, The Simple Way
-
-- Uses the Django dev server within a Docker container (with hot reloading).
-- Uses a SQLite DB back-end.
+### Running the Full Container
+This setup is meant for testing the app in a more realistic scenario.
+It contains the app container, a database container (PostgreSQL) and a reverse proxy container (nginx).
 
 ```bash
-# First time or after migration/dependency/etc. changes
-manage/docker-simple/setup.sh
+# First time only
+# If it tells you to fix the config; fix the config and run it again
+manage/full/setup.sh
 
-# Start the dev server
-manage/docker-simple/run.sh
-
-# Run any command in the container (not while already running)
-manage/docker-simple/cmd.sh <cmd>
-
-# Run any Django manage command in the container (not while already running)
-manage/docker-simple/manage.sh <cmd>
+# No comment needed
+manage/full/run.sh
 ```
 
-### Running in Virtualenv, The Simpler Way
-
-- Uses the Django dev server within a Python virtualenv (with hot reloading).
-- Uses a SQLite DB back-end.
-
-```bash
-# First time or after migration/dependency/etc. changes
-manage/setup.sh
-
-# Start the dev server
-manage/run.sh
-```
-
-### Running in Docker, The Complete Way
-
-- This way is slow, generally use one of the other ways.
-- Uses and nginx proxy.
-- Uses a PostgreSQL DB back-end.
-- Migrates and collects static on start.
-- Most similar to deployment.
+### Setting up Virtualenv
+Virtualenv is only meant to be used by IDEs for this project.
+It'll give the IDE access to the dependencies used (source code and tools).
 
 ```bash
-manage/docker-full/setup.sh
-manage/docker-full/run.sh
+# Create venv, install dependencies inside, etc.
+manage/venv/setup.sh
+
+# Now tell your IDE to use the venv
 ```
