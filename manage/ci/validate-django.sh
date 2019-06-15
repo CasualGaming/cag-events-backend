@@ -15,7 +15,8 @@ mkdir -p log
 
 # Collect static files
 echo "Collecting static files ..."
-$MANAGE collectstatic --no-input --clear
+# Ignore admin app, use theme instead
+$MANAGE collectstatic -i admin --no-input --clear
 
 # Run migration, but skip initial if matching table names already exist
 echo "Running migration ..."

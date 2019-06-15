@@ -31,7 +31,8 @@ pip install --quiet -r requirements/development.txt
 # Collect static files
 echo
 echo "Collecting static files ..."
-$MANAGE collectstatic --noinput --clear | egrep -v "^Deleting" || true
+# Ignore admin app, use theme instead
+$MANAGE collectstatic -i admin --noinput --clear | egrep -v "^Deleting" || true
 
 # Run migration, but skip initial if matching table names already exist
 echo

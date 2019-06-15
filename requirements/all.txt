@@ -64,3 +64,6 @@ uwsgi==2.0.18
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools==41.0.1        # via flake8-blind-except, flake8-import-order, josepy
+
+# TODO regen req file, can't do it on Windows
+django-grappelli

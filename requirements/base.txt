@@ -33,3 +33,6 @@ urllib3==1.25.3           # via requests
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools==41.0.1        # via josepy
+
+# TODO regen req file, can't do it on Windows
+django-grappelli

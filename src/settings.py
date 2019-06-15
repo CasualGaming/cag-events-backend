@@ -16,8 +16,7 @@ INSTALLED_APPS = [
     # "apps.team",
     "apps.user",
 
-    # Django
-    "django.contrib.admin",
+    # Django (before 3rd-party)
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -27,6 +26,11 @@ INSTALLED_APPS = [
     # Third-party
     "rest_framework",
     "mozilla_django_oidc",
+    # Admin theme
+    "grappelli",
+
+    # Django (after 3rd-party)
+    "django.contrib.admin",
 ]
 
 MIDDLEWARE = [
@@ -40,32 +44,50 @@ MIDDLEWARE = [
     "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
+# Basics
+BASE_DIR = base_dir
+DEBUG = env("DEBUG")
+TEMPLATE_DEBUG = DEBUG
+SITE_NAME = env("SITE_NAME")
+WSGI_APPLICATION = "wsgi.application"
+ROOT_URLCONF = "urls"
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+SECRET_KEY = env("SECRET_KEY")
+
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "auth.backends.OidcAuthBackend",
 )
 
-# Basics
-BASE_DIR = base_dir
-DEBUG = env("DEBUG")
-TEMPLATE_DEBUG = DEBUG
-SECRET_KEY = env("SECRET_KEY")
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
-SITE_NAME = env("SITE_NAME")
-WSGI_APPLICATION = "wsgi.application"
-ROOT_URLCONF = "urls"
+# Auth stuff
 AUTH_USER_MODEL = "user.User"
 LOGIN_URL = "/auth/login"
 LOGIN_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL_FAILURE = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-# Database
 DATABASES = {
     "default": env.db("DATABASE_URL"),
 }
 
-# Templates
+# Email
+DEFAULT_MAIL = env("DEFAULT_MAIL", default="app@localhost")
+SUPPORT_MAIL = env("SUPPORT_MAIL", default="support@localhost")
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+# Mailgun (for django_mailgun.MailgunBackend)
+MAILGUN_ACCESS_KEY = env("MAILGUN_ACCESS_KEY", default="")
+MAILGUN_SERVER_NAME = env("MAILGUN_SERVER_NAME", default="")
+
+# Security
+CSRF_COOKIE_PATH = "/"
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE", default=True)
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE", default=True)
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -85,23 +107,9 @@ TEMPLATES = [
     },
 ]
 
-# Email
-DEFAULT_MAIL = env("DEFAULT_MAIL", default="app@localhost")
-SUPPORT_MAIL = env("SUPPORT_MAIL", default="support@localhost")
-EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
-# Mailgun
-MAILGUN_ACCESS_KEY = env("MAILGUN_ACCESS_KEY", default="")
-MAILGUN_SERVER_NAME = env("MAILGUN_SERVER_NAME", default="")
-
-# Security
-CSRF_COOKIE_PATH = "/"
-CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE", default=True)
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE", default=True)
-X_FRAME_OPTIONS = "DENY"
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
+# More template/admin stuff
+GRAPPELLI_ADMIN_TITLE = "CaG Events"
+GRAPPELLI_SWITCH_USER = True
 
 # Static files
 STATIC_URL = "/static/"

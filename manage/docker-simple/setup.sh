@@ -49,7 +49,8 @@ fi
 
 echo
 echo "Configuring app ..."
-$DC_MANAGE collectstatic --noinput --clear | egrep -v "^Deleting" || true
+# Ignore admin app, use theme instead
+$DC_MANAGE collectstatic -i admin --noinput --clear | egrep -v "^Deleting" || true
 $DC_MANAGE migrate --fake-initial
 
 echo

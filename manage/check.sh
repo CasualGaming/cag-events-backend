@@ -19,7 +19,8 @@ fi
 
 echo
 echo "Collecting static files ..."
-$MANAGE collectstatic --no-input --clear | egrep -v "^Deleting" || true
+# Ignore admin app, use theme instead
+$MANAGE collectstatic -i admin --no-input --clear | egrep -v "^Deleting" || true
 
 echo
 echo "Checking migrations ..."

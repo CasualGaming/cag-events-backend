@@ -14,6 +14,8 @@ schema_view = get_schema_view(title="CaG Events")
 
 urlpatterns = [
     path(r"admin/", admin.site.urls),
+    # Used by admin theme
+    path(r"grappelli/", include("grappelli.urls")),
     path(r"schema/", schema_view),
     path(r"auth/", include("rest_framework.urls")),
     path(r"oidc/", include("mozilla_django_oidc.urls")),
