@@ -1,7 +1,8 @@
+coreapi
 django
 djangorestframework
 django-environ
+django-grappelli
 mozilla-django-oidc
-coreapi
-pyyaml
 psycopg2-binary
+pyyaml
