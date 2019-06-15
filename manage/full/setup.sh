@@ -5,8 +5,6 @@ CONFIG_TEMPLATE_FILE="setup/full/config.template.env"
 CONFIG_FILE="$LOCAL_DIR/config.env"
 DB_CONTAINER="ceb-full-database"
 DB_VOLUME="$DB_CONTAINER-data"
-# Double slash prevents MSYS/MinGW path translation
-#DB_PGDATA="//var/lib/postgresql/data/pgdata"
 DB_SUPERUSER="postgres"
 DB_SUPERPASSWORD="dev_postgres_password"
 DB_USER="dev_user"
@@ -50,7 +48,6 @@ $DC up --no-start
 
 echo
 echo "Setting up database ..."
-# Fix wrong owner bitching from postgres
 echo "(No further output means it failed.)"
 $DC up -d database
 # Wait for the service to get ready
@@ -62,6 +59,7 @@ CREATE ROLE $DB_USER WITH PASSWORD '$DB_PASSWORD';
 ALTER ROLE $DB_USER SET client_encoding TO 'utf8';
 ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';
 ALTER ROLE $DB_USER SET timezone TO 'Europe/Oslo';
+ALTER ROLE $DB_USER WITH LOGIN;
 GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;
 END
 

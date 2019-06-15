@@ -17,7 +17,7 @@ services:
     - ../../.local/full/static/:/app/static/:rw
     - ../../.local/full/log/app/:/app/log/:rw
     networks:
-    - ceb-full
+    - main
     depends_on:
     - database
 
@@ -27,9 +27,9 @@ services:
     environment:
     - POSTGRES_PASSWORD=dev_postgres_password
     volumes:
-    - ceb-full-database-data:/var/lib/postgresql/data/:rw
+    - database-data:/var/lib/postgresql/data/:rw
     networks:
-    - ceb-full
+    - main
 
   reverse_proxy:
     container_name: ceb-full-reverse-proxy
@@ -41,13 +41,15 @@ services:
     ports:
     - "8000:80"
     networks:
-    - ceb-full
+    - main
     depends_on:
     - app
 
 volumes:
-  ceb-full-database-data:
-    external: true
+  database-data:
+    external:
+      name: ceb-full-database-data
 
 networks:
-  ceb-full:
+  main:
+    name: ceb-full

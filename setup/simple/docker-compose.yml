@@ -22,7 +22,8 @@ services:
     ports:
     - "8000:8000"
     networks:
-    - ceb-simple
+    - main
 
 networks:
-  ceb-simple:
+  main:
+    name: ceb-simple
