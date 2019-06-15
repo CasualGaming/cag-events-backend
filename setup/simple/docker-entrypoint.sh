@@ -6,7 +6,6 @@ set -eu # Exit on error and undefined var is error
 MANAGE="python3 src/manage.py"
 APP_DIR="/app"
 CONFIG_FILE="$APP_DIR/config.env"
-LOG_DIR="$APP_DIR/log"
 APP_USER="app"
 APP_GROUP="app"
 
@@ -42,10 +41,10 @@ echo "App user: $(id $APP_USER)"
 
 # Setup permissions and stuff
 # Note: Volumes from vboxsf cannot be chowned
-#set +e
-#echo "Trying to chown all files ..."
-#chown -R $APP_USER:$APP_GROUP . 2>/dev/null
-#set -e
+set +e
+echo "Chowning all app files ..."
+chown -R $APP_USER:$APP_GROUP . 2>/dev/null
+set -e
 
 # Run server
 echo

@@ -113,7 +113,7 @@ TEMPLATES = [
 
 # Admin theme
 GRAPPELLI_ADMIN_TITLE = SITE_NAME
-GRAPPELLI_SWITCH_USER = True
+GRAPPELLI_SWITCH_USER = False
 
 # Static files
 STATIC_URL = "/static/"
