@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG_TEMPLATE_FILE="setup/config.template.env"
+CONFIG_TEMPLATE_FILE="setup/ci/config.template.env"
 MANAGE="python3 src/manage.py"
 
 set -eu # Exit on error and undefined var is error
@@ -11,7 +11,7 @@ if [[ $CI != "true" ]]; then
 fi
 
 # Setup files and dirs
-cp $CONFIG_TEMPLATE_FILE env
+cp $CONFIG_TEMPLATE_FILE config.env
 mkdir -p log
 
 # Collect static files
