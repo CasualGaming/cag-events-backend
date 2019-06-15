@@ -3,8 +3,11 @@ import environ
 base_dir = environ.Path(__file__) - 2
 src_dir = environ.Path(__file__) - 1
 
-env = environ.Env(DEBUG=(bool, True))
-environ.Env.read_env(base_dir("config.env"))
+# Add DEBUG=False as default
+env = environ.Env(DEBUG=(bool, False))
+# Load config, file may be specified in env
+config_file = env("CONFIG_FILE", default="config.env")
+environ.Env.read_env(base_dir(config_file))
 
 INSTALLED_APPS = [
     # Local
@@ -114,7 +117,7 @@ GRAPPELLI_SWITCH_USER = True
 
 # Static files
 STATIC_URL = "/static/"
-STATIC_ROOT = base_dir("static")
+STATIC_ROOT = base_dir(env("STATIC_DIR", default="static"))
 
 # i18n
 LANGUAGE_CODE = "en-us"

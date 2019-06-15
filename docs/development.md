@@ -38,6 +38,8 @@ sudo gem install travis
 
 ## Running
 
+The dev server can be run in multiple ways, and each way have isolated configs and data so that they don't interfere with eachother (it's in `.local`). However, most tools are only supported in the first approach, the simple Docker container.
+
 ### Running the Simple Container
 This is the intended way to run the dev server and other tools. It consists of a Django dev server inside a Docker container. Scripts in `manage`, except `manage/ci`, `manage/full` and `manage/venv`, are used to interact with the server and other tools. Configs for it are found in `setup/simple` (don't change these) and `.local/simple` (change these instead). We (Casual Gaming) use our Keycloak server with realm "dev" with client "cag-events-local" for local testing.
 
@@ -83,13 +85,25 @@ manage/full/setup.sh
 manage/full/run.sh
 ```
 
-### Setting up Virtualenv
-Virtualenv is only meant to be used by IDEs for this project.
-It'll give the IDE access to the dependencies used (source code and tools).
+### Virtualenv for IDE
+It is recommended to set up Virtualenv for use by IDEs.
+It'll give the them access to the dependencies used and such (source code and tools).
 
 ```bash
 # Create venv, install dependencies inside, etc.
-manage/venv/setup.sh
+manage/venv/setup-basic.sh
 
 # Now tell your IDE to use the venv
+```
+
+### Virtualenv for Server
+You *could* use Virtualenv instead of Docker (the simple one), it probably won't even matter.
+
+```bash
+# First time only
+# If it tells you to fix the config; fix the config and run it again
+manage/venv/setup.sh
+
+# Prepare for liftoff
+manage/venv/run.sh
 ```
