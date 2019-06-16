@@ -13,5 +13,5 @@ urlpatterns = [
 ]
 
 router = DefaultRouter()
-router.register(r"users", views.UserViewSet, base_name="users")
+router.register(r"articles", views.ArticleViewSet)
 urlpatterns += router.urls

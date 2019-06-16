@@ -3,6 +3,7 @@ django
 djangorestframework
 django-environ
 django-grappelli
+drf-dynamic-fields
 mozilla-django-oidc
 psycopg2-binary
 pyyaml
