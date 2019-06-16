@@ -162,6 +162,9 @@ REST_FRAMEWORK = {
         # For browsing the back-end directly from the web browser
         "rest_framework.authentication.SessionAuthentication",
     ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "auth.permissions.IsSuperuser",
+    ],
 }
 
 # OIDC

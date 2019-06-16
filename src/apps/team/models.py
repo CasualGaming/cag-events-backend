@@ -6,7 +6,6 @@ from apps.user.models import User
 
 class Team(models.Model):
     title = models.CharField("title", max_length=50)
-    tag = models.CharField("tag", max_length=10, unique=True)
     leader = models.ForeignKey(User, blank=False, related_name="lead_teams")
     members = models.ManyToManyField(User, related_name="teams", through="TeamMember")
 

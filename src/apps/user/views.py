@@ -9,34 +9,31 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
-# from auth.permissions import IsOwnerOrAdmin
+from auth.permissions import AllowAll, IsSuperuser
 
 from .models import User
 # from .permissions import IsAuthOrPost
-from .permissions import UserPermission, UserPublicPermission
-from .serializers import UserListSerializer, UserPublicSerializer, UserSerializer
+# from .permissions import UserPermission, PublicUserSerializer
+from .serializers import PublicUserSerializer, UserSerializer
 
 
 class UserViewSet(ReadOnlyModelViewSet):
     queryset = User.objects.all()
     lookup_field = "username"
     serializer_class = UserSerializer
-    permission_classes = [UserPermission]
+    # TODO fix permissions
+    permission_classes = [IsSuperuser]
 
-    def get_serializer_class(self):
-        if self.action == "list":
-            return UserListSerializer
-        return super(ReadOnlyModelViewSet, self).get_serializer_class()
+    # def get_serializer_class(self):
+    #     if self.action == "list":
+    #         return UserListSerializer
+    #     return super(ReadOnlyModelViewSet, self).get_serializer_class()
 
-    @action(url_path="public", methods=["get"], detail=True, permission_classes=[UserPublicPermission])
+    @action(url_path="public", methods=["get"], detail=True, permission_classes=[AllowAll])
     def get_public(self, request, username):
         instance = self.get_object()
-        serializer = UserPublicSerializer(instance)
+        serializer = PublicUserSerializer(instance)
         return Response(serializer.data)
-
-# class PublicUserViewSet(ReadOnlyModelViewSet):
-#    queryset = User.objects.all()
-#    serializer_class = PublicUserSerializer
 
 
 # class UserViewSet(mixins.RetrieveModelMixin,
