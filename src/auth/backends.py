@@ -22,7 +22,6 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
             return User.objects.none()
 
     def create_user(self, claims):
-        print("Create user")  # TODO
         attributes = self.get_user_attributes(claims)
         self.validate_user_attributes(attributes)
         user = User.objects.create(subject_id=attributes["subject_id"],
@@ -32,8 +31,6 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
         return self.update_user(user, claims, attributes)
 
     def update_user(self, user, claims, attributes=None):
-        print("Update user")  # TODO
-
         if attributes is None:
             attributes = self.get_user_attributes(claims)
             self.validate_user_attributes(attributes)
