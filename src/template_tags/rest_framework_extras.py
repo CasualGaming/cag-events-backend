@@ -71,8 +71,6 @@ def userlinks_logout(request):
 def userlinks_extras(request, user):
     items = []
 
-    items.append('<li><a href="/schema">Schema</a></li>')
-
     if user.is_staff:
         items.append('<li><a href="/admin">Admin panel</a></li>')
 

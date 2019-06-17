@@ -6,6 +6,7 @@ services:
     build:
       context: ../..
       dockerfile: ./setup/prod/Dockerfile
+    restart: always
     #environment:
     #- APP_UID=$APP_UID
     #- APP_GID=$APP_GID

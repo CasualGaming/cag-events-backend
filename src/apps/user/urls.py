@@ -6,10 +6,10 @@ from rest_framework.schemas import get_schema_view
 
 from . import views
 
-schema_view = get_schema_view(title=settings.SITE_NAME)
+schema_view = get_schema_view(title=settings.APP_NAME, urlconf="apps.user.urls")
 
 urlpatterns = [
-    path(r"schema/", schema_view),
+    path(r"", schema_view),
 ]
 
 router = DefaultRouter()
