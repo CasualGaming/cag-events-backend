@@ -131,12 +131,26 @@ USE_TZ = True
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
+    "filters": {
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
     "formatters": {
         "standard": {
             "format": "[%(asctime)s] [%(levelname)s] %(message)s",
         },
+        "simple": {
+            "format": "[%(levelname)s] %(message)s",
+        },
     },
     "handlers": {
+        "console": {
+            "level": "WARNING",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
         "error_file": {
             "level": "WARNING",
             "class": "logging.handlers.RotatingFileHandler",
@@ -145,11 +159,25 @@ LOGGING = {
             "backupCount": 5,
             "formatter": "standard",
         },
+        "debug_file": {
+            "level": "DEBUG",
+            "filters": ["require_debug_true"],
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": base_dir(env("LOG_DIR", default="log"), "debug.log"),
+            "maxBytes": 5 * 1024 * 1024,  # 5 MB
+            "backupCount": 5,
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
-            "handlers": ["error_file"],
-            "level": "INFO",
+            "handlers": ["console", "error_file", "debug_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "mozilla_django_oidc": {
+            "handlers": ["console", "error_file", "debug_file"],
+            "level": "DEBUG",
             "propagate": True,
         },
     },
@@ -175,8 +203,9 @@ OIDC_DRF_AUTH_BACKEND = "auth.backends.OidcAuthBackend"
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = env("OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS", default=(15 * 60))
 OIDC_RP_CLIENT_ID = env("OIDC_RP_CLIENT_ID", default="")
 OIDC_RP_CLIENT_SECRET = env("OIDC_RP_CLIENT_SECRET", default="")
+OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
 OIDC_OP_AUTHORIZATION_ENDPOINT = env("OIDC_OP_AUTHORIZATION_ENDPOINT", default="")
 OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
 OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
-OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
 OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
+OIDC_OP_ACCOUNT_ENDPOINT = env("OIDC_OP_ACCOUNT_ENDPOINT", default="")
