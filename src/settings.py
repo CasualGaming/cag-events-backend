@@ -159,6 +159,15 @@ LOGGING = {
             "backupCount": 5,
             "formatter": "standard",
         },
+        "info_file": {
+            "level": "INFO",
+            "filters": ["require_debug_true"],
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": base_dir(env("LOG_DIR", default="log"), "info.log"),
+            "maxBytes": 5 * 1024 * 1024,  # 5 MB
+            "backupCount": 5,
+            "formatter": "standard",
+        },
         "debug_file": {
             "level": "DEBUG",
             "filters": ["require_debug_true"],
@@ -171,12 +180,12 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "error_file", "debug_file"],
+            "handlers": ["console", "error_file", "info_file", "debug_file"],
             "level": "DEBUG",
             "propagate": True,
         },
         "mozilla_django_oidc": {
-            "handlers": ["console", "error_file", "debug_file"],
+            "handlers": ["console", "error_file", "info_file", "debug_file"],
             "level": "DEBUG",
             "propagate": True,
         },
