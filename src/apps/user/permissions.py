@@ -10,5 +10,5 @@ class UserPermissions(permissions.BasePermission):
     """Full user details are restricted."""
 
     def has_permission(self, request, view):
-        # TODO different permissions for different methods
-        return True
+        # TODO different permissions for different methods  # noqa
+        return False
