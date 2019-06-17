@@ -4,9 +4,11 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import get_schema_view
 
+from auth.permissions import AllowAll
+
 from . import views
 
-schema_view = get_schema_view(title=settings.APP_NAME, urlconf="apps.event.urls")
+schema_view = get_schema_view(title=settings.APP_NAME, urlconf="apps.event.urls", permission_classes=[AllowAll])
 
 urlpatterns = [
     path(r"", schema_view),
