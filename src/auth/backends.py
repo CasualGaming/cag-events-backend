@@ -22,37 +22,43 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
             return User.objects.none()
 
     def create_user(self, claims):
-        subject_id = self.get_claim(claims, "sub")
-        username = self.get_claim(claims, "username")
-        email_address = self.get_claim(claims, "email")
-        user = User.objects.create_user(subject_id=subject_id, username=username, email=email_address)
+        print("Create user")  # TODO
+        attributes = self.get_user_attributes(claims)
+        self.validate_user_attributes(attributes)
+        user = User.objects.create(subject_id=attributes["subject_id"],
+                                   username=attributes["username"],
+                                   email=attributes["email"])
         UserProfile.objects.create(user=user)
-        return self.update_user(user, claims)
+        return self.update_user(user, claims, attributes)
 
-    def update_user(self, user, claims):
-        # Update user
-        lower_username = self.get_claim(claims, "username").lower()
-        user.username = lower_username
-        user.pretty_username = self.get_claim(claims, "pretty_username")
-        user.first_name = self.get_claim(claims, "given_name")
-        user.last_name = self.get_claim(claims, "family_name")
-        user.email = self.get_claim(claims, "email")
+    def update_user(self, user, claims, attributes=None):
+        print("Update user")  # TODO
 
-        # Update user profile
-        user.profile.birth_date = self.get_claim(claims, "birth_date")
-        user.profile.gender = self.get_claim(claims, "gender")
-        user.profile.phone_number = self.get_claim(claims, "phone_number")
-        address_claims = self.get_claim(claims, "address")
-        user.profile.country = self.get_claim(address_claims, "country")
-        user.profile.postal_code = self.get_claim(address_claims, "postal_code")
-        user.profile.street_address = self.get_claim(address_claims, "street_address")
+        if attributes is None:
+            attributes = self.get_user_attributes(claims)
+            self.validate_user_attributes(attributes)
+
+        # Update user and userprofile
+        user.username = attributes["username"]
+        user.pretty_username = attributes["pretty_username"]
+        user.first_name = attributes["first_name"]
+        user.last_name = attributes["last_name"]
+        user.email = attributes["email"]
+        user.profile.birth_date = attributes["birth_date"]
+        user.profile.gender = attributes["gender"]
+        user.profile.phone_number = attributes["phone_number"]
+        user.profile.country = attributes["country"]
+        user.profile.postal_code = attributes["postal_code"]
+        user.profile.street_address = attributes["street_address"]
+        user.profile.membership_years = attributes["membership_years"]
+        user.profile.is_member = attributes["is_member"]
 
         # Update groups and statuses
         user.groups.clear()
         is_staff = False
         is_superuser = False
         is_active = False
-        group_names = self.get_claim(claims, "groups")
+        group_names = attributes["groups"]
         for group_name in group_names:
             try:
                 group = Group.objects.get(name=group_name)
@@ -67,21 +73,50 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
         user.is_superuser = is_superuser
         user.is_active = is_active
 
-        # Update membership years and status
-        (membership_years, is_member) = self.get_membership_years(claims, "membership_years")
-        user.profile.membership_years = membership_years
-        user.profile.is_member = is_member
-
-        # Validate
-        if not self.username_regex.match(user.username):
-            raise SuspiciousOperation("Invalid username")
-        if user.username.lower() != user.username:
-            raise SuspiciousOperation("Invalid pretty username")
-
+        # All okay, save
         user.save()
         user.profile.save()
 
         return user
+
+    @classmethod
+    def get_user_attributes(cls, claims):
+        attributes = {}
+
+        attributes["subject_id"] = cls.get_claim(claims, "sub")
+        attributes["username"] = cls.get_claim(claims, "username").lower()
+        attributes["pretty_username"] = cls.get_claim(claims, "pretty_username")
+        attributes["first_name"] = cls.get_claim(claims, "given_name")
+        attributes["last_name"] = cls.get_claim(claims, "family_name")
+        attributes["email"] = cls.get_claim(claims, "email")
+        attributes["birth_date"] = cls.get_claim(claims, "birth_date")
+        attributes["gender"] = cls.get_claim(claims, "gender")
+        attributes["phone_number"] = cls.get_claim(claims, "phone_number")
+
+        address_claims = cls.get_claim(claims, "address")
+        if not isinstance(address_claims, dict):
+            raise SuspiciousOperation("Attribute 'address' is not a dict")
+        attributes["country"] = cls.get_claim(address_claims, "country")
+        attributes["postal_code"] = cls.get_claim(address_claims, "postal_code")
+        attributes["street_address"] = cls.get_claim(address_claims, "street_address")
+
+        (membership_years, is_member) = cls.get_membership_years(claims, "membership_years")
+        attributes["membership_years"] = membership_years
+        attributes["is_member"] = is_member
+
+        groups = cls.get_claim(claims, "groups")
+        if not isinstance(groups, list):
+            raise SuspiciousOperation("Attribute 'groups' is not a list")
+        attributes["groups"] = groups
+
+        return attributes
+
+    @classmethod
+    def validate_user_attributes(cls, attributes):
+        if not cls.username_regex.match(attributes["username"]):
+            raise SuspiciousOperation("Invalid username")
+        if attributes["pretty_username"].lower() != attributes["username"]:
+            raise SuspiciousOperation("Invalid pretty username")
 
     @classmethod
     def get_membership_years(cls, claims, key, year=datetime.today().strftime("%Y")):

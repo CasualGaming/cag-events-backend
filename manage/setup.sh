@@ -26,7 +26,7 @@ if [[ ! -e $CONFIG_FILE ]]; then
     exit 0
 fi
 
-# Create DB file (so Docker doesn't make it a directory)
+# Create DB file so Docker doesn't make it a directory
 if [[ ! -e $DB_FILE ]]; then
     echo "Creating DB file ..."
     touch $DB_FILE

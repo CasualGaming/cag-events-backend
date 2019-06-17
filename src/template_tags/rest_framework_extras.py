@@ -52,27 +52,28 @@ def userlinks_list(request, user):
 
 def userlinks_login(request):
     try:
-        login_url = reverse("rest_framework:login")
         item = '<li><a href="{href}?next={next}">Log in</a></li>'
-        return format_html(item, href=login_url, next=escape(request.path))
+        return format_html(item, href=reverse("rest_framework:login"), next=escape(request.path))
     except NoReverseMatch:
         pass
 
 
 def userlinks_logout(request):
     try:
-        logout_url = reverse("rest_framework:logout")
         item = '<li><a href="{href}?next={next}">Log out</a></li>'
-        return format_html(item, href=logout_url, next=escape(request.path))
+        return format_html(item, href=reverse("rest_framework:logout"), next=escape(request.path))
     except NoReverseMatch:
         pass
 
 
 def userlinks_extras(request, user):
     items = []
+    general_item = '<li><a href="{href}">{name}</a></li>'
+
+    items.append(format_html(general_item, name="Account", href=settings.OIDC_OP_ACCOUNT_ENDPOINT))
 
     if user.is_staff:
-        items.append('<li><a href="/admin">Admin panel</a></li>')
+        items.append(format_html(general_item, name="Admin", href=reverse("admin:index")))
 
     return items
 
