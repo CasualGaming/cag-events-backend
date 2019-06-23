@@ -1,20 +1,33 @@
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-
 from authentication.models import User
-from authentication.permissions import AllowAll, IsSuperuser
+from authentication.permissions import DenyAll, ModelPermission
 
-from .permissions import UserPermissions
-from .serializers import PublicProfileUserSerializer, UserSerializer
+from .serializers import UserSerializer
 
 
 class UserViewSet(ReadOnlyModelViewSet):
+
     serializer_class = UserSerializer
-    permission_classes = [IsSuperuser | UserPermissions]
+
+    def get_permissions(self):
+        if self.action == "list":
+            return [ModelPermission("authentication.user.list")]
+        elif self.action == "retrieve":
+            # All users are somewhat visible
+            return []
+        elif self.action == "delete":
+            return [ModelPermission("authentication.user.delete")]
+        else:
+            return [DenyAll()]
 
     def get_queryset(self):
+        if self.action == "list":
+            return self.get_list_queryset()
+        else:
+            return User.objects.all()
+
+    def get_list_queryset(self):
         queryset = User.objects.all()
 
         username = self.request.query_params.get("username", None)
@@ -31,10 +44,9 @@ class UserViewSet(ReadOnlyModelViewSet):
             is_member = is_member_str == "true"
             queryset = queryset.filter(profile__is_member=is_member)
 
-        return queryset
+        groups_str = self.request.query_params.get("groups", None)
+        if groups_str is not None:
+            for group in groups_str.split(","):
+                queryset = queryset.filter(groups__name=group)
 
-    @action(url_path="public_profile", methods=["get"], detail=True, permission_classes=[AllowAll])
-    def get_public_profile(self, request, username):
-        instance = self.get_object()
-        serializer = PublicProfileUserSerializer(instance)
-        return Response(serializer.data)
+        return queryset

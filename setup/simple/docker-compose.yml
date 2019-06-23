@@ -21,6 +21,7 @@ services:
     - ../../.local/simple/config.env:/app/config.env:ro
     - ../../.local/simple/log/app/:/app/log/:rw
     - ../../.local/simple/db.sqlite3:/app/db.sqlite3:rw
+    - ../../.local/simple/static/:/app/static:rw
     ports:
     - "8000:8000"
     networks:

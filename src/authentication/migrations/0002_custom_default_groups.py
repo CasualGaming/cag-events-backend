@@ -5,8 +5,8 @@ from django.db import migrations
 
 
 def add_default_groups(apps, schema_editor):
-    Group = apps.get_model("auth", "Group")  # noqa: N806 (var not lower-case)
-    GroupExtension = apps.get_model("authentication", "GroupExtension")  # noqa: N806 (var not lower-case)
+    Group = apps.get_model("auth", "Group")
+    GroupExtension = apps.get_model("authentication", "GroupExtension")
 
     user_group = Group.objects.create(name="user")
     user_group_extension = GroupExtension.objects.create(

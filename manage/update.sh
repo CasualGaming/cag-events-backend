@@ -10,7 +10,7 @@ MANAGE="manage/manage.sh"
 
 set -eu # Exit on error and undefined var is error
 
-# Check if config file exist
+# Check if config file exists
 if [[ ! -e $CONFIG_FILE ]]; then
     echo "App config not found: $SETTINGS_FILE" 1>&2
     exit -1

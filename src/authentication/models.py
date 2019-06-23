@@ -45,6 +45,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"
+        default_permissions = ()
+        permissions = [
+            ("user.list", "Can list users"),
+            ("user.view_basic", "Can view everything except address"),
+            ("user.view_address", "Can view address"),
+            ("user.delete", "Can delete users"),
+        ]
 
     def clean(self):
         self.email = self.__class__.objects.normalize_email(self.email)
@@ -79,6 +86,7 @@ class UserProfile(models.Model):
     class Meta:
         verbose_name = "user profile"
         verbose_name_plural = "user profiles"
+        default_permissions = ()
 
     def __str__(self):
         return self.user.username
@@ -102,15 +110,25 @@ class GroupExtension(models.Model):
     class Meta:
         verbose_name = "group extension"
         verbose_name_plural = "group extensions"
+        default_permissions = ()
 
     def __str__(self):
         return self.group.name
 
 
+@receiver(post_save, sender=Group)
+def group_save_listener(sender, instance, **kwargs):
+    update_group_users(instance)
+
+
 @receiver(post_save, sender=GroupExtension)
 def group_extension_save_listener(sender, instance, **kwargs):
+    update_group_users(instance.group)
+
+
+def update_group_users(group):
     """Update all users in group to ensure consistency."""
-    for user in instance.group.user_set.all():
+    for user in group.user_set.all():
         is_superuser = False
         is_staff = False
         is_active = False

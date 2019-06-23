@@ -1,6 +1,6 @@
 from drf_dynamic_fields import DynamicFieldsMixin
 
-from rest_framework.serializers import BaseSerializer, BooleanField, CharField, DateField, ModelSerializer
+from rest_framework.serializers import BaseSerializer, BooleanField, CharField, DateField, ModelSerializer, StringRelatedField
 
 from authentication.models import User
 
@@ -13,8 +13,9 @@ class UsernameUserSerializer(BaseSerializer):
 
 
 class UserSerializer(DynamicFieldsMixin, ModelSerializer):
-    """Serializes users."""
+    """Serializes users based on which fields the current user has permission to view."""
 
+    groups = StringRelatedField(many=True)
     birth_date = DateField(source="profile.birth_date")
     gender = CharField(source="profile.gender")
     country = CharField(source="profile.country")
@@ -23,6 +24,61 @@ class UserSerializer(DynamicFieldsMixin, ModelSerializer):
     phone_number = CharField(source="profile.phone_number")
     membership_years = CharField(source="profile.membership_years")
     is_member = BooleanField(source="profile.is_member")
+
+    @property
+    def fields(self):
+        fields = super(DynamicFieldsMixin, self).fields
+        allowed_fields = self.get_allowed_fields()
+        for field in set(fields.keys()):
+            if field not in allowed_fields:
+                fields.pop(field, None)
+        return fields
+
+    def get_allowed_fields(self):
+        allowed_fields = []
+        request = self.context["request"]
+        basic_view_perm = request.user.has_perm("authentication.user.view_basic")
+        address_view_perm = request.user.has_perm("authentication.user.view_address")
+        is_detail = isinstance(self.instance, User)
+        is_self = is_detail and self.instance == request.user
+
+        # Public fields
+        allowed_fields += [
+            "id",
+            "username",
+            "pretty_username",
+        ]
+
+        # Basic fields
+        if basic_view_perm or is_self:
+            allowed_fields += [
+                "subject_id",
+                "first_name",
+                "last_name",
+                "email",
+                "groups",
+                "birth_date",
+                "gender",
+                "phone_number",
+                "membership_years",
+                "is_member",
+            ]
+
+        # Address fields
+        if address_view_perm or is_self:
+            allowed_fields += [
+                "country",
+                "postal_code",
+                "street_address",
+            ]
+
+        return allowed_fields
+
+    def create(self, validated_data):
+        raise NotImplementedError()
+
+    def update(self, validated_data):
+        raise NotImplementedError()
 
     class Meta:
         model = User
@@ -33,6 +89,7 @@ class UserSerializer(DynamicFieldsMixin, ModelSerializer):
                   "first_name",
                   "last_name",
                   "email",
+                  "groups",
                   "birth_date",
                   "gender",
                   "country",
@@ -41,11 +98,3 @@ class UserSerializer(DynamicFieldsMixin, ModelSerializer):
                   "phone_number",
                   "membership_years",
                   "is_member")
-
-
-class PublicProfileUserSerializer(ModelSerializer):
-    """Serializes public user info."""
-
-    class Meta:
-        model = User
-        fields = ("username", "pretty_username")
