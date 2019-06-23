@@ -59,14 +59,15 @@ DATABASES = {
 
 # Variable stuff
 BASE_DIR = base_dir
-DEBUG = env("DEBUG")
-TEMPLATE_DEBUG = DEBUG
-APP_NAME = "CaG Events"
 SITE_NAME = env("SITE_NAME")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 SECRET_KEY = env("SECRET_KEY")
+DEBUG = env("DEBUG", default=False)
+TEMPLATE_DEBUG = DEBUG
+NUM_PROXIES = env("NUM_PROXIES", default=0)
 
 # Constant stuff
+APP_NAME = "CaG Events"
 WSGI_APPLICATION = "wsgi.application"
 ROOT_URLCONF = "urls"
 AUTH_USER_MODEL = "user.User"
@@ -204,7 +205,15 @@ REST_FRAMEWORK = {
         "auth.permissions.IsSuperuser",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 20,
+    "PAGE_SIZE": env("PAGINATION_SIZE", default=20),
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": env("ANON_THROTTLING", default="50/min"),
+        "user": env("USER_THROTTLING", default="500/min"),
+    },
 }
 
 # OIDC
