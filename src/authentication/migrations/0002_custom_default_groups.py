@@ -1,12 +1,12 @@
-# DO NOT DELETE
-# Custom data migration for adding default groups
+# DO NOT DELETE!
+# Manually created migration for adding default groups
 
 from django.db import migrations
 
 
 def add_default_groups(apps, schema_editor):
     Group = apps.get_model("auth", "Group")  # noqa: N806 (var not lower-case)
-    GroupExtension = apps.get_model("user", "GroupExtension")  # noqa: N806 (var not lower-case)
+    GroupExtension = apps.get_model("authentication", "GroupExtension")  # noqa: N806 (var not lower-case)
 
     user_group = Group.objects.create(name="user")
     user_group_extension = GroupExtension.objects.create(
@@ -24,7 +24,7 @@ def add_default_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("user", "0001_initial"),
+        ("authentication", "0001_initial"),
     ]
 
     operations = [

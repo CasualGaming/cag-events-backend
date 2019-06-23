@@ -6,7 +6,7 @@ from django.core.exceptions import SuspiciousOperation
 
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
-from apps.user.models import GroupExtension, User, UserProfile
+from .models import GroupExtension, User, UserProfile
 
 
 class OidcAuthBackend(OIDCAuthenticationBackend):

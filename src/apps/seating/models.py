@@ -4,7 +4,8 @@ from django.db import models
 from django.db.models import Q
 
 from apps.event.models import Event, TicketType
-from apps.user.models import User
+
+from authentication.models import User
 
 
 class Layout(models.Model):

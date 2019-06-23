@@ -14,7 +14,7 @@ services:
     - PYTHONUNBUFFERED=1
     volumes:
     - ./docker-entrypoint.sh:/app/docker-entrypoint.sh:ro
-    - ../../src/:/app/src/:ro
+    - ../../src/:/app/src/:rw
     - ../../requirements/:/app/requirements/:rw
     - ../../.flake8:/app/.flake8:ro
     - ../../.local/simple/config.env:/app/config.env:ro

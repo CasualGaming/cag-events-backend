@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
-from auth.permissions import AllowAll, IsSuperuser
+from authentication.models import User
+from authentication.permissions import AllowAll, IsSuperuser
 
-from .models import User
 from .permissions import UserPermissions
 from .serializers import PublicProfileUserSerializer, UserSerializer
 

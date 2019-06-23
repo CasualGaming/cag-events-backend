@@ -5,8 +5,6 @@ from rest_framework.response import Response
 from apps.article.serializers import ArticleSerializer
 from apps.sponsor.serializers import SponsorRelationSerializer
 
-# from auth.permissions import IsStaffOrReadOnly
-
 from .models import Event
 from .permissions import EventPermission
 from .serializers import EventSerializer

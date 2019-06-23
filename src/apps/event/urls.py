@@ -4,7 +4,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import get_schema_view
 
-from auth.permissions import AllowAll
+from authentication.permissions import AllowAll
 
 from . import views
 

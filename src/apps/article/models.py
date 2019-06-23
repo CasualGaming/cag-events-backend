@@ -3,7 +3,8 @@ from django.db import models
 # from translatable.models import TranslatableModel, get_translation_model
 
 from apps.event.models import Event
-from apps.user.models import User
+
+from authentication.models import User
 
 
 class Article(models.Model):

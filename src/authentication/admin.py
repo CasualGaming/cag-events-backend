@@ -1,9 +1,7 @@
 from django.contrib import admin
-# from django.contrib import messages
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from django.contrib.auth.models import Group
-# from django.contrib.sessions.models import Session
 from django.forms import ValidationError, models
 
 from .models import GroupExtension, User, UserProfile
@@ -27,17 +25,17 @@ class UserProfileInline(admin.StackedInline):
 
 class ImmutableUserChangeForm(UserChangeForm):
     def clean(self):
-        raise ValidationError("This model is immutable.")
+        raise ValidationError("Users can not be changed locally.")
 
 
 class ImmutableUserCreationForm(UserCreationForm):
     def clean(self):
-        raise ValidationError("Manually creating instances of this model is not allowed.")
+        raise ValidationError("Users can not be created locally.")
 
 
 class ImmutableAdminPasswordChangeForm(AdminPasswordChangeForm):
     def clean(self):
-        raise ValidationError("This model is immutable.")
+        raise ValidationError("Users can not be changed locally.")
 
 
 @admin.register(User)
@@ -49,29 +47,6 @@ class UserProfileAdmin(UserAdmin):
     form = ImmutableUserChangeForm
     add_form = ImmutableUserCreationForm
     change_password_form = ImmutableAdminPasswordChangeForm
-
-    # actions = ["activate_users", "deactivate_users", "logout_users"]
-
-    # def activate_users(self, request, queryset):
-    #     queryset.update(is_active=True)
-
-    # def deactivate_users(self, request, queryset):
-    #     for user in queryset:
-    #         if user.id == request.user.id:
-    #             self.message_user(request, "You cannot deactivate yourself! No actions were performed.", level=messages.WARNING)
-    #             return
-    #     queryset.update(is_active=False)
-
-    # def logout_users(self, request, queryset):
-    #     for session in Session.objects.all():
-    #         session_user = int(session.get_decoded().get("_auth_user_id"))
-    #         for user in queryset:
-    #             if user.id == session_user:
-    #                 session.delete()
-
-    # activate_users.short_description = "Activate"
-    # deactivate_users.short_description = "Deactivate"
-    # forcefully_logout_users.short_description = "Forcefully logout"
 
 
 class GroupExtensionInline(admin.StackedInline):

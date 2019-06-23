@@ -1,7 +1,8 @@
 from django.db import models
 
 from apps.event.models import Attendee
-from apps.user.models import User
+
+from authentication.models import User
 
 
 class Team(models.Model):

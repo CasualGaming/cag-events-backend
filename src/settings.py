@@ -11,6 +11,7 @@ environ.Env.read_env(base_dir(config_file))
 
 INSTALLED_APPS = [
     # Local
+    "authentication",
     # "apps.competition",
     "apps.event",
     "apps.article",
@@ -50,7 +51,7 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
-    "auth.backends.OidcAuthBackend",
+    "authentication.backends.OidcAuthBackend",
 )
 
 DATABASES = {
@@ -70,7 +71,7 @@ NUM_PROXIES = env("NUM_PROXIES", default=0)
 APP_NAME = "CaG Events"
 WSGI_APPLICATION = "wsgi.application"
 ROOT_URLCONF = "urls"
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "authentication.User"
 LOGIN_URL = "/auth/login"
 LOGIN_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL_FAILURE = "/"
@@ -202,7 +203,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "auth.permissions.IsSuperuser",
+        "authentication.permissions.IsSuperuser",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": env("PAGINATION_SIZE", default=20),
@@ -217,7 +218,7 @@ REST_FRAMEWORK = {
 }
 
 # OIDC
-OIDC_DRF_AUTH_BACKEND = "auth.backends.OidcAuthBackend"
+OIDC_DRF_AUTH_BACKEND = "authentication.backends.OidcAuthBackend"
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = env("OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS", default=(15 * 60))
 OIDC_RP_CLIENT_ID = env("OIDC_RP_CLIENT_ID", default="")
 OIDC_RP_CLIENT_SECRET = env("OIDC_RP_CLIENT_SECRET", default="")

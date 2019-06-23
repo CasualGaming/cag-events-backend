@@ -2,7 +2,7 @@ from drf_dynamic_fields import DynamicFieldsMixin
 
 from rest_framework.serializers import BaseSerializer, BooleanField, CharField, DateField, ModelSerializer
 
-from .models import User
+from authentication.models import User
 
 
 class UsernameUserSerializer(BaseSerializer):
