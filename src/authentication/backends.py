@@ -2,7 +2,8 @@ import re
 from datetime import datetime
 
 from django.contrib.auth.models import Group
-from django.core.exceptions import SuspiciousOperation
+from django.core.exceptions import SuspiciousOperation, ValidationError
+from django.core.validators import validate_email
 
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
@@ -112,7 +113,7 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
 
     @classmethod
     def validate_attributes(cls, attributes):
-        # Verify username and pretty_username
+        # Validate username and pretty_username
         if not cls.username_regex.match(attributes["username"]):
             raise SuspiciousOperation("Invalid username format")
         if len(attributes["username"]) < cls.username_min_length:
@@ -121,6 +122,11 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
             raise SuspiciousOperation("Username too long")
         if attributes["pretty_username"].lower() != attributes["username"]:
             raise SuspiciousOperation("Pretty username doesn't match username")
+        # Validate email address
+        try:
+            validate_email(attributes["email"])
+        except ValidationError:
+            raise SuspiciousOperation("Invalid email format")
 
     @classmethod
     def decode_membership_years(cls, claims, key, year=datetime.today().strftime("%Y")):
