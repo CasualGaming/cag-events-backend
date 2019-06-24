@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "authentication",
     "apps.event",
     "apps.article",
+    "apps.ticket",
     "apps.user",
 
     # Django (before 3rd-party)
