@@ -9,6 +9,7 @@ from .serializers import UserSerializer
 class UserViewSet(ReadOnlyModelViewSet):
 
     serializer_class = UserSerializer
+    lookup_field = "username"
 
     def get_permissions(self):
         if self.action == "list":

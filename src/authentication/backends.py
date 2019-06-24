@@ -144,8 +144,8 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
         value = claims.get(key)
         if value is None:
             raise SuspiciousOperation("Claim '" + key + "' is missing")
-        if value == "" and not allow_empty:
-            raise SuspiciousOperation("Claim '" + key + "' is empty")
-        if value != "" and not isinstance(value, expected_type):
+        if not isinstance(value, expected_type):
             raise SuspiciousOperation("Claim '" + key + "' is not a " + str(expected_type) + " but a " + str(type(value)))
+        if isinstance(value, str) and value == "" and not allow_empty:
+            raise SuspiciousOperation("Claim '" + key + "' is empty")
         return value
