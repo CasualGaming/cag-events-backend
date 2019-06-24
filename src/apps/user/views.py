@@ -7,7 +7,7 @@ from .serializers import UserSerializer
 
 
 class UserViewSet(ReadOnlyModelViewSet):
-
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "username"
 
@@ -26,10 +26,10 @@ class UserViewSet(ReadOnlyModelViewSet):
         if self.action == "list":
             return self.get_list_queryset()
         else:
-            return User.objects.all()
+            return self.queryset
 
     def get_list_queryset(self):
-        queryset = User.objects.all()
+        queryset = self.queryset
 
         username = self.request.query_params.get("username", None)
         if username is not None:

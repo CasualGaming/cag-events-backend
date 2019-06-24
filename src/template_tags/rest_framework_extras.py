@@ -70,7 +70,11 @@ def userlinks_extras(request, user):
     items = []
     general_item = '<li><a href="{href}">{name}</a></li>'
 
+    # Link to OIDC provider account
     items.append(format_html(general_item, name="Account", href=settings.OIDC_OP_ACCOUNT_ENDPOINT))
+
+    # Link to site scheme
+    items.append(format_html(general_item, name="Schema", href=reverse("schema")))
 
     if user.is_staff:
         items.append(format_html(general_item, name="Admin", href=reverse("admin:index")))

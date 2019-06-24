@@ -1,6 +1,6 @@
 from drf_dynamic_fields import DynamicFieldsMixin
 
-from rest_framework.serializers import BaseSerializer, BooleanField, CharField, DateField, ModelSerializer, StringRelatedField
+from rest_framework.serializers import BaseSerializer, BooleanField, CharField, DateField, HyperlinkedModelSerializer, StringRelatedField
 
 from authentication.models import User
 
@@ -12,7 +12,7 @@ class UsernameUserSerializer(BaseSerializer):
         return instance.username
 
 
-class UserSerializer(DynamicFieldsMixin, ModelSerializer):
+class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
     """Serializes users based on which fields the current user has permission to view."""
 
     groups = StringRelatedField(many=True)
@@ -27,7 +27,7 @@ class UserSerializer(DynamicFieldsMixin, ModelSerializer):
 
     @property
     def fields(self):
-        fields = super(DynamicFieldsMixin, self).fields
+        fields = super(UserSerializer, self).fields
         allowed_fields = self.get_allowed_fields()
         for field in set(fields.keys()):
             if field not in allowed_fields:
@@ -44,7 +44,7 @@ class UserSerializer(DynamicFieldsMixin, ModelSerializer):
 
         # Public fields
         allowed_fields += [
-            "id",
+            "url",
             "username",
             "pretty_username",
         ]
@@ -52,6 +52,7 @@ class UserSerializer(DynamicFieldsMixin, ModelSerializer):
         # Basic fields
         if basic_view_perm or is_self:
             allowed_fields += [
+                "id",
                 "subject_id",
                 "first_name",
                 "last_name",
@@ -82,7 +83,8 @@ class UserSerializer(DynamicFieldsMixin, ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id",
+        fields = ("url",
+                  "id",
                   "subject_id",
                   "username",
                   "pretty_username",
@@ -98,3 +100,9 @@ class UserSerializer(DynamicFieldsMixin, ModelSerializer):
                   "phone_number",
                   "membership_years",
                   "is_member")
+        extra_kwargs = {
+            "url": {
+                "view_name": "user-detail",
+                "lookup_field": "username",
+            },
+        }
