@@ -1,7 +1,7 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group, PermissionsMixin
 from django.core.mail import send_mail
-from django.db import models
+from django.db.models import BooleanField, CASCADE, CharField, DateField, DateTimeField, EmailField, Model, OneToOneField, UUIDField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -24,17 +24,15 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    subject_id = models.UUIDField("subject id", unique=True, db_index=True)
-    username = models.CharField("username", unique=True, db_index=True, max_length=50)
-    pretty_username = models.CharField("pretty username", unique=True, max_length=50)
-    first_name = models.CharField("first name", max_length=50, blank=True)
-    last_name = models.CharField("last name", max_length=50, blank=True)
-    email = models.EmailField("email address", blank=True)
-    # If the user has access to the admin panel
-    is_staff = models.BooleanField("staff status", default=False)
-    # If the user can log into the site
-    is_active = models.BooleanField("active status", default=False)
-    date_joined = models.DateTimeField("date joined", default=timezone.now)
+    subject_id = UUIDField("subject id", unique=True, db_index=True)
+    username = CharField("username", unique=True, db_index=True, max_length=50)
+    pretty_username = CharField("pretty username", unique=True, max_length=50, help_text="Same as the username, but allows different letter cases.")
+    first_name = CharField("first name", max_length=50, blank=True)
+    last_name = CharField("last name", max_length=50, blank=True)
+    email = EmailField("email address", blank=True)
+    is_staff = BooleanField("staff status", default=False, help_text="If the user can use the admin panel.")
+    is_active = BooleanField("active status", default=False, help_text="If the user can log into the site.")
+    date_joined = DateTimeField("date joined", default=timezone.now)
 
     objects = UserManager()
 
@@ -72,16 +70,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
-    birth_date = models.DateField("date of birth", null=True, blank=True)
-    gender = models.CharField("gender", null=True, blank=True, max_length=50)
-    country = models.CharField("country", null=True, blank=True, max_length=50)
-    postal_code = models.CharField("postal code", null=True, blank=True, max_length=10)
-    street_address = models.CharField("street address", null=True, blank=True, max_length=100)
-    phone_number = models.CharField("phone number", null=True, blank=True, max_length=20)
-    membership_years = models.CharField("membership years", null=True, blank=True, max_length=500)
-    is_member = models.BooleanField("membership status", default=False)
+class UserProfile(Model):
+    user = OneToOneField(User, verbose_name="user", primary_key=True, related_name="profile", on_delete=CASCADE)
+    birth_date = DateField("date of birth", null=True, blank=True)
+    gender = CharField("gender", null=True, blank=True, max_length=50)
+    country = CharField("country", null=True, blank=True, max_length=50)
+    postal_code = CharField("postal code", null=True, blank=True, max_length=10)
+    street_address = CharField("street address", null=True, blank=True, max_length=100)
+    phone_number = CharField("phone number", null=True, blank=True, max_length=20)
+    membership_years = CharField("membership years", null=True, blank=True, max_length=500,
+                                 help_text="Comma separated list of years the user has been a member of the organization.")
+    is_member = BooleanField("membership status", default=False, help_text="If the user is currently a member of the organization.")
 
     class Meta:
         verbose_name = "user profile"
@@ -101,11 +100,11 @@ class UserProfile(models.Model):
         return self.street_address and self.postal_code
 
 
-class GroupExtension(models.Model):
-    group = models.OneToOneField(Group, related_name="extension", on_delete=models.CASCADE)
-    is_superuser = models.BooleanField("superuser status", default=False)
-    is_staff = models.BooleanField("staff status", default=False)
-    is_active = models.BooleanField("active status", default=False)
+class GroupExtension(Model):
+    group = OneToOneField(Group, verbose_name="group", primary_key=True, related_name="extension", on_delete=CASCADE)
+    is_superuser = BooleanField("superuser status", default=False, help_text="If users have every permission.")
+    is_staff = BooleanField("staff status", default=False, help_text="If users can log into the admin panel.")
+    is_active = BooleanField("active status", default=False, help_text="If users can log into the site.")
 
     class Meta:
         verbose_name = "group extension"

@@ -1,23 +1,26 @@
 # from datetime import datetime
 
 # from django.contrib.auth.models import User
-from django.db import models
+from django.db.models import CharField, DateTimeField, Model, TextField
 # from translatable.models import TranslatableModel, get_translation_model
 
 # from apps.userprofile.models import UserProfile
 
 
-class Event(models.Model):
-    title = models.CharField(max_length=100)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    location = models.CharField(max_length=100)
+class Event(Model):
+    title = CharField("title", max_length=100)
+    start_time = DateTimeField("start date and time")
+    end_time = DateTimeField("end date and time")
+    location = CharField("location", blank=True, max_length=100)
+    banner_url = CharField("banner URL", blank=True, max_length=300, help_text="URL for the banner image.")
+    map_url = CharField("map URL", blank=True, max_length=300, help_text="URL for an embedded map.")
+    description = TextField("description")
 
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ("start_date",)
+        ordering = ("start_time",)
 
 # class Lan(TranslatableModel):
 #     title = models.CharField("title", max_length=100)
