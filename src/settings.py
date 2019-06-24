@@ -12,13 +12,8 @@ environ.Env.read_env(base_dir(config_file))
 INSTALLED_APPS = [
     # Local
     "authentication",
-    # "apps.competition",
     "apps.event",
     "apps.article",
-    # "apps.payment",
-    # "apps.seating",
-    "apps.sponsor",
-    # "apps.team",
     "apps.user",
 
     # Django (before 3rd-party)
