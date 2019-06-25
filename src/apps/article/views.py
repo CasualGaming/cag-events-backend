@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 
-from authentication.permissions import IsStaffOrReadOnly
+from common.permissions import IsStaffOrReadOnly
 
 from .models import Article
 from .serializers import ArticleSerializer

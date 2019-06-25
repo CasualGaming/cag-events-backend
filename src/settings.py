@@ -200,7 +200,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "authentication.permissions.IsSuperuser",
+        "common.permissions.IsSuperuser",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": env("PAGINATION_SIZE", default=20),

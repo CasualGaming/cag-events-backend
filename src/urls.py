@@ -10,7 +10,7 @@ from apps.article.views import ArticleViewSet
 from apps.event.views import EventViewSet
 from apps.user.views import UserViewSet
 
-from authentication.permissions import AllowAll
+from common.permissions import AllowAll
 
 
 schema_view = get_schema_view(title=settings.APP_NAME, permission_classes=[AllowAll])

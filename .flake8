@@ -1,5 +1,5 @@
 [flake8]
-application_import_names = apps, authentication, misc
+application_import_names = apps, authentication, common
 exclude = **/__init__.py, **/migrations, .venv
 
 inline-quotes = double

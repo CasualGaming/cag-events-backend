@@ -1,7 +1,8 @@
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from authentication.models import User
-from authentication.permissions import DenyAll, ModelPermission
+
+from common.permissions import DenyAll, ModelPermission
 
 from .serializers import UserSerializer
 
