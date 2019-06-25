@@ -34,7 +34,6 @@ class UserProfileAdmin(UserAdmin):
     inlines = [UserProfileInline]
     list_display = ("username", "email", "first_name", "last_name", "is_staff", "is_superuser", "is_active", "date_joined", "last_login")
     list_filter = ("groups", "is_staff", "is_superuser", "is_active")
-    filter_horizontal = ("groups",)
     form = ImmutableUserChangeForm
     add_form = ImmutableUserCreationForm
     change_password_form = ImmutableAdminPasswordChangeForm
