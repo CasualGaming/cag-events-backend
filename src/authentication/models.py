@@ -8,6 +8,10 @@ from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
+    """
+    Model manager for the surrogate user model.
+    """
+
     def create_user(self, username, email, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
@@ -16,7 +20,6 @@ class UserManager(BaseUserManager):
             raise ValueError("The given username must be set")
 
         email = self.normalize_email(email)
-        username = self.model.normalize_username(username)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_unusable_password()
         user.save(using=self._db)
@@ -24,6 +27,11 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """
+    Surrogate user model. Does not use password and has extra fields.
+    Relies more on authentication backend to validate username etc.
+    """
+
     subject_id = UUIDField("subject id", unique=True, db_index=True)
     username = CharField("username", unique=True, db_index=True, max_length=50)
     pretty_username = CharField("pretty username", unique=True, max_length=50, help_text="Same as the username, but allows different letter cases.")

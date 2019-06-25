@@ -92,7 +92,7 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
         attributes["pretty_username"] = cls.get_claim(claims, "pretty_username")
         attributes["first_name"] = cls.get_claim(claims, "given_name")
         attributes["last_name"] = cls.get_claim(claims, "family_name")
-        attributes["email"] = cls.get_claim(claims, "email")
+        attributes["email"] = cls.decode_email_address(claims, "email")
         attributes["birth_date"] = cls.get_claim(claims, "birth_date")
         attributes["gender"] = cls.get_claim(claims, "gender")
         attributes["phone_number"] = cls.get_claim(claims, "phone_number")
@@ -127,6 +127,18 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
             validate_email(attributes["email"])
         except ValidationError:
             raise SuspiciousOperation("Invalid email format")
+
+    @classmethod
+    def decode_email_address(cls, claims, key):
+        """
+        Verify structure and normalize it by lowercasing the domain part.
+        """
+        email = cls.get_claim(claims, key)
+        try:
+            email_name, domain_part = email.strip().rsplit("@", 1)
+        except ValueError:
+            raise SuspiciousOperation("Invalid email address format")
+        return email_name + "@" + domain_part.lower()
 
     @classmethod
     def decode_membership_years(cls, claims, key, year=datetime.today().strftime("%Y")):

@@ -7,10 +7,11 @@ MANAGE="manage/manage.sh"
 
 set -eu # Exit on error and undefined var is error
 
+echo "Running some checks. This will stop on the first error, or print \"success\" if no errors were catched."
+
 echo
-echo "Collecting static files ..."
-# Ignore admin app, use theme instead
-$MANAGE collectstatic -i admin --no-input --clear | egrep -v "^Deleting" || true
+echo "Running linter ..."
+manage/lint.sh
 
 echo
 echo "Checking migrations ..."
@@ -23,11 +24,12 @@ $MANAGE check --deploy --fail-level=ERROR
 
 echo
 echo "Running tests ..."
-$MANAGE test --no-input
+manage/test.sh
 
 echo
-echo "Running linter ..."
-$CMD flake8
+echo "Collecting static files ..."
+# Ignore admin app, use theme instead
+$MANAGE collectstatic -i admin --no-input --clear | egrep -v "^Deleting" || true
 
 echo
 echo "Success!"
