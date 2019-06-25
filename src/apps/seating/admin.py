@@ -11,8 +11,8 @@ class RowLayoutInline(StackedInline):
 @register(AreaLayout)
 class AreaLayoutAdmin(ModelAdmin):
     inlines = [RowLayoutInline]
-    # list_display = ("username", "email", "first_name", "last_name", "is_staff", "is_superuser", "is_active", "date_joined", "last_login")
-    # list_filter = ("groups", "is_staff", "is_superuser", "is_active")
+    list_display = ["long_title", "is_active"]
+    list_filter = ["is_active"]
 
 
 class AreaInline(StackedInline):
@@ -22,5 +22,5 @@ class AreaInline(StackedInline):
 @register(Seating)
 class SeatingAdmin(ModelAdmin):
     inlines = [AreaInline]
-    # list_display = ("username", "email", "first_name", "last_name", "is_staff", "is_superuser", "is_active", "date_joined", "last_login")
-    # list_filter = ("groups", "is_staff", "is_superuser", "is_active")
+    list_display = ["event", "is_active"]
+    list_filter = ["is_active"]

@@ -6,4 +6,4 @@ from .models import Event
 
 @register(Event)
 class EventAdmin(ModelAdmin):
-    list_display = ("title", "start_time", "end_time", "location")
+    list_display = ["title", "start_time", "end_time", "location"]

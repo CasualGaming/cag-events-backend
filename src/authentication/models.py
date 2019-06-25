@@ -110,6 +110,7 @@ class UserProfile(Model):
 
 class GroupExtension(Model):
     group = OneToOneField(Group, verbose_name="group", primary_key=True, related_name="extension", on_delete=CASCADE)
+    description = CharField("description", max_length=50, blank=True)
     is_superuser = BooleanField("superuser status", default=False, help_text="If users have every permission.")
     is_staff = BooleanField("staff status", default=False, help_text="If users can log into the admin panel.")
     is_active = BooleanField("active status", default=False, help_text="If users can log into the site.")
