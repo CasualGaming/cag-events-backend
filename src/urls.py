@@ -3,23 +3,25 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import RedirectView
 
-from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import get_schema_view
 
 from apps.article.views import ArticleViewSet
 from apps.event.views import EventViewSet
+from apps.seating.views import AreaLayoutViewSet
 from apps.user.views import UserViewSet
 
 from common.permissions import AllowAll
+from common.routers import PublicDefaultRouter
 
 
 schema_view = get_schema_view(title=settings.APP_NAME, permission_classes=[AllowAll])
-router = DefaultRouter()
+router = PublicDefaultRouter()
 
 admin.site.site_header = settings.SITE_NAME
 
 router.register(r"articles", ArticleViewSet)
 router.register(r"events", EventViewSet)
+router.register(r"seating_area_layout", AreaLayoutViewSet)
 router.register(r"users", UserViewSet)
 
 urlpatterns = [
