@@ -32,9 +32,9 @@ if [[ ! -e $VENV_DIR ]]; then
         # Don't use symlinks if in VirtualBox shared folder
         if ( df -t vboxsf . 1>/dev/null 2>/dev/null ); then
             echo "VirtualBox shared folder detected"
-            virtualenv -p $PYTHON_PATH --always-copy $VENV_DIR
+            virtualenv -p "$PYTHON_PATH" --always-copy $VENV_DIR
         else
-            virtualenv -p $PYTHON_PATH $VENV_DIR
+            virtualenv -p "$PYTHON_PATH" $VENV_DIR
         fi
     fi
 
