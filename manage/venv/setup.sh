@@ -35,12 +35,12 @@ fi
 
 echo
 echo "Installing requirements ..."
-pip install --quiet -r requirements/development.txt
+pip install -r requirements/development.txt
 
 echo
 echo "Collecting static files ..."
 # Ignore admin app, use theme instead
-$MANAGE collectstatic -i admin --noinput --clear | egrep -v "^Deleting" || true
+$MANAGE collectstatic -i admin --noinput --clear
 
 echo
 echo "Running migration ..."
