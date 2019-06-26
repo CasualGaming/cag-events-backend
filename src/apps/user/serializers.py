@@ -15,6 +15,32 @@ class UsernameUserSerializer(BaseSerializer):
 class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
     """Serializes users based on which fields the current user has permission to view."""
 
+    class Meta:
+        model = User
+        fields = ("url",
+                  "id",
+                  "subject_id",
+                  "username",
+                  "pretty_username",
+                  "first_name",
+                  "last_name",
+                  "email",
+                  "groups",
+                  "birth_date",
+                  "gender",
+                  "country",
+                  "postal_code",
+                  "street_address",
+                  "phone_number",
+                  "membership_years",
+                  "is_member")
+        extra_kwargs = {
+            "url": {
+                "view_name": "user-detail",
+                "lookup_field": "username",
+            },
+        }
+
     groups = StringRelatedField(many=True)
     birth_date = DateField(source="profile.birth_date")
     gender = CharField(source="profile.gender")
@@ -74,35 +100,3 @@ class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
             ]
 
         return allowed_fields
-
-    def create(self, validated_data):
-        raise NotImplementedError()
-
-    def update(self, validated_data):
-        raise NotImplementedError()
-
-    class Meta:
-        model = User
-        fields = ("url",
-                  "id",
-                  "subject_id",
-                  "username",
-                  "pretty_username",
-                  "first_name",
-                  "last_name",
-                  "email",
-                  "groups",
-                  "birth_date",
-                  "gender",
-                  "country",
-                  "postal_code",
-                  "street_address",
-                  "phone_number",
-                  "membership_years",
-                  "is_member")
-        extra_kwargs = {
-            "url": {
-                "view_name": "user-detail",
-                "lookup_field": "username",
-            },
-        }

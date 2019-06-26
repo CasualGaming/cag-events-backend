@@ -1,6 +1,6 @@
 
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import BooleanField, CASCADE, CharField, CheckConstraint, FloatField, ForeignKey, Index, IntegerField, Model, OneToOneField, PROTECT, Q, SET_NULL, URLField, UniqueConstraint
 
 from apps.event.models import Event
@@ -24,7 +24,8 @@ class AreaLayout(Model):
 
     class Meta:
         permissions = [
-            ("seating.view_inactive_layouts:", "Can view inactive layouts"),
+            ("area_layout.list", "Can list layouts"),
+            ("area_layout.view_inactive", "Can view inactive layouts"),
         ]
 
 
@@ -38,7 +39,7 @@ class RowLayout(Model):
     seat_count_vertical = IntegerField("vertical seat count", help_text="Number of seats in the vertical dimension (stacked on the wide sides of seats).")
     offset_right = FloatField("offset right", default=0, help_text="Offset in meters from the left wrt. the area.")
     offset_down = FloatField("offset down", default=0, help_text="Offset in meters from the top wrt. the area.")
-    rotation = FloatField("rotation", default=0, help_text="Counter-clockwise rotation in radians wrt. the area.")
+    rotation = IntegerField("rotation", default=0, validators=[MinValueValidator(0), MaxValueValidator(359)], help_text="Counter-clockwise rotation in degrees wrt. the area. Must be in range [0, 360).")
     seat_width = FloatField("seat width", help_text="Width in meters of a seat in this row.")
     seat_height = FloatField("seat height", help_text="Height in meters of a seat in this row.")
     seat_spacing_horizontal = FloatField("horizontal seat spacing", default=0, help_text="Spacing in meters between seats, horizontally.")
@@ -67,7 +68,8 @@ class Seating(Model):
 
     class Meta:
         permissions = [
-            ("seating.view_inactive_seatings:", "Can view inactive seatings"),
+            ("seating.list", "Can list seatings"),
+            ("seating.view_inactive", "Can view inactive seatings"),
         ]
 
 

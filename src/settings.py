@@ -202,12 +202,17 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "common.permissions.IsSuperuser",
     ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.BrowsableAPIRenderer",
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework_xml.renderers.XMLRenderer",
+    ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": env("PAGINATION_SIZE", default=20),
-    "DEFAULT_THROTTLE_CLASSES": (
+    "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
-    ),
+    ],
     "DEFAULT_THROTTLE_RATES": {
         "anon": env("ANON_THROTTLING", default="50/min"),
         "user": env("USER_THROTTLING", default="500/min"),

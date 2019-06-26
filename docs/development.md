@@ -50,8 +50,7 @@ Setting up and running the dev server:
 # If it tells you to fix the config; fix the config and run it again
 manage/setup.sh
 
-# For updating installed requirements, re-collect static files and run migrations,
-# not needed the first time
+# For running migrations, not needed the first time
 manage/update.sh
 
 # Start the dev server

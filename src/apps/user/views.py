@@ -13,24 +13,17 @@ class UserViewSet(ReadOnlyModelViewSet):
     lookup_field = "username"
 
     def get_permissions(self):
-        if self.action == "list":
-            return [ModelPermission("authentication.user.list")]
-        elif self.action == "retrieve":
-            # All users are somewhat visible
-            return []
-        elif self.action == "delete":
-            return [ModelPermission("authentication.user.delete")]
-        else:
-            return [DenyAll()]
+        permissions = {
+            "list": [ModelPermission("authentication.user.list")],
+            "retrieve": [],
+            "destroy": [ModelPermission("authentication.user.delete")],
+        }
+        return permissions.get(self.action, [DenyAll()])
 
     def get_queryset(self):
-        if self.action == "list":
-            return self.get_list_queryset()
-        else:
-            return self.queryset
-
-    def get_list_queryset(self):
         queryset = self.queryset
+        if self.action != "list":
+            return queryset
 
         username = self.request.query_params.get("username", None)
         if username is not None:
