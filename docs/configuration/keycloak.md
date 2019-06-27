@@ -1,4 +1,4 @@
-# Keycloak (OpenID Connect)
+# Keycloak Setup
 
 ## Realm Settings and Authentication
 - **TODO** Flows and executions and stuff.
@@ -37,7 +37,7 @@
 - Add the needed mappers for the correct claims.
 
 ## User IDs
-Users are identified by a shared UUID in Keycloak and CaG Events. Unique usernames from Keycloak are used to reference users in the CaG Events API. Since users are identified internally using an immutable UUID, changing a user's username or email address shouldn't affect internal consistency in Keycloak or CaG Events. UUIDs, usernames and email addresses must be unique.
+Users are identified by a shared UUID (the subject ID) in Keycloak and CaG Events. Unique usernames from Keycloak are used to reference users in the CaG Events API. Since users are identified internally using an immutable UUID, changing a user's username or email address shouldn't affect internal consistency in Keycloak or CaG Events. UUIDs, usernames and email addresses must be unique.
 
 ## Required Claims
 These claims are required for CaG Events to accept user logins. They can be implemented in Keycloak as user attributes and added as claims using client mappers (preferably builtin ones).
@@ -55,3 +55,4 @@ These claims are required for CaG Events to accept user logins. They can be impl
 - `street_address` (address mapper)
 - `groups` (custom group membership mapper, not full group path)
 - `membership_years` (custom user attribute mapper)
+- **TODO:** Update required claims
