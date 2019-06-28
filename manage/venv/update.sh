@@ -2,6 +2,7 @@
 
 LOCAL_DIR=".local/venv"
 CONFIG_FILE="$LOCAL_DIR/config.env"
+LOG_DIR="$LOCAL_DIR/log"
 MANAGE="python src/manage.py"
 
 export CONFIG_FILE
@@ -20,4 +21,9 @@ if [[ ! -e $CONFIG_FILE ]]; then
     exit -1
 fi
 
-$MANAGE runserver localhost:8000
+# Add other dirs and files
+[[ ! -e $LOG_DIR ]] && mkdir -p $LOG_DIR
+
+echo
+echo "Running migration ..."
+$MANAGE migrate --fake-initial

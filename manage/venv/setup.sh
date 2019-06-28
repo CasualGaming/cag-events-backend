@@ -11,7 +11,7 @@ export CONFIG_FILE
 set -e # No -u because of source below
 
 # Activate venv and deactivate on exit
-source "$(dirname "$BASH_SOURCE[0]")/activate.sh"
+source manage/venv/activate.sh
 trap deactivate EXIT
 
 set -eu
@@ -40,8 +40,7 @@ pip install -r requirements/development.txt
 echo
 echo "Collecting static files ..."
 # Ignore admin app, use theme instead
-$MANAGE collectstatic -i admin --noinput --clear
+$MANAGE collectstatic -i admin --noinput --clear | egrep -v "^Deleting" || true
 
 echo
-echo "Running migration ..."
-$MANAGE migrate --fake-initial
+manage/venv/update.sh
