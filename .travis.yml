@@ -35,7 +35,9 @@ jobs:
   - stage: Test
     name: Run linter (flake8)
     install: pip install -r requirements/testing.txt
-    script: flake8
+    script:
+    - flake8 --version
+    - flake8
     # SonarCloud does not fail the build if the SonarCloud quality gate fails,
     # but SonarCloud has a GitHub PR status check which can be made required.
   - stage: test

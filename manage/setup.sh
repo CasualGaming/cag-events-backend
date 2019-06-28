@@ -48,7 +48,7 @@ $DC up --no-start
 echo
 echo "Collecting static ..."
 # Ignore admin app, use theme instead
-$MANAGE collectstatic -i admin --noinput --clear
+$MANAGE collectstatic -i admin --noinput --clear | egrep -v "^Deleting" || true
 
 echo
 manage/update.sh

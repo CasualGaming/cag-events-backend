@@ -3,6 +3,8 @@ application_import_names = apps, authentication, common
 exclude = **/__init__.py, **/migrations, .venv
 
 inline-quotes = double
+#import-order-style = google
+max-line-length = 120
 
 # B901 blind except: statement (duplicate of E722)
 # E501 line too long
