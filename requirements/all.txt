@@ -6,6 +6,7 @@
 #
 asn1crypto==0.24.0        # via cryptography
 bandit==1.6.1             # via flake8-bandit
+beautifulsoup4==4.7.1
 certifi==2019.6.16        # via requests
 cffi==1.12.3              # via cryptography
 chardet==3.0.4            # via requests
@@ -62,6 +63,7 @@ pyyaml==5.1.1
 requests==2.22.0          # via coreapi, django-mailgun, mozilla-django-oidc
 six==1.12.0               # via bandit, cryptography, django-mailgun, flake8-print, josepy, pip-tools, pyopenssl, stevedore
 smmap2==2.0.5             # via gitdb2
+soupsieve==1.9.2          # via beautifulsoup4
 sqlparse==0.3.0           # via django
 stevedore==1.30.1         # via bandit
 uritemplate==3.0.0        # via coreapi

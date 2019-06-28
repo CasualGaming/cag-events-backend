@@ -11,10 +11,11 @@ class RowLayoutSerializer(ModelSerializer):
     class Meta:
         model = RowLayout
         fields = ("row_number",
+                  "description",
                   "seat_count_horizontal",
                   "seat_count_vertical",
-                  "offset_right",
-                  "offset_down",
+                  "offset_horizontal",
+                  "offset_vertical",
                   "rotation",
                   "seat_width",
                   "seat_height",
@@ -32,10 +33,9 @@ class AreaLayoutSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
         fields = ("url",
                   "short_title",
                   "long_title",
+                  "width",
+                  "height",
                   "background_url",
-                  "background_offset_right",
-                  "background_offset_down",
-                  "background_width",
                   "is_active",
                   "row_layouts")
 
