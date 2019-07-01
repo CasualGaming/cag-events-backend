@@ -2,7 +2,7 @@ from drf_dynamic_fields import DynamicFieldsMixin
 
 from rest_framework.serializers import HyperlinkedModelSerializer, ModelSerializer, ValidationError
 
-from .models import AreaLayout, RowLayout
+from .models import AreaLayout, RowLayout, Seating
 
 
 class RowLayoutSerializer(ModelSerializer):
@@ -66,3 +66,13 @@ class AreaLayoutSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
             for row_layout_data in row_layouts_data:
                 RowLayout.objects.create(area_layout=area_layout, **row_layout_data)
         return area_layout
+
+
+class SeatingSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
+    """Serializes an area layout including rows."""
+
+    class Meta:
+        model = Seating
+        fields = ("url",
+                  "event",
+                  "is_active")

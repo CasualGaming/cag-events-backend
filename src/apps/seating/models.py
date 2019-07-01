@@ -6,6 +6,8 @@ from django.db.models import BooleanField, CASCADE, CharField, CheckConstraint, 
 from apps.event.models import Event
 from apps.ticket.models import Ticket, TicketType
 
+from common.permissions import generate_default_permissions
+
 
 class AreaLayout(Model):
     """
@@ -18,14 +20,19 @@ class AreaLayout(Model):
     background_url = URLField("background URL", blank=True, help_text="URL for the area background image containing walls, exits, etc.")
     is_active = BooleanField("is active", default=False, help_text="If this layout is currently available to users.")
 
+    class Meta:
+        default_permissions = []
+        permissions = [
+            ("layout.list", "List seating layouts"),
+            ("layout.create", "Create seating layouts"),
+            ("layout.change", "Change seating layouts"),
+            ("layout.delete", "Delete seating layouts"),
+            ("layout.view_inactive", "View inactive seating layouts"),
+        ]
+        permissions += generate_default_permissions("AreaLayout", "seating area layouts")
+
     def __str__(self):
         return self.long_title
-
-    class Meta:
-        permissions = [
-            ("area_layout.list", "Can list layouts"),
-            ("area_layout.view_inactive", "Can view inactive layouts"),
-        ]
 
 
 class RowLayout(Model):
@@ -45,15 +52,18 @@ class RowLayout(Model):
     seat_spacing_horizontal = FloatField("horizontal seat spacing", validators=[MinValueValidator(0)], default=0, help_text="Spacing in meters between seats, horizontally.")
     seat_spacing_vertical = FloatField("vertical seat spacing", validators=[MinValueValidator(0)], default=0, help_text="Spacing in meters between seats, vertically.")
 
-    def __str__(self):
-        return "{0} – Row {1}".format(self.area_layout, self.row_number)
-
     class Meta:
         constraints = [
             UniqueConstraint(fields=["area_layout", "row_number"], name="unique_layout_area_row_number"),
             CheckConstraint(check=Q(row_number__gte=1), name="row_number_gte_1"),
         ]
         indexes = [Index(fields=["area_layout", "row_number"])]
+        default_permissions = []
+        # Custom permissions are shared with AreaLayout
+        permissions = generate_default_permissions("RowLayout", "seating row layouts")
+
+    def __str__(self):
+        return "{0} – Row {1}".format(self.area_layout, self.row_number)
 
 
 class Seating(Model):
@@ -63,14 +73,16 @@ class Seating(Model):
     event = OneToOneField(Event, verbose_name="event", primary_key=True, related_name="seating", on_delete=PROTECT)
     is_active = BooleanField("is active", default=False, help_text="If this seating is currently available to users.")
 
+    class Meta:
+        default_permissions = []
+        permissions = [
+            ("seating.list", "List seatings"),
+            ("seating.view_inactive", "View inactive seatings"),
+        ]
+        permissions += generate_default_permissions("Seating", "seatings")
+
     def __str__(self):
         return str(self.event)
-
-    class Meta:
-        permissions = [
-            ("seating.list", "Can list seatings"),
-            ("seating.view_inactive", "Can view inactive seatings"),
-        ]
 
 
 class Area(Model):
@@ -81,32 +93,44 @@ class Area(Model):
     area_layout = ForeignKey(AreaLayout, verbose_name="area layout", related_name="areas", on_delete=PROTECT)
     area_code = CharField("area code", max_length=4, help_text="Unique, non-empty area code for an area within a seating. Max 4 characters.")
 
-    def __str__(self):
-        return "{0} – {1}".format(self.seating, self.area_code)
-
     class Meta:
         constraints = [
             UniqueConstraint(fields=["seating", "area_code"], name="unique_area_code"),
         ]
         indexes = [Index(fields=["seating", "area_code"])]
+        default_permissions = []
+        permissions = generate_default_permissions("Area", "seating areas")
+
+    def __str__(self):
+        return "{0} – {1}".format(self.seating, self.area_code)
 
 
 class RowTicketTypes(Model):
     """
     For specifying which ticket types are available for individual rows in a seating.
     """
-    area = ForeignKey(Area, verbose_name="area", related_name="rows", on_delete=PROTECT)
+    area = ForeignKey(Area, verbose_name="area", related_name="applicable_rows", on_delete=PROTECT)
     row_number = IntegerField("row number", validators=[MinValueValidator(1)], help_text="Row number in the area layout.")
     ticket_type = ForeignKey(TicketType, verbose_name="ticket types", related_name="seating_rows", on_delete=PROTECT,
                              help_text="A ticket type available for this seating row.")
-
-    def __str__(self):
-        return "{0} – {1} – {2}".format(self.area, self.row_number, self.ticket_type)
 
     class Meta:
         constraints = [
             UniqueConstraint(fields=["area", "row_number", "ticket_type"], name="unique_area_row_ticket_type"),
         ]
+        default_permissions = []
+        permissions = generate_default_permissions("RowTicketTypes", "seating row ticket types")
+
+    def __str__(self):
+        return "{0} – {1} – {2}".format(self.area, self.row_number, self.ticket_type)
+
+    def clean(self):
+        if self.area.seating.event != self.ticket_type.event:
+            raise ValidationError("The seating and ticket type are for different events.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(Seat, self).save(*args, **kwargs)
 
 
 class Seat(Model):
@@ -118,19 +142,8 @@ class Seat(Model):
     row_number = IntegerField("row number", validators=[MinValueValidator(1)], help_text="Row number in the area.")
     seat_number = IntegerField("seat number", validators=[MinValueValidator(1)], help_text="Seat number in the row. Horizontal-major numbering.")
     is_reserved = BooleanField("is reserved", default=False, help_text="If this seat can not be tied to a ticket.")
-    assigned_ticket = ForeignKey(Ticket, verbose_name="assigned ticket", related_name="seats", on_delete=SET_NULL, null=True, blank=True,
-                                 help_text="Ticket tied to this seat if it is assigned.")
-
-    def clean(self):
-        if self.assigned_ticket is not None and self.is_reserved:
-            raise ValidationError("The seat cannot be both reserved and assigned a ticket")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super(Seat, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return "{0} – {1}/{2}/{3}".format(self.seating, self.area.area_code, self.row_number, self.seat_number)
+    assigned_ticket = OneToOneField(Ticket, verbose_name="assigned ticket", related_name="seat", on_delete=SET_NULL, null=True, blank=True,
+                                    help_text="Ticket tied to this seat if it is assigned.")
 
     class Meta:
         constraints = [
@@ -140,4 +153,16 @@ class Seat(Model):
             # Make sure a reserved seat is not assigned and vice versa
             CheckConstraint(check=(Q(assigned_ticket__exact=None) | Q(is_reserved__exact=False)), name="not_reserved_and_assigned"),
         ]
-        default_permissions = ()
+        default_permissions = []
+        permissions = generate_default_permissions("Seat", "seats", actions=("view",))
+
+    def __str__(self):
+        return "{0} – {1}/{2}/{3}".format(self.seating, self.area.area_code, self.row_number, self.seat_number)
+
+    def clean(self):
+        if self.assigned_ticket is not None and self.is_reserved:
+            raise ValidationError("The seat cannot be both reserved and assigned a ticket")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(Seat, self).save(*args, **kwargs)

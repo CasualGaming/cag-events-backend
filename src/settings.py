@@ -12,6 +12,7 @@ environ.Env.read_env(base_dir(config_file))
 INSTALLED_APPS = [
     # Local
     "authentication",
+    "common",
     "apps.event",
     "apps.article",
     "apps.ticket",

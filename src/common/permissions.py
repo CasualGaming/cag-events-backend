@@ -90,3 +90,21 @@ class IsStaffOrReadOnly(BasePermission):
     """DEPRECATED: Use [IsSuperuser | IsReadOnly] instead"""
     def has_permission(self, request, view):
         return request.user.is_staff or request.method in SAFE_METHODS
+
+
+def generate_default_permissions(model_name, verbose_model_name, actions=None):
+    all_actions = ("view", "add", "change", "delete")
+
+    if actions is not None:
+        if not isinstance(actions, tuple) and not isinstance(actions, list):
+            raise TypeError("Invalid actions")
+    else:
+        actions = all_actions
+
+    lower_model_name = model_name.lower()
+    permissions = []
+    for action in actions:
+        if action not in all_actions:
+            raise ValueError("Invalid action: " + action)
+        permissions += [("{0}_{1}".format(action, lower_model_name), "(Admin panel) {0} {1}".format(action.capitalize(), verbose_model_name))]
+    return permissions

@@ -7,7 +7,7 @@ MANAGE="manage/manage.sh"
 
 set -eu # Exit on error and undefined var is error
 
-echo "Running some checks. This will stop on the first error, or print \"success\" if no errors were catched."
+echo "Running some checks. This will stop on the first error, or print \"success\" if no errors were caught."
 
 echo
 echo "Running linter ..."

@@ -10,6 +10,8 @@ from apps.event.views import EventViewSet
 from apps.seating.views import AreaLayoutViewSet
 from apps.user.views import UserViewSet
 
+from authentication.views import LoginFailureView
+
 from common.permissions import AllowAll
 from common.routers import PublicDefaultRouter
 
@@ -30,6 +32,7 @@ urlpatterns = [
     path(r"schema/", schema_view, name="schema"),
     path(r"auth/", include("rest_framework.urls")),
     path(r"oidc/", include("mozilla_django_oidc.urls")),
+    path(r"login_failure/", LoginFailureView.as_view()),
     path(r"v0/", include(router.urls)),
     # path(r"favicon.ico", RedirectView.as_view(url="/static/images/favicon.ico", permanent=True)),
     path(r"", RedirectView.as_view(url="/v0", permanent=False)),

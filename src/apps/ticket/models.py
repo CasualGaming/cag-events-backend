@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db.models import CharField, DateField, ForeignKey, IntegerField, Model, PROTECT, SET_NULL
 
 from apps.event.models import Event
@@ -9,7 +10,7 @@ class TicketType(Model):
     short_title = CharField("short title", max_length=20, help_text="A short, non-unique title to show to users.")
     long_title = CharField("long title", unique=True, max_length=50, help_text="A longer, unique title.")
     event = ForeignKey(Event, verbose_name="event", related_name="ticket_types", on_delete=PROTECT)
-    priority = IntegerField("priority", default=10, help_text="Lower priority shows it higher on the list among other ticket types.")
+    priority = IntegerField("priority", validators=[MinValueValidator(0)], default=10, help_text="Lower priority shows it higher on the list among other ticket types.")
 
     def __str__(self):
         return self.long_title
@@ -21,4 +22,4 @@ class Ticket(Model):
     purchase_date = DateField("purchase date", editable=False)
 
     def __str__(self):
-        return str(self.id)
+        return "#{1} ({0})".format(self.ticket_type, self.id)

@@ -6,6 +6,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
+from common.permissions import generate_default_permissions
+
 
 class UserManager(BaseUserManager):
     """
@@ -49,15 +51,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["email"]
 
     class Meta:
-        verbose_name = "user"
-        verbose_name_plural = "users"
-        default_permissions = ()
+        default_permissions = []
         permissions = [
-            ("user.list", "Can list users"),
-            ("user.view_basic", "Can view everything except address"),
-            ("user.view_address", "Can view address"),
-            ("user.delete", "Can delete users"),
+            ("user.list", "List users"),
+            ("user.view_basic", "View users' non-address info"),
+            ("user.view_address", "View users' address"),
+            ("user.delete", "Delete users"),
         ]
+        permissions += generate_default_permissions("User", "users", actions=("view", "delete"))
 
     def clean(self):
         self.email = self.__class__.objects.normalize_email(self.email)
@@ -91,9 +92,8 @@ class UserProfile(Model):
     is_member = BooleanField("membership status", default=False, help_text="If the user is currently a member of the organization.")
 
     class Meta:
-        verbose_name = "user profile"
-        verbose_name_plural = "user profiles"
-        default_permissions = ()
+        default_permissions = []
+        permissions = generate_default_permissions("UserProfile", "user profiles", actions=("view",))
 
     def __str__(self):
         return self.user.username
@@ -116,9 +116,14 @@ class GroupExtension(Model):
     is_active = BooleanField("active status", default=False, help_text="If users can log into the site.")
 
     class Meta:
-        verbose_name = "group extension"
-        verbose_name_plural = "group extensions"
-        default_permissions = ()
+        default_permissions = []
+        permissions = [
+            ("group.list", "List groups"),
+            ("group.create", "Add groups"),
+            ("group.change", "Change groups"),
+            ("group.delete", "Delete groups"),
+        ]
+        permissions = generate_default_permissions("GroupExtension", "group extensions", actions=("view",))
 
     def __str__(self):
         return self.group.name
