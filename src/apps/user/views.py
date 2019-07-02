@@ -2,7 +2,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from authentication.models import User
 
-from common.permissions import DenyAll, ModelPermission
+from common.permissions import DenyAll, StringPermission
 
 from .serializers import UserSerializer
 
@@ -14,9 +14,9 @@ class UserViewSet(ReadOnlyModelViewSet):
 
     def get_permissions(self):
         permissions = {
-            "list": [ModelPermission("authentication.user.list")],
+            "list": [StringPermission("authentication.user.list")],
             "retrieve": [],
-            "destroy": [ModelPermission("authentication.user.delete")],
+            "destroy": [StringPermission("authentication.user.delete")],
         }
         return permissions.get(self.action, [DenyAll()])
 

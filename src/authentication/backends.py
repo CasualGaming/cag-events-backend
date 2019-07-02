@@ -7,6 +7,7 @@ from django.core.validators import validate_email
 
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
+from .group_sync import sync_user_groups
 from .models import GroupExtension, User, UserProfile
 
 
@@ -58,24 +59,16 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
         user.profile.is_member = attributes["is_member"]
 
         # Update groups and statuses
-        user.groups.clear()
-        is_staff = False
-        is_superuser = False
-        is_active = False
         group_names = attributes["groups"]
+        user.groups.clear()
         for group_name in group_names:
             try:
                 group = Group.objects.get(name=group_name)
-                group_ext = GroupExtension.objects.get(group=group)
+                GroupExtension.objects.get(group=group)
                 user.groups.add(group)
-                is_superuser = is_superuser or group_ext.is_superuser
-                is_staff = is_staff or group_ext.is_staff
-                is_active = is_active or group_ext.is_active
             except Group.DoesNotExist:
                 continue
-        user.is_staff = is_staff
-        user.is_superuser = is_superuser
-        user.is_active = is_active
+        sync_user_groups(user, save=False)
 
         # All okay, save
         user.save()

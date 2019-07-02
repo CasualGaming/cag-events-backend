@@ -52,19 +52,37 @@ class IsActive(BasePermission):
         return obj.is_active
 
 
-class ModelPermission(BasePermission):
+class StringPermission(BasePermission):
     """
-    Links Django model permissions to DRF permission.
-    The model permission must be a string of format `<app label>.<permission codename>`.
+    DRF permission wrapper for a model string permission, such as `seating.layout.list`.
     """
 
-    def __init__(self, model_permission):
-        if not isinstance(model_permission, str):
+    def __init__(self, string_permission):
+        if not isinstance(string_permission, str):
             raise TypeError("Model permission must be a string")
-        self.model_permission = model_permission
+        self.string_permission = string_permission
 
     def has_permission(self, request, view):
-        return request.user.has_perm(self.model_permission)
+        return request.user.has_perm(self.string_permission)
+
+
+class ConjunctionPermission(BasePermission):
+    """
+    Create new permission as conjunction (AND) of provided instantiated permissions.
+    Requires all permissions to have both `has_permission` and `has_object_permission` satisfied.
+    """
+
+    def __init__(self, *permissions):
+        self.permissions = permissions
+
+    def has_permission(self, request, view):
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        for permission in self.permissions:
+            if not permission.has_permission(request, view) or not permission.has_object_permission(request, view, obj):
+                return False
+        return True
 
 
 class DisjunctionPermission(BasePermission):
@@ -87,12 +105,14 @@ class DisjunctionPermission(BasePermission):
 
 
 class IsStaffOrReadOnly(BasePermission):
-    """DEPRECATED: Use [IsSuperuser | IsReadOnly] instead"""
+    """DEPRECATED"""
     def has_permission(self, request, view):
         return request.user.is_staff or request.method in SAFE_METHODS
 
 
-def generate_default_permissions(model_name, verbose_model_name, actions=None):
+def generate_default_permissions(model_name, verbose_plural_model_name, actions=None):
+    """Generate a list of permissions matching the default permissions of a model."""
+
     all_actions = ("view", "add", "change", "delete")
 
     if actions is not None:
@@ -106,5 +126,5 @@ def generate_default_permissions(model_name, verbose_model_name, actions=None):
     for action in actions:
         if action not in all_actions:
             raise ValueError("Invalid action: " + action)
-        permissions += [("{0}_{1}".format(action, lower_model_name), "(Admin panel) {0} {1}".format(action.capitalize(), verbose_model_name))]
+        permissions += [("{0}_{1}".format(action, lower_model_name), "{0} {1}".format(action.capitalize(), verbose_plural_model_name))]
     return permissions

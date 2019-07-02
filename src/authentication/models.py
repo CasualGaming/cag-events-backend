@@ -2,11 +2,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group, PermissionsMixin
 from django.core.mail import send_mail
 from django.db.models import BooleanField, CASCADE, CharField, DateField, DateTimeField, EmailField, Model, OneToOneField, UUIDField
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils import timezone
-
-from common.permissions import generate_default_permissions
 
 
 class UserManager(BaseUserManager):
@@ -50,16 +46,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
 
-    class Meta:
-        default_permissions = []
-        permissions = [
-            ("user.list", "List users"),
-            ("user.view_basic", "View users' non-address info"),
-            ("user.view_address", "View users' address"),
-            ("user.delete", "Delete users"),
-        ]
-        permissions += generate_default_permissions("User", "users", actions=("view", "delete"))
-
     def clean(self):
         self.email = self.__class__.objects.normalize_email(self.email)
 
@@ -91,10 +77,6 @@ class UserProfile(Model):
                                  help_text="Comma separated list of years the user has been a member of the organization.")
     is_member = BooleanField("membership status", default=False, help_text="If the user is currently a member of the organization.")
 
-    class Meta:
-        default_permissions = []
-        permissions = generate_default_permissions("UserProfile", "user profiles", actions=("view",))
-
     def __str__(self):
         return self.user.username
 
@@ -115,42 +97,24 @@ class GroupExtension(Model):
     is_staff = BooleanField("staff status", default=False, help_text="If users can log into the admin panel.")
     is_active = BooleanField("active status", default=False, help_text="If users can log into the site.")
 
+    def __str__(self):
+        return self.group.name
+
+
+class Permissions(Model):
     class Meta:
+        managed = False
         default_permissions = []
         permissions = [
+            ("*", "Authentication app admin"),
+            ("user.*", "User admin"),
+            ("user.list", "List users"),
+            ("user.view_basic", "View users' non-address info"),
+            ("user.view_address", "View users' address"),
+            ("user.delete", "Delete users"),
+            ("group.*", "Group admin"),
             ("group.list", "List groups"),
             ("group.create", "Add groups"),
             ("group.change", "Change groups"),
             ("group.delete", "Delete groups"),
         ]
-        permissions = generate_default_permissions("GroupExtension", "group extensions", actions=("view",))
-
-    def __str__(self):
-        return self.group.name
-
-
-@receiver(post_save, sender=Group)
-def group_save_listener(sender, instance, **kwargs):
-    update_group_users(instance)
-
-
-@receiver(post_save, sender=GroupExtension)
-def group_extension_save_listener(sender, instance, **kwargs):
-    update_group_users(instance.group)
-
-
-def update_group_users(group):
-    """Update all users in group to ensure consistency."""
-    for user in group.user_set.all():
-        is_superuser = False
-        is_staff = False
-        is_active = False
-        for group in user.groups.all():
-            group_ext = group.extension
-            is_superuser = is_superuser or group_ext.is_superuser
-            is_staff = is_staff or group_ext.is_staff
-            is_active = is_active or group_ext.is_active
-        user.is_superuser = is_superuser
-        user.is_staff = is_staff
-        user.is_active = is_active
-        user.save()

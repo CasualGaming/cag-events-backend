@@ -4,7 +4,7 @@ from django.http.response import HttpResponse
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
-from common.permissions import DenyAll, DisjunctionPermission, IsActive, ModelPermission
+from common.permissions import DenyAll, DisjunctionPermission, IsActive, StringPermission
 
 from .generators import generate_area_layout
 from .models import AreaLayout, Seating
@@ -17,13 +17,13 @@ class AreaLayoutViewSet(ModelViewSet):
 
     def get_permissions(self):
         permissions = {
-            "list": [ModelPermission("seating.area_layout.list")],
-            "retrieve": [DisjunctionPermission(IsActive(), ModelPermission("seating.area_layout.view_inactive"))],
-            "create": [ModelPermission("seating.area_layout.create")],
-            "update": [ModelPermission("seating.area_layout.change")],
-            "partial_update": [ModelPermission("seating.area_layout.change")],
-            "destroy": [ModelPermission("seating.area_layout.delete")],
-            "generated_image": [DisjunctionPermission(IsActive(), ModelPermission("seating.area_layout.view_inactive"))],
+            "list": [StringPermission("seating.area_layout.list")],
+            "retrieve": [DisjunctionPermission(IsActive(), StringPermission("seating.area_layout.view_inactive"))],
+            "create": [StringPermission("seating.area_layout.create")],
+            "update": [StringPermission("seating.area_layout.change")],
+            "partial_update": [StringPermission("seating.area_layout.change")],
+            "destroy": [StringPermission("seating.area_layout.delete")],
+            "generated_image": [DisjunctionPermission(IsActive(), StringPermission("seating.area_layout.view_inactive"))],
         }
         return permissions.get(self.action, [DenyAll()])
 
@@ -61,12 +61,12 @@ class SeatingViewSet(ModelViewSet):
 
     def get_permissions(self):
         permissions = {
-            "list": [ModelPermission("seating.seating.list")],
-            "create": [ModelPermission("seating.seating.create")],
-            "retrieve": [DisjunctionPermission(IsActive(), ModelPermission("seating.seating.view_inactive"))],
-            "update": [ModelPermission("seating.seating.change")],
-            "partial_update": [ModelPermission("seating.seating.change")],
-            "destroy": [ModelPermission("seating.seating.delete")],
+            "list": [StringPermission("seating.seating.list")],
+            "create": [StringPermission("seating.seating.create")],
+            "retrieve": [DisjunctionPermission(IsActive(), StringPermission("seating.seating.view_inactive"))],
+            "update": [StringPermission("seating.seating.change")],
+            "partial_update": [StringPermission("seating.seating.change")],
+            "destroy": [StringPermission("seating.seating.delete")],
         }
         return permissions.get(self.action, [DenyAll()])
 

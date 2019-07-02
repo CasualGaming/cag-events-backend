@@ -6,8 +6,6 @@ from django.db.models import BooleanField, CASCADE, CharField, CheckConstraint, 
 from apps.event.models import Event
 from apps.ticket.models import Ticket, TicketType
 
-from common.permissions import generate_default_permissions
-
 
 class AreaLayout(Model):
     """
@@ -19,17 +17,6 @@ class AreaLayout(Model):
     height = FloatField("height", validators=[MinValueValidator(0)], help_text="Height in meters of the area.")
     background_url = URLField("background URL", blank=True, help_text="URL for the area background image containing walls, exits, etc.")
     is_active = BooleanField("is active", default=False, help_text="If this layout is currently available to users.")
-
-    class Meta:
-        default_permissions = []
-        permissions = [
-            ("layout.list", "List seating layouts"),
-            ("layout.create", "Create seating layouts"),
-            ("layout.change", "Change seating layouts"),
-            ("layout.delete", "Delete seating layouts"),
-            ("layout.view_inactive", "View inactive seating layouts"),
-        ]
-        permissions += generate_default_permissions("AreaLayout", "seating area layouts")
 
     def __str__(self):
         return self.long_title
@@ -58,9 +45,6 @@ class RowLayout(Model):
             CheckConstraint(check=Q(row_number__gte=1), name="row_number_gte_1"),
         ]
         indexes = [Index(fields=["area_layout", "row_number"])]
-        default_permissions = []
-        # Custom permissions are shared with AreaLayout
-        permissions = generate_default_permissions("RowLayout", "seating row layouts")
 
     def __str__(self):
         return "{0} – Row {1}".format(self.area_layout, self.row_number)
@@ -72,14 +56,6 @@ class Seating(Model):
     """
     event = OneToOneField(Event, verbose_name="event", primary_key=True, related_name="seating", on_delete=PROTECT)
     is_active = BooleanField("is active", default=False, help_text="If this seating is currently available to users.")
-
-    class Meta:
-        default_permissions = []
-        permissions = [
-            ("seating.list", "List seatings"),
-            ("seating.view_inactive", "View inactive seatings"),
-        ]
-        permissions += generate_default_permissions("Seating", "seatings")
 
     def __str__(self):
         return str(self.event)
@@ -98,8 +74,6 @@ class Area(Model):
             UniqueConstraint(fields=["seating", "area_code"], name="unique_area_code"),
         ]
         indexes = [Index(fields=["seating", "area_code"])]
-        default_permissions = []
-        permissions = generate_default_permissions("Area", "seating areas")
 
     def __str__(self):
         return "{0} – {1}".format(self.seating, self.area_code)
@@ -118,8 +92,6 @@ class RowTicketTypes(Model):
         constraints = [
             UniqueConstraint(fields=["area", "row_number", "ticket_type"], name="unique_area_row_ticket_type"),
         ]
-        default_permissions = []
-        permissions = generate_default_permissions("RowTicketTypes", "seating row ticket types")
 
     def __str__(self):
         return "{0} – {1} – {2}".format(self.area, self.row_number, self.ticket_type)
@@ -153,8 +125,6 @@ class Seat(Model):
             # Make sure a reserved seat is not assigned and vice versa
             CheckConstraint(check=(Q(assigned_ticket__exact=None) | Q(is_reserved__exact=False)), name="not_reserved_and_assigned"),
         ]
-        default_permissions = []
-        permissions = generate_default_permissions("Seat", "seats", actions=("view",))
 
     def __str__(self):
         return "{0} – {1}/{2}/{3}".format(self.seating, self.area.area_code, self.row_number, self.seat_number)
@@ -166,3 +136,21 @@ class Seat(Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(Seat, self).save(*args, **kwargs)
+
+
+class Permissions(Model):
+    class Meta:
+        managed = False
+        default_permissions = []
+        permissions = [
+            ("*", "Seating app admin"),
+            ("layout.*", "Seating layout admin"),
+            ("layout.list", "List seating layouts"),
+            ("layout.create", "Create seating layouts"),
+            ("layout.change", "Change seating layouts"),
+            ("layout.delete", "Delete seating layouts"),
+            ("layout.view_inactive", "View inactive seating layouts"),
+            ("seating.*", "Seating admin"),
+            ("seating.list", "List seatings"),
+            ("seating.view_inactive", "View inactive seatings"),
+        ]
