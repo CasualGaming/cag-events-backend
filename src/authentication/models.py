@@ -2,12 +2,18 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group, PermissionsMixin
 from django.core.mail import send_mail
 from django.db.models import BooleanField, CASCADE, CharField, DateField, DateTimeField, EmailField, Model, OneToOneField, UUIDField
-from django.db.models.signals import post_save
+from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
+from authentication.group_sync import sync_group
+
 
 class UserManager(BaseUserManager):
+    """
+    Model manager for the surrogate user model.
+    """
+
     def create_user(self, username, email, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
@@ -16,7 +22,6 @@ class UserManager(BaseUserManager):
             raise ValueError("The given username must be set")
 
         email = self.normalize_email(email)
-        username = self.model.normalize_username(username)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_unusable_password()
         user.save(using=self._db)
@@ -24,6 +29,11 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """
+    Surrogate user model. Does not use password and has extra fields.
+    Relies more on authentication backend to validate username etc.
+    """
+
     subject_id = UUIDField("subject id", unique=True, db_index=True)
     username = CharField("username", unique=True, db_index=True, max_length=50)
     pretty_username = CharField("pretty username", unique=True, max_length=50, help_text="Same as the username, but allows different letter cases.")
@@ -41,15 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["email"]
 
     class Meta:
-        verbose_name = "user"
-        verbose_name_plural = "users"
-        default_permissions = ()
-        permissions = [
-            ("user.list", "Can list users"),
-            ("user.view_basic", "Can view everything except address"),
-            ("user.view_address", "Can view address"),
-            ("user.delete", "Can delete users"),
-        ]
+        default_permissions = ["view", "delete"]
 
     def clean(self):
         self.email = self.__class__.objects.normalize_email(self.email)
@@ -83,9 +85,7 @@ class UserProfile(Model):
     is_member = BooleanField("membership status", default=False, help_text="If the user is currently a member of the organization.")
 
     class Meta:
-        verbose_name = "user profile"
-        verbose_name_plural = "user profiles"
-        default_permissions = ()
+        default_permissions = ["view", "change"]
 
     def __str__(self):
         return self.user.username
@@ -102,41 +102,46 @@ class UserProfile(Model):
 
 class GroupExtension(Model):
     group = OneToOneField(Group, verbose_name="group", primary_key=True, related_name="extension", on_delete=CASCADE)
+    description = CharField("description", max_length=50, blank=True)
     is_superuser = BooleanField("superuser status", default=False, help_text="If users have every permission.")
     is_staff = BooleanField("staff status", default=False, help_text="If users can log into the admin panel.")
     is_active = BooleanField("active status", default=False, help_text="If users can log into the site.")
 
     class Meta:
-        verbose_name = "group extension"
-        verbose_name_plural = "group extensions"
-        default_permissions = ()
+        default_permissions = ["view", "change"]
 
     def __str__(self):
         return self.group.name
 
 
-@receiver(post_save, sender=Group)
-def group_save_listener(sender, instance, **kwargs):
-    update_group_users(instance)
+class Permissions(Model):
+    class Meta:
+        managed = False
+        default_permissions = []
+        permissions = [
+            ("*", "Authentication app admin"),
+            ("user.*", "User admin"),
+            ("user.list", "List users"),
+            ("user.view_basic", "View users' non-address info"),
+            ("user.view_address", "View users' address"),
+            ("user.delete", "Delete users"),
+            ("group.*", "Group admin"),
+            ("group.list", "List groups"),
+            ("group.create", "Add groups"),
+            ("group.change", "Change groups"),
+            ("group.delete", "Delete groups"),
+        ]
+
+
+@receiver(m2m_changed, sender=Group.permissions.through)
+def sync_group_from_group_permissions_change(sender, instance, action, **kwargs):
+    accepted_actions = ["post_add", "post_remove", "post_clear"]
+    if action not in accepted_actions:
+        return
+
+    sync_group(instance)
 
 
 @receiver(post_save, sender=GroupExtension)
-def group_extension_save_listener(sender, instance, **kwargs):
-    update_group_users(instance.group)
-
-
-def update_group_users(group):
-    """Update all users in group to ensure consistency."""
-    for user in group.user_set.all():
-        is_superuser = False
-        is_staff = False
-        is_active = False
-        for group in user.groups.all():
-            group_ext = group.extension
-            is_superuser = is_superuser or group_ext.is_superuser
-            is_staff = is_staff or group_ext.is_staff
-            is_active = is_active or group_ext.is_active
-        user.is_superuser = is_superuser
-        user.is_staff = is_staff
-        user.is_active = is_active
-        user.save()
+def sync_group_from_group_extension_save(sender, instance, **kwargs):
+    sync_group(instance.group)

@@ -16,9 +16,10 @@
 - Git ([Git CLI](https://git-scm.com) or [GitHub for Windows](https://windows.github.com/))
 - Python 3.7 w/ pip
 - Docker and Docker Compose
-- VS Code (optional)
+- (Optional) VS Code
   - flake8 linter extension
-- Travis Tool (optional)
+- (Optional) SQLite browser (e.g. [DB Browser for SQLite](https://sqlitebrowser.org/)) (for browsing the SQLite dev DB)
+- (Optional) Travis Tool (for encrypting files for Travis CI)
 
 ### Configure Git
 ```bash
@@ -50,8 +51,7 @@ Setting up and running the dev server:
 # If it tells you to fix the config; fix the config and run it again
 manage/setup.sh
 
-# For updating installed requirements, re-collect static files and run migrations,
-# not needed the first time
+# For running migrations, not needed the first time
 manage/update.sh
 
 # Start the dev server

@@ -11,8 +11,8 @@ Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
 * [SonarCloud](https://sonarcloud.io/dashboard?id=CasualGaming_cag-events-backend)
 
 ## Documents
-- [Development](docs/development.md)
-- [Keycloak/OpenID Connect](docs/keycloak-oidc.md)
+- [Development](docs/development/development.md)
+- [Docker image](docs/technical/docker-image.md)
 
 ## License
 This project is licensed under GPLv3, see LICENSE for the full license text.

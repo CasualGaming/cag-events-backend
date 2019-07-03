@@ -1,6 +1,8 @@
+beautifulsoup4
 coreapi
 django
 djangorestframework
+djangorestframework-xml
 django-environ
 django-grappelli
 drf-dynamic-fields

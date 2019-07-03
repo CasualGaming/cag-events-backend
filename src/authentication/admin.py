@@ -1,26 +1,17 @@
-from django.contrib import admin
+from django.contrib.admin import StackedInline, register, site
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from django.contrib.auth.models import Group
-from django.forms import ValidationError, models
+from django.forms import ValidationError
+
+from common.admin_utils import NoDeleteBaseInlineFormSet
 
 from .models import GroupExtension, User, UserProfile
 
 
-class NoDeleteInline(models.BaseInlineFormSet):
-    """
-    Custom formset to prevent deletion.
-    Used by the inline for userprofiles to prevent the possibility
-    of deleting the profile object.
-    """
-    def __init__(self, *args, **kwargs):
-        super(NoDeleteInline, self).__init__(*args, **kwargs)
-        self.can_delete = False
-
-
-class UserProfileInline(admin.StackedInline):
+class UserProfileInline(StackedInline):
     model = UserProfile
-    formset = NoDeleteInline
+    formset = NoDeleteBaseInlineFormSet
 
 
 class ImmutableUserChangeForm(UserChangeForm):
@@ -38,28 +29,50 @@ class ImmutableAdminPasswordChangeForm(AdminPasswordChangeForm):
         raise ValidationError("Users can not be changed locally.")
 
 
-@admin.register(User)
+@register(User)
 class UserProfileAdmin(UserAdmin):
-    inlines = (UserProfileInline,)
-    list_display = ("username", "email", "first_name", "last_name", "is_staff", "is_superuser", "is_active", "date_joined", "last_login")
-    list_filter = ("groups", "is_staff", "is_superuser", "is_active")
-    filter_horizontal = ("groups",)
+    inlines = [UserProfileInline]
+    list_display = ["username", "email", "first_name", "last_name", "is_staff", "is_superuser", "is_active", "date_joined", "last_login"]
+    list_filter = ["groups", "is_staff", "is_superuser", "is_active"]
     form = ImmutableUserChangeForm
     add_form = ImmutableUserCreationForm
     change_password_form = ImmutableAdminPasswordChangeForm
 
 
-class GroupExtensionInline(admin.StackedInline):
+class GroupExtensionInline(StackedInline):
     model = GroupExtension
-    formset = NoDeleteInline
+    formset = NoDeleteBaseInlineFormSet
 
 
-admin.site.unregister(Group)
+site.unregister(Group)
 
 
-@admin.register(Group)
+@register(Group)
 class GroupExtensionAdmin(GroupAdmin):
     inlines = (GroupExtensionInline,)
-    search_fields = ("name",)
-    ordering = ("name",)
-    filter_horizontal = ("permissions",)
+    list_display = ["name", "description", "is_staff", "is_superuser", "is_active"]
+    list_filter = ["extension__is_staff", "extension__is_superuser", "extension__is_active"]
+    ordering = ["name"]
+
+    def description(self, obj):
+        return obj.extension.description
+    description.short_description = "Description"
+    description.admin_order_field = "extension__description"
+
+    def is_staff(self, obj):
+        return obj.extension.is_staff
+    is_staff.short_description = "Staff"
+    is_staff.admin_order_field = "extension__is_staff"
+    is_staff.boolean = True
+
+    def is_superuser(self, obj):
+        return obj.extension.is_superuser
+    is_superuser.short_description = "Superuser"
+    is_superuser.admin_order_field = "extension__is_superuser"
+    is_superuser.boolean = True
+
+    def is_active(self, obj):
+        return obj.extension.is_active
+    is_active.short_description = "Active"
+    is_active.admin_order_field = "extension__is_active"
+    is_active.boolean = True

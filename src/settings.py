@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "apps.event",
     "apps.article",
     "apps.ticket",
+    "apps.seating",
     "apps.user",
 
     # Django (before 3rd-party)
@@ -54,23 +55,21 @@ DATABASES = {
     "default": env.db("DATABASE_URL"),
 }
 
-# Variable stuff
+# General
+DEBUG = env("DEBUG", default=False)
+TEMPLATE_DEBUG = DEBUG
 BASE_DIR = base_dir
+APP_NAME = "CaG Events"
 SITE_NAME = env("SITE_NAME")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 SECRET_KEY = env("SECRET_KEY")
-DEBUG = env("DEBUG", default=False)
-TEMPLATE_DEBUG = DEBUG
 NUM_PROXIES = env("NUM_PROXIES", default=0)
-
-# Constant stuff
-APP_NAME = "CaG Events"
 WSGI_APPLICATION = "wsgi.application"
 ROOT_URLCONF = "urls"
 AUTH_USER_MODEL = "authentication.User"
 LOGIN_URL = "/auth/login"
 LOGIN_REDIRECT_URL = "/"
-LOGIN_REDIRECT_URL_FAILURE = "/"
+LOGIN_REDIRECT_URL_FAILURE = "/login_failure"
 LOGOUT_REDIRECT_URL = "/"
 
 # Email
@@ -199,14 +198,19 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "authentication.permissions.IsSuperuser",
+        "common.permissions.IsSuperuser",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.BrowsableAPIRenderer",
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework_xml.renderers.XMLRenderer",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": env("PAGINATION_SIZE", default=20),
-    "DEFAULT_THROTTLE_CLASSES": (
+    "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
-    ),
+    ],
     "DEFAULT_THROTTLE_RATES": {
         "anon": env("ANON_THROTTLING", default="50/min"),
         "user": env("USER_THROTTLING", default="500/min"),
@@ -216,11 +220,14 @@ REST_FRAMEWORK = {
 # OIDC
 OIDC_DRF_AUTH_BACKEND = "authentication.backends.OidcAuthBackend"
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = env("OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS", default=(15 * 60))
-OIDC_RP_CLIENT_ID = env("OIDC_RP_CLIENT_ID", default="")
-OIDC_RP_CLIENT_SECRET = env("OIDC_RP_CLIENT_SECRET", default="")
-OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO", default="")
-OIDC_OP_AUTHORIZATION_ENDPOINT = env("OIDC_OP_AUTHORIZATION_ENDPOINT", default="")
-OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
-OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
-OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
-OIDC_OP_ACCOUNT_ENDPOINT = env("OIDC_OP_ACCOUNT_ENDPOINT", default="")
+OIDC_RP_CLIENT_ID = env("OIDC_RP_CLIENT_ID")
+OIDC_RP_CLIENT_SECRET = env("OIDC_RP_CLIENT_SECRET")
+OIDC_RP_SIGN_ALGO = env("OIDC_RP_SIGN_ALGO")
+OIDC_OP_AUTHORIZATION_ENDPOINT = env("OIDC_OP_AUTHORIZATION_ENDPOINT")
+OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT")
+OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT")
+OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT")
+OIDC_OP_ACCOUNT_ENDPOINT = env("OIDC_OP_ACCOUNT_ENDPOINT")
+
+# App settings
+SEATING_GENERATE_IMAGES = env("SEATING_GENERATE_IMAGES", default=False)

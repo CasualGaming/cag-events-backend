@@ -9,6 +9,7 @@ DB_FILE="$LOCAL_DIR/db.sqlite3"
 CONFIG_TEMPLATE_FILE="setup/simple/config.template.env"
 DC_FILE="setup/simple/docker-compose.yml"
 DC="docker-compose -f $DC_FILE"
+MANAGE="manage/manage.sh"
 
 set -eu # Exit on error and undefined var is error
 
@@ -43,6 +44,11 @@ $DC build app
 echo
 echo "Creating containers ..."
 $DC up --no-start
+
+echo
+echo "Collecting static ..."
+# Ignore admin app, use theme instead
+$MANAGE collectstatic -i admin --noinput --clear
 
 echo
 manage/update.sh

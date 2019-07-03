@@ -7,6 +7,7 @@ from django.core.validators import validate_email
 
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
+from .group_sync import sync_user_groups
 from .models import GroupExtension, User, UserProfile
 
 
@@ -58,24 +59,16 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
         user.profile.is_member = attributes["is_member"]
 
         # Update groups and statuses
-        user.groups.clear()
-        is_staff = False
-        is_superuser = False
-        is_active = False
         group_names = attributes["groups"]
+        user.groups.clear()
         for group_name in group_names:
             try:
                 group = Group.objects.get(name=group_name)
-                group_ext = GroupExtension.objects.get(group=group)
+                GroupExtension.objects.get(group=group)
                 user.groups.add(group)
-                is_superuser = is_superuser or group_ext.is_superuser
-                is_staff = is_staff or group_ext.is_staff
-                is_active = is_active or group_ext.is_active
             except Group.DoesNotExist:
                 continue
-        user.is_staff = is_staff
-        user.is_superuser = is_superuser
-        user.is_active = is_active
+        sync_user_groups(user, save=False)
 
         # All okay, save
         user.save()
@@ -92,7 +85,7 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
         attributes["pretty_username"] = cls.get_claim(claims, "pretty_username")
         attributes["first_name"] = cls.get_claim(claims, "given_name")
         attributes["last_name"] = cls.get_claim(claims, "family_name")
-        attributes["email"] = cls.get_claim(claims, "email")
+        attributes["email"] = cls.decode_email_address(claims, "email")
         attributes["birth_date"] = cls.get_claim(claims, "birth_date")
         attributes["gender"] = cls.get_claim(claims, "gender")
         attributes["phone_number"] = cls.get_claim(claims, "phone_number")
@@ -127,6 +120,18 @@ class OidcAuthBackend(OIDCAuthenticationBackend):
             validate_email(attributes["email"])
         except ValidationError:
             raise SuspiciousOperation("Invalid email format")
+
+    @classmethod
+    def decode_email_address(cls, claims, key):
+        """
+        Verify structure and normalize it by lowercasing the domain part.
+        """
+        email = cls.get_claim(claims, key)
+        try:
+            email_name, domain_part = email.strip().rsplit("@", 1)
+        except ValueError:
+            raise SuspiciousOperation("Invalid email address format")
+        return email_name + "@" + domain_part.lower()
 
     @classmethod
     def decode_membership_years(cls, claims, key, year=datetime.today().strftime("%Y")):

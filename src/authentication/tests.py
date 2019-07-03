@@ -46,6 +46,7 @@ class OidcAuthBackendTestCase(TestCase):
         self.assertRaises(SuspiciousOperation, OidcAuthBackend.get_claim, self.claims, "four")
 
     def test_user_attributes_valid1(self):
+        # No changes
         attributes = OidcAuthBackend.decode_attributes(self.user_claims)
         OidcAuthBackend.validate_attributes(attributes)
 
@@ -54,6 +55,13 @@ class OidcAuthBackendTestCase(TestCase):
         claims = deepcopy(self.user_claims)
         claims["membership_years"] = ""
         claims["groups"] = []
+        attributes = OidcAuthBackend.decode_attributes(claims)
+        OidcAuthBackend.validate_attributes(attributes)
+
+    def test_user_attributes_valid3(self):
+        # Uppercase email address domain is fine
+        claims = deepcopy(self.user_claims)
+        claims["email"] = "USER@EXAMPLE.NET"
         attributes = OidcAuthBackend.decode_attributes(claims)
         OidcAuthBackend.validate_attributes(attributes)
 
@@ -121,8 +129,7 @@ class OidcAuthBackendTestCase(TestCase):
         # Malformed email address
         claims = deepcopy(self.user_claims)
         claims["email"] = "hon"
-        attributes = OidcAuthBackend.decode_attributes(claims)
-        self.assertRaises(SuspiciousOperation, OidcAuthBackend.validate_attributes, attributes)
+        self.assertRaises(SuspiciousOperation, OidcAuthBackend.decode_attributes, claims)
 
     def test_user_attributes_invalid_membership_years1(self):
         # Malformed list of membership years
