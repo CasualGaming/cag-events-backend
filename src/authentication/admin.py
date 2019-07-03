@@ -4,14 +4,14 @@ from django.contrib.auth.forms import AdminPasswordChangeForm, UserChangeForm, U
 from django.contrib.auth.models import Group
 from django.forms import ValidationError
 
-from common.admin import NoDeleteInline
+from common.admin_utils import NoDeleteBaseInlineFormSet
 
 from .models import GroupExtension, User, UserProfile
 
 
 class UserProfileInline(StackedInline):
     model = UserProfile
-    formset = NoDeleteInline
+    formset = NoDeleteBaseInlineFormSet
 
 
 class ImmutableUserChangeForm(UserChangeForm):
@@ -41,7 +41,7 @@ class UserProfileAdmin(UserAdmin):
 
 class GroupExtensionInline(StackedInline):
     model = GroupExtension
-    formset = NoDeleteInline
+    formset = NoDeleteBaseInlineFormSet
 
 
 site.unregister(Group)

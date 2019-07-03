@@ -3,6 +3,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from authentication.models import User
 
 from common.permissions import DenyAll, StringPermission
+from common.request_utils import get_query_param_bool, get_query_param_list, get_query_param_str
 
 from .serializers import UserSerializer
 
@@ -25,23 +26,21 @@ class UserViewSet(ReadOnlyModelViewSet):
         if self.action != "list":
             return queryset
 
-        username = self.request.query_params.get("username", None)
+        username = get_query_param_str(self.request, "username")
         if username is not None:
             username = username.lower()
             queryset = queryset.filter(username=username)
 
-        partial_username = self.request.query_params.get("partial_username", None)
+        partial_username = get_query_param_str(self.request, "partial_username")
         if partial_username is not None:
             queryset = queryset.filter(username__icontains=partial_username)
 
-        is_member_str = self.request.query_params.get("member", None)
-        if is_member_str is not None and (is_member_str == "true" or is_member_str == "false"):
-            is_member = is_member_str == "true"
+        is_member = get_query_param_bool(self.request, "member")
+        if is_member is not None:
             queryset = queryset.filter(profile__is_member=is_member)
 
-        groups_str = self.request.query_params.get("groups", None)
-        if groups_str is not None:
-            for group in groups_str.split(","):
-                queryset = queryset.filter(groups__name=group)
+        groups = get_query_param_list(self.request, "groups")
+        if groups is not None:
+            queryset = queryset.filter(groups__name__in=groups)
 
         return queryset

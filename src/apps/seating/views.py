@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
 from common.permissions import DenyAll, DisjunctionPermission, IsActive, StringPermission
+from common.request_utils import get_query_param_bool, get_query_param_int, get_query_param_str
 
 from .generators import generate_area_layout
 from .models import AreaLayout, Seat, Seating
@@ -82,9 +83,8 @@ class SeatingViewSet(ModelViewSet):
         if not self.request.user.has_perm("seating.seating.view_inactive"):
             queryset = queryset.filter(is_active=True)
 
-        is_active_str = self.request.query_params.get("active", None)
-        if is_active_str is not None and (is_active_str == "true" or is_active_str == "false"):
-            is_active = is_active_str == "true"
+        is_active = get_query_param_bool(self.request, "active")
+        if is_active is not None:
             queryset = queryset.filter(is_active=is_active)
 
         return queryset
@@ -110,42 +110,31 @@ class SeatViewSet(ModelViewSet):
         if self.action != "list":
             return queryset
 
-        seating_str = self.request.query_params.get("seating", None)
-        if seating_str is not None:
-            try:
-                seating = int(seating_str)
-                queryset = queryset.filter(seating=seating)
-            except ValueError:
-                pass
+        seating_id = get_query_param_int(self.request, "seating")
+        if seating_id is not None:
+            queryset = queryset.filter(seating=seating_id)
 
-        area_code = self.request.query_params.get("area_code", None)
+        area_code = get_query_param_str(self.request, "area_code")
         if area_code is not None:
             queryset = queryset.filter(area__area_code=area_code)
 
-        row_number_str = self.request.query_params.get("row_number", None)
-        if row_number_str is not None:
-            try:
-                row_number = int(row_number_str)
-                queryset = queryset.filter(row_number=row_number)
-            except ValueError:
-                pass
+        row_number = get_query_param_int(self.request, "row_number")
+        if row_number is not None:
+            queryset = queryset.filter(row_number=row_number)
 
-        is_taken_str = self.request.query_params.get("is_taken", None)
-        if is_taken_str is not None and (is_taken_str == "true" or is_taken_str == "false"):
-            is_taken = is_taken_str == "true"
+        is_taken = get_query_param_bool(self.request, "is_taken")
+        if is_taken is not None:
             if is_taken:
                 queryset = queryset.filter(~Q(assigned_ticket=None))
             else:
                 queryset = queryset.filter(assigned_ticket=None)
 
-        is_reserved_str = self.request.query_params.get("is_reserved", None)
-        if is_reserved_str is not None and (is_reserved_str == "true" or is_reserved_str == "false"):
-            is_reserved = is_reserved_str == "true"
+        is_reserved = get_query_param_bool(self.request, "is_reserved")
+        if is_reserved is not None:
             queryset = queryset.filter(is_reserved=is_reserved)
 
-        is_available_str = self.request.query_params.get("is_available", None)
-        if is_available_str is not None and (is_available_str == "true" or is_available_str == "false"):
-            is_available = is_available_str == "true"
+        is_available = get_query_param_bool(self.request, "is_available")
+        if is_available is not None:
             if is_available:
                 queryset = queryset.filter(assigned_ticket=None, is_reserved=False)
             else:

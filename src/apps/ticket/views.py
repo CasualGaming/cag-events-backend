@@ -3,6 +3,7 @@ from django.db.models import Q
 from rest_framework.viewsets import ModelViewSet
 
 from common.permissions import DenyAll, DisjunctionPermission, IsActive, StringPermission
+from common.request_utils import get_query_param_bool, get_query_param_int, get_query_param_str
 
 from .models import Ticket, TicketType
 from .permissions import IsTicketOwnerOrAssignee
@@ -64,25 +65,20 @@ class TicketViewSet(ModelViewSet):
 
         user = self.request.user
 
-        ticket_type_str = self.request.query_params.get("ticket_type", None)
-        if ticket_type_str is not None:
-            try:
-                ticket_type = int(ticket_type_str)
-                queryset = queryset.filter(ticket_type=ticket_type)
-            except ValueError:
-                pass
+        ticket_type = get_query_param_int(self.request, "ticket_type")
+        if ticket_type is not None:
+            queryset = queryset.filter(ticket_type=ticket_type)
 
-        owner = self.request.query_params.get("owner", None)
+        owner = get_query_param_str(self.request, "owner")
         if owner is not None:
             queryset = queryset.filter(owner__username=owner)
 
-        assignee = self.request.query_params.get("assignee", None)
+        assignee = get_query_param_str(self.request, "assignee")
         if assignee is not None:
             queryset = queryset.filter(assignee__username=assignee)
 
-        is_activated_str = self.request.query_params.get("activated", None)
-        if is_activated_str is not None and (is_activated_str == "true" or is_activated_str == "false"):
-            is_activated = is_activated_str == "true"
+        is_activated = get_query_param_bool(self.request, "activated")
+        if is_activated is not None:
             if is_activated:
                 queryset = queryset.filter(~Q(assignee=None))
             else:

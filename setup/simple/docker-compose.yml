@@ -6,7 +6,7 @@ services:
     build:
       context: ../..
       dockerfile: ./setup/simple/Dockerfile
-    restart: always
+    restart: "no"
     tty: true
     environment:
     #- APP_UID=$APP_UID
