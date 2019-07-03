@@ -1,4 +1,3 @@
-
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import BooleanField, CASCADE, CharField, CheckConstraint, FloatField, ForeignKey, Index, IntegerField, Model, OneToOneField, PROTECT, Q, SET_NULL, URLField, UniqueConstraint
@@ -47,7 +46,10 @@ class RowLayout(Model):
         indexes = [Index(fields=["area_layout", "row_number"])]
 
     def __str__(self):
-        return "{0} – Row {1}".format(self.area_layout, self.row_number)
+        return "{0} - Row {1}".format(self.area_layout, self.row_number)
+
+    def seat_count(self):
+        return self.seat_count_horizontal * self.seat_count_vertical
 
 
 class Seating(Model):
@@ -76,16 +78,16 @@ class Area(Model):
         indexes = [Index(fields=["seating", "area_code"])]
 
     def __str__(self):
-        return "{0} – {1}".format(self.seating, self.area_code)
+        return "{0} - Area {1}".format(self.seating, self.area_code)
 
 
-class RowTicketTypes(Model):
+class RowTicketType(Model):
     """
     For specifying which ticket types are available for individual rows in a seating.
     """
-    area = ForeignKey(Area, verbose_name="area", related_name="applicable_rows", on_delete=PROTECT)
+    area = ForeignKey(Area, verbose_name="area", related_name="row_ticket_types", on_delete=CASCADE)
     row_number = IntegerField("row number", validators=[MinValueValidator(1)], help_text="Row number in the area layout.")
-    ticket_type = ForeignKey(TicketType, verbose_name="ticket types", related_name="seating_rows", on_delete=PROTECT,
+    ticket_type = ForeignKey(TicketType, verbose_name="ticket types", related_name="applicable_rows", on_delete=CASCADE,
                              help_text="A ticket type available for this seating row.")
 
     class Meta:
@@ -94,48 +96,70 @@ class RowTicketTypes(Model):
         ]
 
     def __str__(self):
-        return "{0} – {1} – {2}".format(self.area, self.row_number, self.ticket_type)
+        return "{0} - {1} - {2}".format(self.area, self.row_number, self.ticket_type)
 
     def clean(self):
         if self.area.seating.event != self.ticket_type.event:
             raise ValidationError("The seating and ticket type are for different events.")
+        if not RowLayout.objects.filter(area_layout=self.area.area_layout_id, row_number=self.row_number).exists():
+            raise ValidationError("Row number {0} does not exist in the area layout.".format(self.row_number))
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        return super(Seat, self).save(*args, **kwargs)
+        return super(RowTicketType, self).save(*args, **kwargs)
 
 
 class Seat(Model):
     """
-    A seat in a row in an area in a seating. Should be generated automatically when a seating area is created.
+    A seat in a row in an area in a seating. If a seat exists without an assigned ticket, it means it's reserved.
     """
-    seating = ForeignKey(Seating, verbose_name="seating", related_name="seats", on_delete=PROTECT)
-    area = ForeignKey(Area, verbose_name="area", related_name="seats", on_delete=PROTECT, help_text="Area in the seating.")
-    row_number = IntegerField("row number", validators=[MinValueValidator(1)], help_text="Row number in the area.")
-    seat_number = IntegerField("seat number", validators=[MinValueValidator(1)], help_text="Seat number in the row. Horizontal-major numbering.")
-    is_reserved = BooleanField("is reserved", default=False, help_text="If this seat can not be tied to a ticket.")
+    area = ForeignKey(Area, verbose_name="area", related_name="seats", on_delete=PROTECT, help_text="Seating area.")
+    row_number = IntegerField("row number", validators=[MinValueValidator(1)], help_text="Row number within area.")
+    seat_number = IntegerField("seat number", validators=[MinValueValidator(1)], help_text="Seat number within row. Horizontal-major seat numbering.")
     assigned_ticket = OneToOneField(Ticket, verbose_name="assigned ticket", related_name="seat", on_delete=SET_NULL, null=True, blank=True,
-                                    help_text="Ticket tied to this seat if it is assigned.")
+                                    help_text="Ticket assigned to this seat.")
+    show_user = BooleanField("show user", default=True, help_text="If the user with a ticket assigned to this seat should be shown publicly.")
+    # Denormalized field, set by clean
+    seating = ForeignKey(Seating, verbose_name="seating", related_name="seats", on_delete=PROTECT, editable=False)
 
     class Meta:
         constraints = [
             UniqueConstraint(fields=["area", "row_number", "seat_number"], name="unique_area_row_seat"),
             CheckConstraint(check=Q(row_number__gte=1), name="row_number_gte_1"),
             CheckConstraint(check=Q(seat_number__gte=1), name="seat_number_gte_1"),
-            # Make sure a reserved seat is not assigned and vice versa
-            CheckConstraint(check=(Q(assigned_ticket__exact=None) | Q(is_reserved__exact=False)), name="not_reserved_and_assigned"),
         ]
+        default_permissions = ["view", "change"]
 
     def __str__(self):
-        return "{0} – {1}/{2}/{3}".format(self.seating, self.area.area_code, self.row_number, self.seat_number)
+        return "{0} - {1}/{2}/{3}".format(self.area.seating, self.area.area_code, self.row_number, self.seat_number)
 
     def clean(self):
-        if self.assigned_ticket is not None and self.is_reserved:
-            raise ValidationError("The seat cannot be both reserved and assigned a ticket")
+        # Denormalized
+        self.seating_id = self.area.seating_id
+
+        row_layout_qs = RowLayout.objects.filter(area_layout=self.area.area_layout_id, row_number=self.row_number)
+        if not row_layout_qs.exists():
+            raise ValidationError("Row number does not exist in the area layout.")
+        row_layout = row_layout_qs[0]
+        if self.seat_number > row_layout.seat_count():
+            raise ValidationError("Seat number higher than seat count in row layout.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(Seat, self).save(*args, **kwargs)
+
+    def is_taken(self):
+        return self.assigned_ticket is not None
+
+    def is_reserved(self):
+        return self.assigned_ticket is None
+
+    def public_user(self):
+        if not self.show_user:
+            return None
+        if self.assigned_ticket is None:
+            return None
+        return self.assigned_ticket.assignee
 
 
 class Permissions(Model):
@@ -150,7 +174,13 @@ class Permissions(Model):
             ("layout.change", "Change seating layouts"),
             ("layout.delete", "Delete seating layouts"),
             ("layout.view_inactive", "View inactive seating layouts"),
+            ("layout.generate_image", "Generate seating layout images"),
             ("seating.*", "Seating admin"),
             ("seating.list", "List seatings"),
-            ("seating.view_inactive", "View inactive seatings"),
+            ("seat.*", "Seat admin"),
+            ("seat.create", "Manually create seats"),
+            ("seat.change", "Manually change seats"),
+            ("seat.delete", "Manually delete seats"),
+            ("seat.view_ticket", "View tickets assigned to seats"),
+            ("seat.view_hidden_user", "View hidden users assigned to seats"),
         ]

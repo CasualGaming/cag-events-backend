@@ -2,7 +2,11 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group, PermissionsMixin
 from django.core.mail import send_mail
 from django.db.models import BooleanField, CASCADE, CharField, DateField, DateTimeField, EmailField, Model, OneToOneField, UUIDField
+from django.db.models.signals import m2m_changed, post_save
+from django.dispatch import receiver
 from django.utils import timezone
+
+from authentication.group_sync import sync_group
 
 
 class UserManager(BaseUserManager):
@@ -46,6 +50,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
 
+    class Meta:
+        default_permissions = ["view", "delete"]
+
     def clean(self):
         self.email = self.__class__.objects.normalize_email(self.email)
 
@@ -77,6 +84,9 @@ class UserProfile(Model):
                                  help_text="Comma separated list of years the user has been a member of the organization.")
     is_member = BooleanField("membership status", default=False, help_text="If the user is currently a member of the organization.")
 
+    class Meta:
+        default_permissions = ["view", "change"]
+
     def __str__(self):
         return self.user.username
 
@@ -96,6 +106,9 @@ class GroupExtension(Model):
     is_superuser = BooleanField("superuser status", default=False, help_text="If users have every permission.")
     is_staff = BooleanField("staff status", default=False, help_text="If users can log into the admin panel.")
     is_active = BooleanField("active status", default=False, help_text="If users can log into the site.")
+
+    class Meta:
+        default_permissions = ["view", "change"]
 
     def __str__(self):
         return self.group.name
@@ -118,3 +131,17 @@ class Permissions(Model):
             ("group.change", "Change groups"),
             ("group.delete", "Delete groups"),
         ]
+
+
+@receiver(m2m_changed, sender=Group.permissions.through)
+def sync_group_from_group_permissions_change(sender, instance, action, **kwargs):
+    accepted_actions = ["post_add", "post_remove", "post_clear"]
+    if action not in accepted_actions:
+        return
+
+    sync_group(instance)
+
+
+@receiver(post_save, sender=GroupExtension)
+def sync_group_from_group_extension_save(sender, instance, **kwargs):
+    sync_group(instance.group)

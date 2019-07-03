@@ -1,14 +1,14 @@
 from threading import Lock
 
 from django.contrib.auth.models import Permission
-from django.db.models.signals import m2m_changed, post_migrate, post_save
+from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 
-from .models import Group, GroupExtension
+from .models import Group
 
 
 _has_run_migration_listener = False
-_group_permissions_lock = Lock()
+_sync_group_lock = Lock()
 
 
 @receiver(post_migrate)
@@ -22,26 +22,6 @@ def migration_listener(*args, **kwargs):
     sync_groups()
 
 
-@receiver(m2m_changed, sender=Group.permissions.through)
-def group_permissions_listener(sender, instance, action, **kwargs):
-    accepted_actions = ["post_add", "post_remove", "post_clear"]
-    if action not in accepted_actions:
-        return
-
-    # Break recursion when updating group perms
-    # Not thread safe
-    if _group_permissions_lock.acquire(blocking=False):
-        try:
-            sync_group(instance)
-        finally:
-            _group_permissions_lock.release()
-
-
-@receiver(post_save, sender=GroupExtension)
-def group_extension_save_listener(sender, instance, **kwargs):
-    sync_group(instance)
-
-
 def sync_groups():
     """Update all groups and their users."""
     for group in Group.objects.all():
@@ -49,9 +29,17 @@ def sync_groups():
 
 
 def sync_group(group):
-    """Update a group and it's users."""
-    sync_group_permissions(group)
-    sync_group_users(group)
+    """
+    Update a group and it's users.
+    Does nothing if it detects recursion, like when updating perms triggers it recursively.
+    Not thread safe.
+    """
+    if _sync_group_lock.acquire(blocking=False):
+        try:
+            sync_group_permissions(group)
+            sync_group_users(group)
+        finally:
+            _sync_group_lock.release()
 
 
 def sync_group_permissions(group):

@@ -7,7 +7,8 @@ from rest_framework.schemas import get_schema_view
 
 from apps.article.views import ArticleViewSet
 from apps.event.views import EventViewSet
-from apps.seating.views import AreaLayoutViewSet
+from apps.seating.views import AreaLayoutViewSet, SeatViewSet, SeatingViewSet
+from apps.ticket.views import TicketTypeViewSet, TicketViewSet
 from apps.user.views import UserViewSet
 
 from authentication.views import LoginFailureView
@@ -16,14 +17,27 @@ from common.permissions import AllowAll
 from common.routers import PublicDefaultRouter
 
 
+admin.site.site_header = settings.SITE_NAME
+
 schema_view = get_schema_view(title=settings.APP_NAME, permission_classes=[AllowAll])
 router = PublicDefaultRouter()
 
-admin.site.site_header = settings.SITE_NAME
-
+# Article app
 router.register(r"articles", ArticleViewSet)
+
+# Event app
 router.register(r"events", EventViewSet)
-router.register(r"seating_area_layout", AreaLayoutViewSet)
+
+# Seating app
+router.register(r"seatings", SeatingViewSet)
+router.register(r"seating_area_layouts", AreaLayoutViewSet)
+router.register(r"seats", SeatViewSet)
+
+# Ticket app
+router.register(r"ticket_types", TicketTypeViewSet)
+router.register(r"tickets", TicketViewSet)
+
+# User app
 router.register(r"users", UserViewSet)
 
 urlpatterns = [

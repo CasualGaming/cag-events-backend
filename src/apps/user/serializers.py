@@ -15,32 +15,6 @@ class UsernameUserSerializer(BaseSerializer):
 class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
     """Serializes users based on which fields the current user has permission to view."""
 
-    class Meta:
-        model = User
-        fields = ("url",
-                  "id",
-                  "subject_id",
-                  "username",
-                  "pretty_username",
-                  "first_name",
-                  "last_name",
-                  "email",
-                  "groups",
-                  "birth_date",
-                  "gender",
-                  "country",
-                  "postal_code",
-                  "street_address",
-                  "phone_number",
-                  "membership_years",
-                  "is_member")
-        extra_kwargs = {
-            "url": {
-                "view_name": "user-detail",
-                "lookup_field": "username",
-            },
-        }
-
     groups = StringRelatedField(many=True)
     birth_date = DateField(source="profile.birth_date")
     gender = CharField(source="profile.gender")
@@ -50,6 +24,34 @@ class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
     phone_number = CharField(source="profile.phone_number")
     membership_years = CharField(source="profile.membership_years")
     is_member = BooleanField(source="profile.is_member")
+
+    class Meta:
+        model = User
+        fields = [
+            "url",
+            "id",
+            "subject_id",
+            "username",
+            "pretty_username",
+            "first_name",
+            "last_name",
+            "email",
+            "groups",
+            "birth_date",
+            "gender",
+            "country",
+            "postal_code",
+            "street_address",
+            "phone_number",
+            "membership_years",
+            "is_member",
+        ]
+        extra_kwargs = {
+            "url": {
+                "view_name": "user-detail",
+                "lookup_field": "username",
+            },
+        }
 
     @property
     def fields(self):
@@ -63,8 +65,6 @@ class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
     def get_allowed_fields(self):
         allowed_fields = []
         request = self.context["request"]
-        basic_view_perm = request.user.has_perm("authentication.user.view_basic")
-        address_view_perm = request.user.has_perm("authentication.user.view_address")
         is_detail = isinstance(self.instance, User)
         is_self = is_detail and self.instance == request.user
 
@@ -76,7 +76,7 @@ class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
         ]
 
         # Basic fields
-        if basic_view_perm or is_self:
+        if request.user.has_perm("authentication.user.view_basic") or is_self:
             allowed_fields += [
                 "id",
                 "subject_id",
@@ -92,7 +92,7 @@ class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
             ]
 
         # Address fields
-        if address_view_perm or is_self:
+        if request.user.has_perm("authentication.user.view_address") or is_self:
             allowed_fields += [
                 "country",
                 "postal_code",

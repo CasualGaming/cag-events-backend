@@ -16,9 +16,10 @@
 - Git ([Git CLI](https://git-scm.com) or [GitHub for Windows](https://windows.github.com/))
 - Python 3.7 w/ pip
 - Docker and Docker Compose
-- VS Code (optional)
+- (Optional) VS Code
   - flake8 linter extension
-- Travis Tool (optional)
+- (Optional) SQLite browser (e.g. [DB Browser for SQLite](https://sqlitebrowser.org/)) (for browsing the SQLite dev DB)
+- (Optional) Travis Tool (for encrypting files for Travis CI)
 
 ### Configure Git
 ```bash

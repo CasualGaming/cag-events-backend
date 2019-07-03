@@ -1,9 +1,11 @@
 # Permission Conventions
 
 ## Default Permissions
-Django automatically adds four default permissions for all models, which are used by the Django admin panel and should **not** be used for anything else, because they are trash. They will not be created if `default_permissions = []` is specified in the model's meta class, but there's not point in doing that since they can't be removed from internal Django models anyways.
+Django automatically adds four default permissions for all models, which are used by the Django admin panel and should **not** be used for anything else, because they are trash. If you want to disallow creating, changing or deleting a model from the admin panel, customize `default_permissions` in the model's meta class.
 
 Default permission codename format: `(view|add|change|delete)_<lowercase_model_name>` (e.g. `view_arealayout`)
+
+Default default permissions (all): `default_permissions = ["view", "create", "change", "delete"]`
 
 ## Custom Permissions
 Add all permissions used in views etc. as custom permissions. Don't use the shady default permissions for anything except the Django admin panel (which requires them).

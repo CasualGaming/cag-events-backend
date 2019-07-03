@@ -61,18 +61,18 @@ class GroupExtensionAdmin(GroupAdmin):
 
     def is_staff(self, obj):
         return obj.extension.is_staff
-    is_staff.short_description = "Is staff"
+    is_staff.short_description = "Staff"
     is_staff.admin_order_field = "extension__is_staff"
     is_staff.boolean = True
 
     def is_superuser(self, obj):
         return obj.extension.is_superuser
-    is_superuser.short_description = "Is superuser"
+    is_superuser.short_description = "Superuser"
     is_superuser.admin_order_field = "extension__is_superuser"
     is_superuser.boolean = True
 
     def is_active(self, obj):
         return obj.extension.is_active
-    is_active.short_description = "Is active"
+    is_active.short_description = "Active"
     is_active.admin_order_field = "extension__is_active"
     is_active.boolean = True

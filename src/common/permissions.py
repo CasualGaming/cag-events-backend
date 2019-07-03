@@ -52,6 +52,15 @@ class IsActive(BasePermission):
         return obj.is_active
 
 
+class IsInactive(BasePermission):
+    """
+    Allow if the object is not active.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return not obj.is_active
+
+
 class StringPermission(BasePermission):
     """
     DRF permission wrapper for a model string permission, such as `seating.layout.list`.
