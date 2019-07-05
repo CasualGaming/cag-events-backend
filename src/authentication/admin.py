@@ -32,8 +32,9 @@ class ImmutableAdminPasswordChangeForm(AdminPasswordChangeForm):
 @register(User)
 class UserProfileAdmin(UserAdmin):
     inlines = [UserProfileInline]
-    list_display = ["username", "email", "first_name", "last_name", "is_staff", "is_superuser", "is_active", "date_joined", "last_login"]
-    list_filter = ["groups", "is_staff", "is_superuser", "is_active"]
+    list_display = ["username", "email", "first_name", "last_name", "is_active", "is_staff", "is_superuser", "is_deleted", "last_login", "join_date", "delete_date"]
+    # TODO Filter deleted
+    list_filter = ["groups", "is_active", "is_staff", "is_superuser"]
     form = ImmutableUserChangeForm
     add_form = ImmutableUserCreationForm
     change_password_form = ImmutableAdminPasswordChangeForm

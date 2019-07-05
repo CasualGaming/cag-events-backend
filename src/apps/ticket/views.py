@@ -2,7 +2,7 @@ from django.db.models import Q
 
 from rest_framework.viewsets import ModelViewSet
 
-from common.permissions import DenyAll, DisjunctionPermission, IsActive, StringPermission
+from common.permissions import DenyAll, DisjunctionPermission, IsEnabled, StringPermission
 from common.request_utils import get_query_param_bool, get_query_param_int, get_query_param_str
 
 from .models import Ticket, TicketType
@@ -18,7 +18,7 @@ class TicketTypeViewSet(ModelViewSet):
         permissions = {
             # List has more granular permission filtering
             "list": [StringPermission("ticket.ticket_type.list")],
-            "retrieve": [DisjunctionPermission(IsActive(), StringPermission("ticket.ticket_type.view_inactive"))],
+            "retrieve": [DisjunctionPermission(IsEnabled(), StringPermission("ticket.ticket_type.view_disabled"))],
             "create": [StringPermission("ticket.ticket_type.create")],
             "update": [StringPermission("ticket.ticket_type.change")],
             "partial_update": [StringPermission("ticket.ticket_type.change")],
@@ -31,14 +31,13 @@ class TicketTypeViewSet(ModelViewSet):
         if self.action != "list":
             return queryset
 
-        # Hide all inactive if the user is not allowed to see inactive
-        if not self.request.user.has_perm("ticket.ticket_type.view_inactive"):
-            queryset = queryset.filter(is_active=True)
+        # Hide all disabled if the user is not allowed to see disabled
+        if not self.request.user.has_perm("ticket.ticket_type.view_disabled"):
+            queryset = queryset.filter(is_enabled=True)
 
-        is_active_str = self.request.query_params.get("active", None)
-        if is_active_str is not None and (is_active_str == "true" or is_active_str == "false"):
-            is_active = is_active_str == "true"
-            queryset = queryset.filter(is_active=is_active)
+        is_enabled = get_query_param_bool(self.request, "enabled")
+        if is_enabled is not None:
+            queryset = queryset.filter(is_enabled=is_enabled)
 
         return queryset
 
@@ -49,6 +48,7 @@ class TicketViewSet(ModelViewSet):
 
     def get_permissions(self):
         permissions = {
+            # List items are filtered
             "list": [],
             "retrieve": [DisjunctionPermission(StringPermission("ticket.ticket.view_all"), IsTicketOwnerOrAssignee())],
             "create": [StringPermission("ticket.ticket.create")],

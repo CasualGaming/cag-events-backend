@@ -13,6 +13,12 @@ class AllowAll(BasePermission):
         return True
 
 
+class IsAuthenticated(BasePermission):
+    """Allow if user is logged in."""
+    def has_permission(self, request, view):
+        return request.user.is_authenticated()
+
+
 class IsSuperuser(BasePermission):
     """Allow if user is superuser."""
     def has_permission(self, request, view):
@@ -59,6 +65,24 @@ class IsInactive(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return not obj.is_active
+
+
+class IsEnabled(BasePermission):
+    """
+    Allow if the object is enabled.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj.is_enabled
+
+
+class IsDisabled(BasePermission):
+    """
+    Allow if the object is disabled.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return not obj.is_enabled
 
 
 class StringPermission(BasePermission):

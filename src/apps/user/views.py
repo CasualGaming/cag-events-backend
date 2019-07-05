@@ -8,6 +8,12 @@ from common.request_utils import get_query_param_bool, get_query_param_list, get
 from .serializers import UserSerializer
 
 
+# TODO viewset and serializer for changing local fields, like privacy
+# TODO custom delete, deactivate instead of removing
+# TODO Allow force delete?
+# TODO admin panel, mark for deletion and maybe force delete
+
+
 class UserViewSet(ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -16,6 +22,7 @@ class UserViewSet(ReadOnlyModelViewSet):
     def get_permissions(self):
         permissions = {
             "list": [StringPermission("authentication.user.list")],
+            # Instance fields are filtered
             "retrieve": [],
             "destroy": [StringPermission("authentication.user.delete")],
         }

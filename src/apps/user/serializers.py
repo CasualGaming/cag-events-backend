@@ -1,6 +1,6 @@
 from drf_dynamic_fields import DynamicFieldsMixin
 
-from rest_framework.serializers import BaseSerializer, BooleanField, CharField, DateField, HyperlinkedModelSerializer, StringRelatedField
+from rest_framework.serializers import BaseSerializer, BooleanField, CharField, DateField, HyperlinkedModelSerializer, IntegerField, StringRelatedField
 
 from authentication.models import User
 
@@ -24,31 +24,52 @@ class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
     phone_number = CharField(source="profile.phone_number")
     membership_years = CharField(source="profile.membership_years")
     is_member = BooleanField(source="profile.is_member")
+    is_age_public = BooleanField(source="profile.is_age_public")
+    is_gender_public = BooleanField(source="profile.is_gender_public")
+    public_age = IntegerField(source="profile.public_age")
+    public_gender = CharField(source="profile.public_gender")
 
     class Meta:
         model = User
-        fields = [
+        _public_fields = [
             "url",
-            "id",
-            "subject_id",
             "username",
             "pretty_username",
+            "public_name",
+            "public_age",
+            "public_gender",
+        ]
+        _basic_fields = [
+            "id",
+            "subject_id",
             "first_name",
             "last_name",
             "email",
             "groups",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "is_deleted",
+            "join_date",
+            "delete_date",
+            "last_login",
             "birth_date",
             "gender",
-            "country",
-            "postal_code",
-            "street_address",
             "phone_number",
             "membership_years",
             "is_member",
+            "is_name_public",
+            "is_age_public",
+            "is_gender_public",
         ]
+        _address_fields = [
+            "country",
+            "postal_code",
+            "street_address",
+        ]
+        fields = _public_fields + _basic_fields + _address_fields
         extra_kwargs = {
             "url": {
-                "view_name": "user-detail",
                 "lookup_field": "username",
             },
         }
@@ -68,35 +89,12 @@ class UserSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
         is_detail = isinstance(self.instance, User)
         is_self = is_detail and self.instance == request.user
 
-        # Public fields
-        allowed_fields += [
-            "url",
-            "username",
-            "pretty_username",
-        ]
+        allowed_fields += self.Meta._public_fields
 
-        # Basic fields
         if request.user.has_perm("authentication.user.view_basic") or is_self:
-            allowed_fields += [
-                "id",
-                "subject_id",
-                "first_name",
-                "last_name",
-                "email",
-                "groups",
-                "birth_date",
-                "gender",
-                "phone_number",
-                "membership_years",
-                "is_member",
-            ]
+            allowed_fields += self.Meta._basic_fields
 
-        # Address fields
         if request.user.has_perm("authentication.user.view_address") or is_self:
-            allowed_fields += [
-                "country",
-                "postal_code",
-                "street_address",
-            ]
+            allowed_fields += self.Meta._address_fields
 
         return allowed_fields

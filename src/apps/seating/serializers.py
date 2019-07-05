@@ -10,7 +10,7 @@ from .models import Area, AreaLayout, RowLayout, RowTicketType, Seat, Seating
 
 
 class RowLayoutNestedSerializer(ModelSerializer):
-    """Serializes a row layout."""
+    """Serializes a row layout, for use within the area layout serializer."""
 
     class Meta:
         model = RowLayout
@@ -26,6 +26,7 @@ class RowLayoutNestedSerializer(ModelSerializer):
             "seat_height",
             "seat_spacing_horizontal",
             "seat_spacing_vertical",
+            "seat_count",
         ]
 
 
@@ -38,13 +39,13 @@ class AreaLayoutSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
         model = AreaLayout
         fields = [
             "url",
-            "short_title",
-            "long_title",
+            "title",
+            "is_enabled",
             "width",
             "height",
             "background_url",
-            "is_active",
             "row_layouts",
+            "seat_count",
         ]
 
     def validate(self, data):
@@ -77,7 +78,7 @@ class AreaLayoutSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
 
 
 class RowTicketTypeNestedSerializer(ModelSerializer):
-    """Serializes a row ticket type relation."""
+    """Serializes a row ticket type relation, for use within the area serializer."""
 
     ticket_type = HyperlinkedRelatedField(view_name="tickettype-detail", queryset=TicketType.objects.all())
 
@@ -90,7 +91,7 @@ class RowTicketTypeNestedSerializer(ModelSerializer):
 
 
 class AreaNestedSerializer(ModelSerializer):
-    """Serializes an area."""
+    """Serializes an area, for use within the seating serializer."""
 
     area_layout = HyperlinkedRelatedField(view_name="arealayout-detail", queryset=AreaLayout.objects.all())
     row_ticket_types = RowTicketTypeNestedSerializer(many=True)
@@ -98,8 +99,10 @@ class AreaNestedSerializer(ModelSerializer):
     class Meta:
         model = Area
         fields = [
-            "area_layout",
+            "title",
             "area_code",
+            "description",
+            "area_layout",
             "row_ticket_types",
         ]
 
@@ -114,8 +117,9 @@ class SeatingSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
         fields = [
             "url",
             "event",
-            "is_active",
+            "is_enabled",
             "areas",
+            "seat_count",
         ]
         extra_kwargs = {
             "event": {
@@ -155,13 +159,14 @@ class SeatingSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
 class SeatSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
     """Serializes a seat, including the assigned ticket and user assigned to that ticket."""
 
+    seating = HyperlinkedRelatedField(source="area.seating", view_name="seating-detail", queryset=Seating.objects.all())
     area_code = StringRelatedField(source="area.area_code")
     user = HyperlinkedRelatedField(source="assigned_ticket.assignee", view_name="user-detail", lookup_field="username", queryset=User.objects.all())
-    public_user = HyperlinkedRelatedField(view_name="user-detail", lookup_field="username", queryset=User.objects.all())
+    public_user = HyperlinkedRelatedField(source="assigned_ticket.assignee.public_seat_user", view_name="user-detail", lookup_field="username", queryset=User.objects.all())
 
     class Meta:
         model = Seat
-        fields = [
+        _public_fields = [
             "url",
             "seating",
             "area_code",
@@ -169,10 +174,15 @@ class SeatSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
             "seat_number",
             "is_reserved",
             "is_taken",
-            "assigned_ticket",
             "public_user",
+        ]
+        _user_fields = [
             "user",
         ]
+        _ticket_fields = [
+            "assigned_ticket",
+        ]
+        fields = _public_fields + _user_fields + _ticket_fields
 
     @property
     def fields(self):
@@ -191,28 +201,14 @@ class SeatSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
         is_assigned_to_self = is_detail and assigned_ticket is not None and assigned_ticket.assigned_user == request.user
 
         # Public fields
-        allowed_fields += [
-            "url",
-            "seating",
-            "area_code",
-            "row_number",
-            "seat_number",
-            "is_reserved",
-            "is_taken",
-            "show_user",
-            "public_user",
-        ]
+        allowed_fields += self.Meta._public_fields
 
         # User field
         if request.user.has_perm("seating.seat.view_hidden_user") or is_assigned_to_self:
-            allowed_fields += [
-                "user",
-            ]
+            allowed_fields += self.Meta._user_fields
 
         # Ticket field
         if request.user.has_perm("seating.seat.view_ticket") or is_assigned_to_self:
-            allowed_fields += [
-                "assigned_ticket",
-            ]
+            allowed_fields += self.Meta._ticket_fields
 
         return allowed_fields

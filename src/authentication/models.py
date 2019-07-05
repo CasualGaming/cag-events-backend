@@ -1,12 +1,17 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group, PermissionsMixin
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from django.db.models import BooleanField, CASCADE, CharField, DateField, DateTimeField, EmailField, Model, OneToOneField, UUIDField
+from django.db.models import BooleanField, CASCADE, CharField, DateField, DateTimeField, EmailField, Model, OneToOneField, Q, UUIDField
+from django.db.models.constraints import CheckConstraint
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
 from authentication.group_sync import sync_group
+
+
+# TODO mark for deletion admin panel action and view
 
 
 class UserManager(BaseUserManager):
@@ -31,18 +36,31 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     """
     Surrogate user model. Does not use password and has extra fields.
-    Relies more on authentication backend to validate username etc.
+    All information is received from the authentication backend (like OpenID Connect),
+    or is inherited from the user's groups.
     """
 
+    # Fields from auth backend
     subject_id = UUIDField("subject id", unique=True, db_index=True)
     username = CharField("username", unique=True, db_index=True, max_length=50)
     pretty_username = CharField("pretty username", unique=True, max_length=50, help_text="Same as the username, but allows different letter cases.")
     first_name = CharField("first name", max_length=50, blank=True)
     last_name = CharField("last name", max_length=50, blank=True)
     email = EmailField("email address", blank=True)
+
+    # Fields from groups
     is_staff = BooleanField("staff status", default=False, help_text="If the user can use the admin panel.")
     is_active = BooleanField("active status", default=False, help_text="If the user can log into the site.")
-    date_joined = DateTimeField("date joined", default=timezone.now)
+    # is_superuser in PermissionsMixin
+
+    # Special fields
+    join_date = DateTimeField("date joined", default=timezone.now, editable=False)
+    # Make sure this is not unset or accidentally changed
+    delete_date = DateTimeField("date joined", null=True, blank=True, help_text="When the user was marked for deletion.")
+
+    # Privacy fields
+    is_name_public = BooleanField("is name public", default=False, help_text="If the user's name is public.")
+    is_seat_user_public = BooleanField("is seat user public", default=False, help_text="If the user will show publicly on seats it's assigned to.")
 
     objects = UserManager()
 
@@ -51,11 +69,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["email"]
 
     class Meta:
-        default_permissions = ["view", "delete"]
+        constraints = [
+            CheckConstraint(check=~(Q(is_active=True) & ~Q(delete_date=None)), name="user_user_not_both_active_and_deleted"),
+        ]
+        default_permissions = ["view"]
 
     def clean(self):
         self.email = self.__class__.objects.normalize_email(self.email)
+        if self.is_active and self.is_deleted:
+            raise ValidationError("Deleted user cannot be activated.")
 
+    # Required
     def get_full_name(self):
         """
         Return the combined full name.
@@ -63,26 +87,58 @@ class User(AbstractBaseUser, PermissionsMixin):
         full_name = "{0} {1}".format(self.first_name, self.last_name)
         return full_name.strip()
 
+    # Required
     def get_short_name(self):
         """Return the short name for the user."""
         return self.first_name
 
+    # Required
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    @property
+    def is_deleted(self):
+        return self.deleted_date
+
+    @property
+    def public_name(self):
+        """The full name if it's public, else NULL."""
+        return self.get_full_name() if self.is_name_public else None
+
+    @property
+    def public_seat_user(self):
+        """This user if it allows being shown in its seats, else NULL."""
+        return self if self.is_seat_user_public else None
+
+    def delete(self):
+        self.is_active = False
+        self.delete_date = timezone.now
+
 
 class UserProfile(Model):
+    """
+    Contains user information not related to authentication.
+    It is automatically created for a user when the user is created, and deleted when the user is deleted.
+    Like the user, all information is received from the authentication backend (like OpenID Connect),
+    or is inherited from the user's groups.
+    """
     user = OneToOneField(User, verbose_name="user", primary_key=True, related_name="profile", on_delete=CASCADE)
+
+    # Fields from auth backend
     birth_date = DateField("date of birth", null=True, blank=True)
-    gender = CharField("gender", null=True, blank=True, max_length=50)
+    gender = CharField("gender", null=True, blank=True, max_length=20)
+    phone_number = CharField("phone number", null=True, blank=True, max_length=20)
     country = CharField("country", null=True, blank=True, max_length=50)
     postal_code = CharField("postal code", null=True, blank=True, max_length=10)
     street_address = CharField("street address", null=True, blank=True, max_length=100)
-    phone_number = CharField("phone number", null=True, blank=True, max_length=20)
     membership_years = CharField("membership years", null=True, blank=True, max_length=500,
                                  help_text="Comma separated list of years the user has been a member of the organization.")
     is_member = BooleanField("membership status", default=False, help_text="If the user is currently a member of the organization.")
+
+    # Privacy fields
+    is_age_public = BooleanField("is age public", default=False, help_text="If the user's age in years is public.")
+    is_gender_public = BooleanField("is gender public", default=False, help_text="If the user's gender is public.")
 
     class Meta:
         default_permissions = ["view", "change"]
@@ -90,17 +146,27 @@ class UserProfile(Model):
     def __str__(self):
         return self.user.username
 
-    def get_month(self):
-        return "{0:02d}".format(self.birth_date.month)
-
-    def get_day(self):
-        return "{0:02d}".format(self.birth_date.day)
-
+    @property
     def has_address(self):
-        return self.street_address and self.postal_code
+        """If a full address (valid or not) is set."""
+        return self.country and self.street_address and self.postal_code
+
+    @property
+    def public_age(self):
+        """The age in years if that is public, otherwise NULL."""
+        return (timezone.now() - self.birth_date).years if self.is_age_public else None
+
+    @property
+    def public_gender(self):
+        """The gender if that is public, otherwise NULL."""
+        return self.gender if self.is_gender_public else None
 
 
 class GroupExtension(Model):
+    """
+    Contains more group information, since Django groups cannot be (easily) substituted.
+    It is automatically created for a group when the group is created, and deleted when the group is deleted.
+    """
     group = OneToOneField(Group, verbose_name="group", primary_key=True, related_name="extension", on_delete=CASCADE)
     description = CharField("description", max_length=50, blank=True)
     is_superuser = BooleanField("superuser status", default=False, help_text="If users have every permission.")

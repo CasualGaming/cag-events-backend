@@ -6,21 +6,32 @@ from .models import Ticket, TicketType
 
 
 class TicketTypeSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
-    """Serializes a ticket type."""
 
     class Meta:
         model = TicketType
         fields = [
             "url",
-            "short_title",
-            "long_title",
+            "simple_title",
+            "unique_title",
             "event",
-            "priority",
+            "is_enabled",
+            "visual_priority",
+            "max_count",
+            "max_user_purchase_count",
+            "max_user_assignment_count",
+            "grants_entrance",
+            "is_for_seating",
+            "required_ticket_type",
+            "valid_start_time",
+            "valid_end_time",
+            "is_valid_all_event",
+            "description",
+            "total_count",
+            "total_available_count",
         ]
 
 
 class TicketSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
-    """Serializes a ticket."""
 
     class Meta:
         model = Ticket
@@ -30,15 +41,14 @@ class TicketSerializer(DynamicFieldsMixin, HyperlinkedModelSerializer):
             "owner",
             "assignee",
             "is_activated",
+            "transfer_code",
             "seat",
         ]
         extra_kwargs = {
             "owner": {
-                "view_name": "user-detail",
                 "lookup_field": "username",
             },
             "assignee": {
-                "view_name": "user-detail",
                 "lookup_field": "username",
             },
         }
