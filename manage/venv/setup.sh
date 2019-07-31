@@ -6,20 +6,27 @@ LOG_DIR="$LOCAL_DIR/log"
 CONFIG_TEMPLATE_FILE="setup/venv/config.template.env"
 MANAGE="python src/manage.py"
 
+# Used by app
 export CONFIG_FILE
-
-set -e # No -u because of source below
-
-# Activate venv and deactivate on exit
-source "$(dirname "$BASH_SOURCE[0]")/activate.sh"
-trap deactivate EXIT
 
 set -eu
 
+# Activate venv and deactivate on exit
+# Allow undefined vars
+set +u
+source "$(dirname "$BASH_SOURCE[0]")/activate.sh"
+trap deactivate EXIT
+set -u
+
 mkdir -p $LOCAL_DIR
+mkdir -p $LOG_DIR
+
+echo "Installing requirements ..."
+pip install -r requirements/development.txt
 
 # Add config file and exit if missing
 if [[ ! -e $CONFIG_FILE ]]; then
+    echo
     echo "Creating new config file ..."
     cp $CONFIG_TEMPLATE_FILE $CONFIG_FILE
 
@@ -29,13 +36,6 @@ if [[ ! -e $CONFIG_FILE ]]; then
     echo "Please configure it and then re-run this script."
     exit 0
 fi
-
-# Add other dirs and files
-[[ ! -e $LOG_DIR ]] && mkdir -p $LOG_DIR
-
-echo
-echo "Installing requirements ..."
-pip install -r requirements/development.txt
 
 echo
 echo "Collecting static files ..."

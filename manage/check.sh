@@ -16,7 +16,7 @@ manage/lint.sh
 echo
 echo "Checking migrations ..."
 $MANAGE makemigrations --check --no-input --dry-run
-$MANAGE migrate --fake-initial --no-input --plan
+$MANAGE migrate --fake-initial --no-input --fake --plan
 
 echo
 echo "Checking validity ..."

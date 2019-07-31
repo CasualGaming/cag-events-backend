@@ -1,12 +1,13 @@
 #!/bin/bash
 
-set -e # No -u because of source below
+set -eu
 
 # Activate venv and deactivate on exit
+# Allow undefined vars
+set +u
 source "$(dirname "$BASH_SOURCE[0]")/activate.sh"
 trap deactivate EXIT
-
-set -eu
+set -u
 
 echo
 echo "Installing requirements ..."
