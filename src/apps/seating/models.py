@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db.models import BooleanField, CASCADE, CharField, CheckConstraint, F, FloatField, ForeignKey, Index, IntegerField, Model, OneToOneField, PROTECT, Q, URLField, UniqueConstraint
+from django.db.models import BooleanField, CASCADE, CharField, CheckConstraint, F, FloatField, ForeignKey, Index, IntegerField, Model, OneToOneField, PROTECT, Q, Sum, URLField, UniqueConstraint
 
 from apps.event.models import Event
 from apps.ticket.models import Ticket, TicketType
@@ -21,9 +21,9 @@ class AreaLayout(Model):
 
     @property
     def seat_count(self):
-        # TODO test
-        # return self.row_layouts.annotate(seat_count=(F("seat_count_horizontal") * F("seat_count_vertical"))).aggregate(Sum("seat_count"))
-        return self.row_layouts.annotate(seat_count=(F("seat_count_horizontal") * F("seat_count_vertical"))).get("seat_count__sum")
+        # TODO fix shortcut
+        return self.row_layouts.annotate(seat_count=(F("seat_count_horizontal") * F("seat_count_vertical"))).aggregate(Sum("seat_count"))
+        # return self.row_layouts.annotate(seat_count=(F("seat_count_horizontal") * F("seat_count_vertical"))).get("seat_count__sum")
 
 
 class RowLayout(Model):
