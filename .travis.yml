@@ -2,8 +2,6 @@
 # - DOCKER_REPO
 # - DOCKER_USER (secure)
 # - DOCKER_PASSWORD (secure)
-# - SONARCLOUD_TOKEN (secure)
-# - SONARCLOUD_ORG
 
 dist: xenial
 language: python
@@ -36,19 +34,6 @@ jobs:
     name: Run linter (flake8)
     install: pip install -r requirements/testing.txt
     script: flake8 src
-    # SonarCloud does not fail the build if the SonarCloud quality gate fails,
-    # but SonarCloud has a GitHub PR status check which can be made required.
-  - stage: test
-    name: Analyze source code (SonarCloud)
-    language: java
-    addons:
-      sonarcloud:
-        organization: $SONARCLOUD_ORG
-        token: $SONARCLOUD_TOKEN
-    git:
-      depth: false
-    install: true # NOP
-    script: sonar-scanner
 
   # Deploy stage
   # TODO Release branch with version tag as commit message
