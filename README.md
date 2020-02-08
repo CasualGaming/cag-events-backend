@@ -17,7 +17,6 @@ Back-end for [CaG Events](https://github.com/CasualGaming/cag-events).
 - [Docker image](docs/technical/docker-image.md)
 
 ## License
-This project is licensed under GPLv3, see LICENSE for the full license text.
-
+This project is licensed under GNU General Public License version 2, or (at your option) any later version (GPLv2 or later).
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FCasualGaming%2Fcag-events-backend.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FCasualGaming%2Fcag-events-backend?ref=badge_large)
